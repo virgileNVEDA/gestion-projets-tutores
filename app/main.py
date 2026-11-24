@@ -1,4 +1,7 @@
 from datetime import datetime
+import re
+import unicodedata
+from difflib import SequenceMatcher
 from flask import Blueprint, render_template, request, abort, make_response
 from flask_login import login_required, current_user
 from sqlalchemy import func, extract
@@ -16,12 +19,47 @@ def index():
 
 
 
+def _normalize_matricule(value):
+    """Normalise un matricule pour ignorer accents, espaces et ponctuation."""
+    value = unicodedata.normalize("NFKD", value or "")
+    value = "".join(char for char in value if not unicodedata.combining(char))
+    return re.sub(r"[^a-z0-9]", "", value.casefold())
+
+
 @main_bp.get("/recherche-etudiant")
 def public_student_lookup():
     matricule = request.args.get("matricule", "").strip()
-    student = User.query.filter_by(matricule=matricule, role="student", active=True).first() if matricule else None
+    student = None
+    search_match_note = None
+    if matricule:
+        # D'abord la recherche exacte, puis la comparaison tolérante aux petites fautes.
+        student = User.query.filter_by(matricule=matricule, role="student", active=True).first()
+        if not student:
+            wanted = _normalize_matricule(matricule)
+            if len(wanted) >= 5:
+                candidates = User.query.filter(
+                    User.role == "student", User.active.is_(True), User.matricule.isnot(None)
+                ).all()
+                ranked = []
+                for candidate in candidates:
+                    normalized = _normalize_matricule(candidate.matricule)
+                    if normalized:
+                        ranked.append((SequenceMatcher(None, wanted, normalized).ratio(), candidate))
+                ranked.sort(key=lambda item: item[0], reverse=True)
+                if ranked and ranked[0][0] >= 0.86:
+                    # En cas de deux matricules proches, ne jamais choisir arbitrairement.
+                    second_score = ranked[1][0] if len(ranked) > 1 else 0
+                    if ranked[0][0] - second_score >= 0.07:
+                        student = ranked[0][1]
+                        search_match_note = (
+                            "Nous avons corrigé une petite erreur de saisie et trouvé le matricule "
+                            + student.matricule + ". Vérifiez qu’il s’agit bien du vôtre."
+                        )
     topic = ProjectTopic.query.filter_by(student_id=student.id).order_by(ProjectTopic.updated_at.desc()).first() if student else None
-    return render_template("public_home.html", student=student, topic=topic, matricule=matricule, searched=bool(matricule))
+    return render_template(
+        "public_home.html", student=student, topic=topic, matricule=matricule,
+        searched=bool(matricule), search_match_note=search_match_note
+    )
 
 @main_bp.get("/fiche-etudiant/<string:matricule>/imprimer")
 def public_student_print(matricule):
