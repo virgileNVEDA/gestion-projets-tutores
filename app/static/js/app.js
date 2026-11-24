@@ -57,3 +57,20 @@ document.addEventListener("DOMContentLoaded", () => {
   window.setInterval(ping, 60000);
   document.addEventListener("visibilitychange", () => { if (!document.hidden) ping(); });
 });
+
+
+/* Sur la page profil, toujours revenir au début après un enregistrement/rechargement.
+   Certains navigateurs mobiles restaurent l'ancienne position de défilement et
+   donnent l'impression qu'un grand bloc vide précède le contenu. */
+(() => {
+  const resetProfileScroll = () => {
+    if (window.location.pathname === "/auth/profil") {
+      window.scrollTo({top: 0, left: 0, behavior: "instant"});
+    }
+  };
+  document.addEventListener("DOMContentLoaded", () => {
+    resetProfileScroll();
+    requestAnimationFrame(resetProfileScroll);
+  });
+  window.addEventListener("pageshow", resetProfileScroll);
+})();
