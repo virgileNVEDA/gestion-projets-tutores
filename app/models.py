@@ -87,3 +87,42 @@ class Message(db.Model):
 @login_manager.user_loader
 def load_user(user_id):
     return db.session.get(User, int(user_id))
+
+
+class DocumentVersion(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    topic_id = db.Column(db.Integer, db.ForeignKey("project_topic.id"), nullable=False, index=True)
+    uploader_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    filename = db.Column(db.String(255), nullable=False)
+    storage_key = db.Column(db.String(500), nullable=False)
+    version = db.Column(db.Integer, nullable=False, default=1)
+    document_type = db.Column(db.String(40), nullable=False, default="memoire")
+    comment = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    topic = db.relationship("ProjectTopic", backref="document_versions")
+    uploader = db.relationship("User")
+
+
+class Meeting(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    topic_id = db.Column(db.Integer, db.ForeignKey("project_topic.id"), nullable=False, index=True)
+    organizer_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    title = db.Column(db.String(180), nullable=False)
+    scheduled_at = db.Column(db.DateTime, nullable=False)
+    location = db.Column(db.String(180))
+    notes = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    topic = db.relationship("ProjectTopic", backref="meetings")
+    organizer = db.relationship("User")
+
+
+class Notification(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False, index=True)
+    topic_id = db.Column(db.Integer, db.ForeignKey("project_topic.id"))
+    title = db.Column(db.String(180), nullable=False)
+    body = db.Column(db.Text, nullable=False)
+    read_at = db.Column(db.DateTime)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    user = db.relationship("User", backref="notifications")
+    topic = db.relationship("ProjectTopic")
