@@ -5,7 +5,7 @@ from werkzeug.utils import secure_filename
 from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app, send_from_directory, abort, jsonify
 from flask_login import login_required, current_user
 from .extensions import db
-from .models import User, AcademicProgram, ProjectTopic, WorkflowEvent, Message, DocumentVersion, Meeting, Notification, ROLES
+from .models import User, AcademicProgram, ProjectTopic, WorkflowEvent, Message, DocumentVersion, Meeting, Notification, Institution, ROLES
 
 modules_bp = Blueprint("modules", __name__, url_prefix="/modules")
 ALLOWED = {"pdf", "doc", "docx", "odt", "xlsx", "pptx", "png", "jpg", "jpeg"}
@@ -35,6 +35,44 @@ def can_access(topic):
 def notify(user_id, topic_id, title, body):
     if user_id and user_id != current_user.id:
         db.session.add(Notification(user_id=user_id, topic_id=topic_id, title=title, body=body))
+
+
+@modules_bp.route("/parametres", methods=["GET", "POST"])
+@login_required
+def settings():
+    if current_user.role != "admin":
+        abort(403)
+    institution = Institution.query.order_by(Institution.id.asc()).first()
+    if institution is None:
+        institution = Institution(name="Établissement académique")
+        db.session.add(institution)
+        db.session.commit()
+    if request.method == "POST":
+        institution.name = request.form.get("institution_name", "").strip() or institution.name
+        institution.acronym = request.form.get("acronym", "").strip() or None
+        institution.logo_url = request.form.get("logo_url", "").strip() or None
+        institution.primary_color = request.form.get("primary_color", "#142D49")
+        institution.accent_color = request.form.get("accent_color", "#079B83")
+        institution.progress_enabled = request.form.get("progress_enabled") == "on"
+        institution.progress_color = request.form.get("progress_color", "#079B83")
+        images = [line.strip() for line in request.form.get("carousel_images", "").splitlines() if line.strip()]
+        if len(images) > 12:
+            flash("Le carrousel accepte au maximum 12 images.", "error")
+            return redirect(url_for("modules.settings"))
+        if any(not (url.startswith("https://") or url.startswith("http://")) for url in images):
+            flash("Chaque image doit avoir une adresse HTTPS ou HTTP valide.", "error")
+            return redirect(url_for("modules.settings"))
+        import json
+        institution.carousel_images = json.dumps(images, ensure_ascii=False)
+        db.session.commit()
+        flash("Les paramètres de l’établissement ont été enregistrés.", "success")
+        return redirect(url_for("modules.settings"))
+    import json
+    try:
+        carousel_images = "\\n".join(json.loads(institution.carousel_images or "[]"))
+    except (ValueError, TypeError):
+        carousel_images = ""
+    return render_template("settings.html", institution=institution, carousel_images=carousel_images)
 
 @modules_bp.route("/<section>", methods=["GET","POST"])
 @login_required
