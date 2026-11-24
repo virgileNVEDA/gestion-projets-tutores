@@ -21,6 +21,9 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(255), nullable=False)
     role = db.Column(db.String(30), nullable=False, default="student")
     matricule = db.Column(db.String(60), unique=True, nullable=True, index=True)
+    option_name = db.Column(db.String(120))
+    mention = db.Column(db.String(120))
+    promotion = db.Column(db.String(80))
     active = db.Column(db.Boolean, default=True, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
