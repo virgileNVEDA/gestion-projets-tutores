@@ -1,12 +1,33 @@
 {% extends "base.html" %}
-{% block title %}Accueil · Gestion des projets tutorés{% endblock %}
+{% block title %}Accueil · Gestion des sujets des projets tutorés{% endblock %}
 {% block public_content %}
-<main class="public-home">
-  <header class="public-nav"><a class="public-brand" href="/"><span class="brand-mark">GP</span><span><b>PROJETS TUTORÉS</b><small>PLATEFORME ACADÉMIQUE</small></span></a><a class="public-login" href="{{ url_for('auth.login') }}">Espace de connexion <span>→</span></a></header>
-  <section class="public-hero"><div class="hero-copy"><span class="eyebrow green">ESPACE ACADÉMIQUE NUMÉRIQUE</span><h1>Le suivi de votre projet, <em>en toute simplicité.</em></h1><p>Consultez votre dossier académique à tout moment grâce à votre matricule. Retrouvez votre sujet, votre promotion et les informations relatives à votre encadrement.</p><div class="hero-pills"><span>✓ Suivi académique</span><span>✓ Consultation rapide</span><span>✓ Fiche PDF</span></div></div><div class="hero-art"><div class="hero-orbit orbit-one"></div><div class="hero-orbit orbit-two"></div><div class="hero-doc"><span class="doc-mark">GP</span><b>DOSSIER ÉTUDIANT</b><div class="doc-line long"></div><div class="doc-line"></div><div class="doc-line medium"></div><div class="doc-stamp">✓</div></div><div class="hero-float">Suivi & validation<br><b>Centralisés</b></div></div></section>
-  <section class="lookup-section"><div class="lookup-heading"><span class="eyebrow green">CONSULTATION PUBLIQUE</span><h2>Retrouver mon dossier étudiant</h2><p>Aucun compte n’est nécessaire. Saisissez simplement votre matricule.</p></div><form class="public-search" action="{{ url_for('main.public_student_lookup') }}" method="get"><span class="search-symbol">⌕</span><input type="text" name="matricule" value="{{ matricule or '' }}" placeholder="Ex. PT2026-000125" required aria-label="Matricule étudiant"><button type="submit">Rechercher mon dossier <span>→</span></button></form>
-  {% if searched %}{% if student %}<article class="public-result"><div class="result-top"><div><span class="eyebrow green">DOSSIER RETROUVÉ</span><h3>{{ student.full_name }}</h3><p>Matricule : <b>{{ student.matricule }}</b></p></div><a class="result-pdf" href="{{ url_for('main.public_student_print',matricule=student.matricule) }}" target="_blank">Imprimer / PDF ↗</a></div><div class="result-grid"><div><small>Option</small><b>{{ student.option_name or 'Non renseignée' }}</b></div><div><small>Mention</small><b>{{ student.mention or 'Non renseignée' }}</b></div><div><small>Promotion</small><b>{{ student.promotion or 'Non renseignée' }}</b></div><div><small>Programme</small><b>{{ topic.program.name if topic and topic.program else 'Non renseigné' }}</b></div><div><small>Sujet de projet / mémoire</small><b>{{ topic.title if topic else 'Aucun sujet enregistré' }}</b></div><div><small>Directeur / Tuteur</small><b>{{ topic.tutor.full_name if topic and topic.tutor else 'À attribuer' }}</b></div><div><small>Codirecteur</small><b>{{ topic.codirector.full_name if topic and topic.codirector else 'À attribuer' }}</b></div><div><small>État du dossier</small><b>{{ topic.status|replace('_',' ')|title if topic else 'Sans sujet' }}</b></div></div><p class="public-disclaimer">Cette fiche présente uniquement les informations académiques autorisées à la consultation publique.</p></article>{% else %}<div class="lookup-error">Aucun dossier étudiant ne correspond à ce matricule. Vérifiez le code et réessayez.</div>{% endif %}{% endif %}
+<main class="portal-home">
+  <header class="portal-header">
+    <a class="portal-brand" href="/"><span class="brand-mark">GP</span><span><b>GESTION ACADÉMIQUE</b><small>PROJETS TUTORÉS · TFC · MÉMOIRES</small></span></a>
+    <a class="portal-header-link" href="{{ url_for('auth.login') }}">Se connecter <span>→</span></a>
+  </header>
+  <section class="portal-hero">
+    <div class="portal-kicker"><span></span> PLATEFORME ACADÉMIQUE NUMÉRIQUE</div>
+    <h1>Gestion des sujets<br><em>des projets tutorés</em></h1>
+    <p class="portal-intro">Une plateforme centralisée pour soumettre les sujets, organiser l’encadrement, suivre les travaux et assurer les validations académiques.</p>
+    <div class="portal-values"><span>Suivi structuré</span><span>Encadrement collaboratif</span><span>Traçabilité des validations</span></div>
   </section>
-  <footer class="public-footer"><span>© 2026 · Gestion des sujets des projets tutorés</span><span>Excellence · Innovation · Rigueur</span></footer>
+  <section class="portal-access">
+    <div class="portal-section-heading"><span class="eyebrow green">ACCÈS À LA PLATEFORME</span><h2>Choisissez votre espace</h2><p>Identifiez votre profil pour accéder aux fonctionnalités qui vous sont destinées.</p></div>
+    <div class="portal-access-grid">
+      <a class="portal-access-card student-access" href="{{ url_for('auth.login') }}">
+        <span class="access-icon">♙</span><span class="access-tag">ESPACE PERSONNEL</span><h3>Espace Étudiant</h3><p>Consulter votre sujet, suivre l’évolution de votre dossier, échanger avec votre encadreur et déposer vos documents.</p><span class="access-action">Accéder à mon espace <b>→</b></span>
+      </a>
+      <a class="portal-access-card admin-access" href="{{ url_for('auth.login') }}">
+        <span class="access-icon">▦</span><span class="access-tag">GESTION & PILOTAGE</span><h3>Administration</h3><p>Gérer les étudiants, les enseignants, les programmes, les affectations, les validations et les rapports.</p><span class="access-action">Accéder à l’administration <b>→</b></span>
+      </a>
+    </div>
+  </section>
+  <section class="portal-lookup">
+    <div class="lookup-copy"><span class="eyebrow green">CONSULTATION DU DOSSIER</span><h2>Retrouver mon dossier étudiant</h2><p>Retrouvez la fiche académique à l’aide de votre matricule.</p></div>
+    <form class="portal-search" action="{{ url_for('main.public_student_lookup') }}" method="get"><input type="text" name="matricule" value="{{ matricule or '' }}" placeholder="Votre matricule étudiant" required aria-label="Matricule étudiant"><button type="submit">Rechercher <span>→</span></button></form>
+    {% if searched %}{% if student %}<article class="public-result"><div class="result-top"><div><span class="eyebrow green">DOSSIER RETROUVÉ</span><h3>{{ student.full_name }}</h3><p>Matricule : <b>{{ student.matricule }}</b></p></div><a class="result-pdf" href="{{ url_for('main.public_student_print',matricule=student.matricule) }}" target="_blank">Imprimer / PDF ↗</a></div><div class="result-grid"><div><small>Option</small><b>{{ student.option_name or 'Non renseignée' }}</b></div><div><small>Mention</small><b>{{ student.mention or 'Non renseignée' }}</b></div><div><small>Promotion</small><b>{{ student.promotion or 'Non renseignée' }}</b></div><div><small>Programme</small><b>{{ topic.program.name if topic and topic.program else 'Non renseigné' }}</b></div><div><small>Sujet de projet / mémoire</small><b>{{ topic.title if topic else 'Aucun sujet enregistré' }}</b></div><div><small>Directeur / Tuteur</small><b>{{ topic.tutor.full_name if topic and topic.tutor else 'À attribuer' }}</b></div><div><small>Codirecteur</small><b>{{ topic.codirector.full_name if topic and topic.codirector else 'À attribuer' }}</b></div><div><small>État du dossier</small><b>{{ topic.status|replace('_',' ')|title if topic else 'Sans sujet' }}</b></div></div></article>{% else %}<div class="lookup-error">Aucun dossier trouvé pour ce matricule. Vérifiez le code et réessayez.</div>{% endif %}{% endif %}
+  </section>
+  <footer class="portal-footer"><span>© 2026 · Gestion des sujets des projets tutorés</span><span>Confidentialité · Excellence · Traçabilité</span></footer>
 </main>
 {% endblock %}
