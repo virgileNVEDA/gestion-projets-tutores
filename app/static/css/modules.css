@@ -17,3 +17,17 @@
 .remove-check{display:flex!important;flex-direction:row!important;align-items:center;gap:8px;margin-top:12px;font-size:12px!important;color:#a34b43!important}
 .remove-check input,.settings-switch input{width:17px;height:17px;accent-color:#078f7a}
 @media(max-width:650px){.settings-fields{grid-template-columns:1fr;padding:17px}.settings-fields .wide{grid-column:auto}}
+
+/* En-têtes uniformes des modules */
+.form-panel>h3,.panel>h3{display:block;background:#142d49;color:#fff!important;margin:-25px -25px 19px!important;padding:16px 20px;border-radius:15px 15px 0 0;font-size:15px!important;letter-spacing:0}
+.module-grid .panel>h3{margin:-25px -25px 19px!important}
+.workflow-card b,.document-row b,.meeting-row b,.message-row b,.notification-row b{color:#334155}
+.module-form label,.settings-fields>label,.upload-card>label{color:#475569}
+.module-form input,.module-form select,.module-form textarea,.inline-form input,.inline-form select{color:#334155}
+.settings-group summary{background:#142d49;color:#fff;border-radius:12px}
+.settings-group summary b{color:#fff!important}
+.settings-group summary small{color:#d3dee8!important}
+.settings-group summary i{color:#fff}
+.settings-icon{background:#ffffff20;color:#fff}
+.settings-group[open] summary{border-radius:12px 12px 0 0}
+@media(max-width:760px){.form-panel>h3,.panel>h3,.module-grid .panel>h3{margin:-18px -16px 17px!important;padding:14px 16px}}
