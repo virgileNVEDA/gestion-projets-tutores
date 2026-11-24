@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Paramètres de l'établissement{% endblock %}
+{% block content %}
+<div class="settings-page">
+<div class="settings-heading"><div><span class="eyebrow green">CONFIGURATION</span><h1>Paramètres de l'établissement</h1><p class="muted">Personnalisez l'identité et l'apparence de votre espace académique.</p></div><span class="settings-lock">⚙ Administration</span></div>
+<form method="post" class="settings-form"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<details class="settings-group" open><summary><span class="settings-icon">🏛</span><span><b>Identité de l'établissement</b><small>Nom officiel, sigle et logo</small></span><i>⌄</i></summary><div class="settings-fields">
+<label>Nom de l'institut ou de l'université<input name="institution_name" value="{{ institution.name }}" required maxlength="180"></label>
+<label>Sigle / Acronyme<input name="acronym" value="{{ institution.acronym or '' }}" placeholder="Ex. : ISTSH"></label>
+<label class="wide">Adresse web du logo<input type="url" name="logo_url" value="{{ institution.logo_url or '' }}" placeholder="https://..."><small>Utilisez une image accessible par HTTPS.</small></label>
+</div></details>
+<details class="settings-group"><summary><span class="settings-icon">🎨</span><span><b>Couleurs de l'interface</b><small>Palette principale de l'établissement</small></span><i>⌄</i></summary><div class="settings-fields color-fields"><label>Couleur principale<input type="color" name="primary_color" value="{{ institution.primary_color }}"></label><label>Couleur secondaire<input type="color" name="accent_color" value="{{ institution.accent_color }}"></label></div></details>
+<details class="settings-group"><summary><span class="settings-icon">🖼</span><span><b>Carrousel de l'accueil</b><small>Images affichées dans l'animation circulaire</small></span><i>⌄</i></summary><div class="settings-fields"><label class="wide">Adresses des images<textarea name="carousel_images" rows="6" placeholder="Une adresse d'image par ligne">{{ carousel_images }}</textarea><small>Jusqu'à 12 images. Une adresse par ligne, en HTTP ou HTTPS.</small></label></div></details>
+<details class="settings-group"><summary><span class="settings-icon">⏳</span><span><b>Barre de progression</b><small>Indicateur discret lors des chargements</small></span><i>⌄</i></summary><div class="settings-fields color-fields"><label class="settings-switch">Afficher la barre de progression <input type="checkbox" name="progress_enabled" {% if institution.progress_enabled %}checked{% endif %}></label><label>Couleur de la progression<input type="color" name="progress_color" value="{{ institution.progress_color }}"></label></div></details>
+<div class="settings-actions"><span>Les modifications seront appliquées après enregistrement.</span><button type="submit" class="settings-save">Enregistrer les paramètres</button></div>
+</form></div>
+{% endblock %}
