@@ -41,6 +41,21 @@ def notify(user_id, topic_id, title, body):
 def inject_institution():
     return {"institution": Institution.query.order_by(Institution.id.asc()).first()}
 
+def _image_data(file, label):
+    if not file or not file.filename:
+        return None
+    import base64
+    ext = file.filename.rsplit(".", 1)[-1].lower() if "." in file.filename else ""
+    mime = {"png":"image/png", "jpg":"image/jpeg", "jpeg":"image/jpeg", "webp":"image/webp"}.get(ext)
+    if not mime:
+        raise ValueError(f"{label} : format accepté PNG, JPG ou WEBP.")
+    raw = file.read()
+    if len(raw) > 2 * 1024 * 1024:
+        raise ValueError(f"{label} : chaque image doit faire 2 Mo maximum.")
+    if not raw:
+        raise ValueError(f"{label} : fichier vide.")
+    return "data:" + mime + ";base64," + base64.b64encode(raw).decode("ascii")
+
 @modules_bp.route("/parametres", methods=["GET", "POST"])
 @login_required
 def settings():
@@ -52,30 +67,51 @@ def settings():
         db.session.add(institution)
         db.session.commit()
     if request.method == "POST":
-        institution.name = request.form.get("institution_name", "").strip() or institution.name
-        institution.acronym = request.form.get("acronym", "").strip() or None
-        institution.logo_url = request.form.get("logo_url", "").strip() or None
-        institution.primary_color = request.form.get("primary_color", "#142D49")
-        institution.accent_color = request.form.get("accent_color", "#079B83")
-        institution.progress_enabled = request.form.get("progress_enabled") == "on"
-        institution.progress_color = request.form.get("progress_color", "#079B83")
-        images = [line.strip() for line in request.form.get("carousel_images", "").splitlines() if line.strip()]
-        if len(images) > 12:
-            flash("Le carrousel accepte au maximum 12 images.", "error")
+        try:
+            institution.name = request.form.get("institution_name", "").strip() or institution.name
+            institution.acronym = request.form.get("acronym", "").strip() or None
+            institution.address = request.form.get("address", "").strip() or None
+            institution.phone = request.form.get("phone", "").strip() or None
+            institution.contact_email = request.form.get("contact_email", "").strip() or None
+            institution.website = request.form.get("website", "").strip() or None
+            institution.motto = request.form.get("motto", "").strip() or None
+            institution.academic_year = request.form.get("academic_year", "").strip() or None
+            institution.primary_color = request.form.get("primary_color", "#142D49")
+            institution.accent_color = request.form.get("accent_color", "#079B83")
+            institution.progress_enabled = request.form.get("progress_enabled") == "on"
+            institution.progress_color = request.form.get("progress_color", "#079B83")
+            for field, attr, label in [
+                ("logo_file", "logo_data", "Logo principal"),
+                ("secondary_logo_file", "secondary_logo_data", "Deuxième logo"),
+                ("progress_image_file", "progress_image_data", "Image de chargement")
+            ]:
+                uploaded = request.files.get(field)
+                if uploaded and uploaded.filename:
+                    setattr(institution, attr, _image_data(uploaded, label))
+            if request.form.get("remove_logo") == "on": institution.logo_data = None
+            if request.form.get("remove_secondary_logo") == "on": institution.secondary_logo_data = None
+            if request.form.get("remove_progress_image") == "on": institution.progress_image_data = None
+            import json
+            images = json.loads(institution.carousel_images or "[]")
+            if request.form.get("clear_carousel") == "on": images = []
+            for uploaded in request.files.getlist("carousel_files"):
+                if uploaded and uploaded.filename:
+                    if len(images) >= 12: raise ValueError("Le carrousel accepte au maximum 12 images.")
+                    images.append(_image_data(uploaded, "Image du carrousel"))
+            if len(images) > 12: raise ValueError("Le carrousel accepte au maximum 12 images.")
+            # Les anciennes adresses web restent compatibles.
+            institution.carousel_images = json.dumps(images, ensure_ascii=False)
+            db.session.commit()
+            flash("Les paramètres de l’établissement ont été enregistrés.", "success")
             return redirect(url_for("modules.settings"))
-        if any(not (url.startswith("https://") or url.startswith("http://")) for url in images):
-            flash("Chaque image doit avoir une adresse HTTPS ou HTTP valide.", "error")
-            return redirect(url_for("modules.settings"))
-        import json
-        institution.carousel_images = json.dumps(images, ensure_ascii=False)
-        db.session.commit()
-        flash("Les paramètres de l’établissement ont été enregistrés.", "success")
-        return redirect(url_for("modules.settings"))
+        except (ValueError, TypeError) as exc:
+            db.session.rollback()
+            flash(str(exc), "error")
     import json
     try:
-        carousel_images = "\\n".join(json.loads(institution.carousel_images or "[]"))
+        carousel_images = json.loads(institution.carousel_images or "[]")
     except (ValueError, TypeError):
-        carousel_images = ""
+        carousel_images = []
     return render_template("settings.html", institution=institution, carousel_images=carousel_images)
 
 @modules_bp.route("/<section>", methods=["GET","POST"])
