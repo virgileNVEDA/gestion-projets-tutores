@@ -42,7 +42,7 @@ def create_app():
             if name not in institution_columns:
                 db.session.execute(text(f'ALTER TABLE "institution" ADD COLUMN {name} {sql_type}'))
         columns = {column["name"] for column in inspect(db.engine).get_columns("user")}
-        for name, sql_type in (("option_name", "VARCHAR(120)"), ("mention", "VARCHAR(120)"), ("promotion", "VARCHAR(80)")):
+        for name, sql_type in (("option_name", "VARCHAR(120)"), ("mention", "VARCHAR(120)"), ("promotion", "VARCHAR(80)"), ("profile_photo_data", "TEXT"), ("last_seen_at", "TIMESTAMP")):
             if name not in columns:
                 db.session.execute(text(f'ALTER TABLE "user" ADD COLUMN {name} {sql_type}'))
         # Créer une identité par défaut pour préserver l'installation existante.
