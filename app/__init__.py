@@ -20,8 +20,10 @@ def create_app():
     from . import models  # noqa: F401
     from .auth import auth_bp
     from .main import main_bp
+    from .modules import modules_bp
     app.register_blueprint(auth_bp)
     app.register_blueprint(main_bp)
+    app.register_blueprint(modules_bp)
 
     @app.cli.command("init-db")
     def init_db():
