@@ -1,33 +1,47 @@
 {% extends "base.html" %}
-{% block title %}Accueil · Gestion des sujets des projets tutorés{% endblock %}
+{% block title %}Accueil · Projets tutorés{% endblock %}
 {% block public_content %}
-<main class="portal-home">
-  <header class="portal-header">
-    <a class="portal-brand" href="/"><span class="brand-mark">GP</span><span><b>GESTION ACADÉMIQUE</b><small>PROJETS TUTORÉS · TFC · MÉMOIRES</small></span></a>
-    <a class="portal-header-link" href="{{ url_for('auth.login') }}">Se connecter <span>→</span></a>
+<main class="orbit-home">
+  <header class="orbit-header">
+    <a class="orbit-brand" href="/" aria-label="Accueil"><span class="orbit-brand-mark">GP</span><span>PROJETS <b>TUTORÉS</b></span></a>
+    <a class="orbit-login" href="{{ url_for('auth.login') }}" aria-label="Se connecter" title="Se connecter">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
+    </a>
   </header>
-  <section class="portal-hero">
-    <div class="portal-kicker"><span></span> PLATEFORME ACADÉMIQUE NUMÉRIQUE</div>
-    <h1>Gestion des sujets<br><em>des projets tutorés</em></h1>
-    <p class="portal-intro">Une plateforme centralisée pour soumettre les sujets, organiser l’encadrement, suivre les travaux et assurer les validations académiques.</p>
-    <div class="portal-values"><span>Suivi structuré</span><span>Encadrement collaboratif</span><span>Traçabilité des validations</span></div>
-  </section>
-  <section class="portal-access">
-    <div class="portal-section-heading"><span class="eyebrow green">ACCÈS À LA PLATEFORME</span><h2>Choisissez votre espace</h2><p>Identifiez votre profil pour accéder aux fonctionnalités qui vous sont destinées.</p></div>
-    <div class="portal-access-grid">
-      <a class="portal-access-card student-access" href="{{ url_for('auth.login') }}">
-        <span class="access-icon">♙</span><span class="access-tag">ESPACE PERSONNEL</span><h3>Espace Étudiant</h3><p>Consulter votre sujet, suivre l’évolution de votre dossier, échanger avec votre encadreur et déposer vos documents.</p><span class="access-action">Accéder à mon espace <b>→</b></span>
-      </a>
-      <a class="portal-access-card admin-access" href="{{ url_for('auth.login') }}">
-        <span class="access-icon">▦</span><span class="access-tag">GESTION & PILOTAGE</span><h3>Administration</h3><p>Gérer les étudiants, les enseignants, les programmes, les affectations, les validations et les rapports.</p><span class="access-action">Accéder à l’administration <b>→</b></span>
-      </a>
+
+  <section class="orbit-stage" aria-label="Carrousel circulaire d’images">
+    <div class="orbit-glow"></div>
+    <div class="orbit-ring orbit-ring-outer">
+      <div class="orbit-thumbnails">
+        <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=180&h=180&fit=crop" alt="Étudiants sur un campus">
+        <img src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=180&h=180&fit=crop" alt="Livres et documentation">
+        <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=180&h=180&fit=crop" alt="Travail numérique">
+        <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=180&h=180&fit=crop" alt="Étudiants en groupe">
+        <img src="https://images.unsplash.com/photo-149763 la?auto=format&w=180&h=180&fit=crop" alt="Bibliothèque">
+        <img src="https://images.unsplash.com/photo-1513258496099-48168024c7ca?w=180&h=180&fit=crop" alt="Salle de cours">
+        <img src="https://images.unsplash.com/photo-1516321497487-e288fb19713f?w=180&h=180&fit=crop" alt="Formation informatique">
+        <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?w=180&h=180&fit=crop" alt="Enseignement">
+        <img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=180&h=180&fit=crop" alt="Étude et apprentissage">
+        <img src="https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?w=180&h=180&fit=crop" alt="Collaboration étudiante">
+        <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=180&h=180&fit=crop" alt="Recherche et rédaction">
+        <img src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=180&h=180&fit=crop" alt="Travail académique">
+      </div>
     </div>
+    <div class="orbit-ring orbit-ring-inner"></div>
+    <div class="orbit-center">
+      <div class="orbit-center-image orbit-image-one"></div>
+      <div class="orbit-center-image orbit-image-two"></div>
+      <div class="orbit-center-image orbit-image-three"></div>
+      <div class="orbit-center-shade"></div>
+      <div class="orbit-center-caption"><span>ESPACE ACADÉMIQUE</span><strong>Projets & mémoires</strong><small>Concevoir · Encadrer · Réussir</small></div>
+    </div>
+    <span class="orbit-spark orbit-spark-one"></span><span class="orbit-spark orbit-spark-two"></span><span class="orbit-spark orbit-spark-three"></span>
   </section>
-  <section class="portal-lookup">
-    <div class="lookup-copy"><span class="eyebrow green">CONSULTATION DU DOSSIER</span><h2>Retrouver mon dossier étudiant</h2><p>Retrouvez la fiche académique à l’aide de votre matricule.</p></div>
-    <form class="portal-search" action="{{ url_for('main.public_student_lookup') }}" method="get"><input type="text" name="matricule" value="{{ matricule or '' }}" placeholder="Votre matricule étudiant" required aria-label="Matricule étudiant"><button type="submit">Rechercher <span>→</span></button></form>
-    {% if searched %}{% if student %}<article class="public-result"><div class="result-top"><div><span class="eyebrow green">DOSSIER RETROUVÉ</span><h3>{{ student.full_name }}</h3><p>Matricule : <b>{{ student.matricule }}</b></p></div><a class="result-pdf" href="{{ url_for('main.public_student_print',matricule=student.matricule) }}" target="_blank">Imprimer / PDF ↗</a></div><div class="result-grid"><div><small>Option</small><b>{{ student.option_name or 'Non renseignée' }}</b></div><div><small>Mention</small><b>{{ student.mention or 'Non renseignée' }}</b></div><div><small>Promotion</small><b>{{ student.promotion or 'Non renseignée' }}</b></div><div><small>Programme</small><b>{{ topic.program.name if topic and topic.program else 'Non renseigné' }}</b></div><div><small>Sujet de projet / mémoire</small><b>{{ topic.title if topic else 'Aucun sujet enregistré' }}</b></div><div><small>Directeur / Tuteur</small><b>{{ topic.tutor.full_name if topic and topic.tutor else 'À attribuer' }}</b></div><div><small>Codirecteur</small><b>{{ topic.codirector.full_name if topic and topic.codirector else 'À attribuer' }}</b></div><div><small>État du dossier</small><b>{{ topic.status|replace('_',' ')|title if topic else 'Sans sujet' }}</b></div></div></article>{% else %}<div class="lookup-error">Aucun dossier trouvé pour ce matricule. Vérifiez le code et réessayez.</div>{% endif %}{% endif %}
-  </section>
-  <footer class="portal-footer"><span>© 2026 · Gestion des sujets des projets tutorés</span><span>Confidentialité · Excellence · Traçabilité</span></footer>
+
+  <div class="orbit-bottom">
+    <span class="orbit-bottom-line"></span>
+    <p>Une plateforme pour faire grandir les idées et valoriser la recherche.</p>
+    <span class="orbit-bottom-line"></span>
+  </div>
 </main>
 {% endblock %}
