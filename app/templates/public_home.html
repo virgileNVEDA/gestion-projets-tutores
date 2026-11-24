@@ -38,6 +38,36 @@
     <span class="orbit-spark orbit-spark-one"></span><span class="orbit-spark orbit-spark-two"></span><span class="orbit-spark orbit-spark-three"></span>
   </section>
 
+  <section class="orbit-search-section" aria-label="Recherche d’un dossier étudiant">
+    <div class="orbit-search-heading"><span>RECHERCHE INTELLIGENTE</span><h1>Retrouver un dossier étudiant</h1><p>Saisissez votre matricule. Même avec une petite faute de frappe, la recherche essaiera de retrouver la bonne référence.</p></div>
+    <form class="orbit-search-form" action="{{ url_for('main.public_student_lookup') }}" method="get" role="search">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg>
+      <input type="search" name="matricule" value="{{ matricule or '' }}" placeholder="Ex. : votre matricule étudiant…" aria-label="Matricule étudiant" autocomplete="off" required>
+      <button type="submit">Rechercher <span>→</span></button>
+    </form>
+    <div class="orbit-search-hint">Recherche tolérante aux espaces, tirets et petites erreurs de saisie</div>
+    {% if searched %}
+      {% if student %}
+        {% if search_match_note %}<p class="orbit-match-note">{{ search_match_note }}</p>{% endif %}
+        <article class="orbit-search-result">
+          <div class="orbit-result-top"><div><small>DOSSIER RETROUVÉ</small><h2>{{ student.full_name }}</h2><p>Matricule : <b>{{ student.matricule }}</b></p></div><a href="{{ url_for('main.public_student_print', matricule=student.matricule) }}" target="_blank" rel="noopener">Imprimer / PDF ↗</a></div>
+          <div class="orbit-result-grid">
+            <div><small>Option</small><b>{{ student.option_name or 'Non renseignée' }}</b></div>
+            <div><small>Mention</small><b>{{ student.mention or 'Non renseignée' }}</b></div>
+            <div><small>Promotion</small><b>{{ student.promotion or 'Non renseignée' }}</b></div>
+            <div><small>Programme</small><b>{{ topic.program.name if topic and topic.program else 'Non renseigné' }}</b></div>
+            <div><small>Sujet</small><b>{{ topic.title if topic else 'Aucun sujet enregistré' }}</b></div>
+            <div><small>Directeur / Tuteur</small><b>{{ topic.tutor.full_name if topic and topic.tutor else 'À attribuer' }}</b></div>
+            <div><small>Codirecteur</small><b>{{ topic.codirector.full_name if topic and topic.codirector else 'À attribuer' }}</b></div>
+            <div><small>État du dossier</small><b>{{ topic.status|replace('_',' ')|title if topic else 'Sans sujet' }}</b></div>
+          </div>
+        </article>
+      {% else %}
+        <p class="orbit-search-error">Aucun dossier correspondant trouvé. Vérifiez le matricule ou rapprochez-vous du secrétariat académique.</p>
+      {% endif %}
+    {% endif %}
+  </section>
+
   <div class="orbit-bottom">
     <span class="orbit-bottom-line"></span>
     <p>Une plateforme pour faire grandir les idées et valoriser la recherche.</p>
