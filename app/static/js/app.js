@@ -16,16 +16,33 @@ document.addEventListener("DOMContentLoaded",()=>{const input=document.getElemen
 
 document.addEventListener("DOMContentLoaded",()=>{const input=document.getElementById("password"),button=document.getElementById("togglePassword");if(!input||!button)return;button.addEventListener("click",()=>{const visible=input.type==="password";input.type=visible?"text":"password";button.setAttribute("aria-pressed",String(visible));button.setAttribute("aria-label",visible?"Masquer le mot de passe":"Afficher le mot de passe");});});
 
-document.addEventListener("DOMContentLoaded", () => {
-  const bar = document.getElementById("globalProgress");
-  if (!bar) return;
-  const start = () => { bar.classList.add("is-running"); };
-  document.querySelectorAll("a[href], form").forEach((el) => {
-    el.addEventListener("click", (event) => {
-      if (el.tagName === "A" && (event.ctrlKey || event.metaKey || el.target === "_blank")) return;
-      start();
+(() => {
+  const showLoader = () => {
+    const loader = document.getElementById("appLoading");
+    const bar = document.getElementById("globalProgress");
+    if (loader) { loader.classList.remove("is-hidden"); loader.classList.add("is-visible"); }
+    if (bar) bar.classList.add("is-running");
+  };
+  const hideLoader = () => {
+    const loader = document.getElementById("appLoading");
+    const bar = document.getElementById("globalProgress");
+    if (loader) { loader.classList.remove("is-visible"); loader.classList.add("is-hidden"); }
+    if (bar) bar.classList.remove("is-running");
+  };
+  document.addEventListener("DOMContentLoaded", () => {
+    window.setTimeout(hideLoader, 220);
+    document.querySelectorAll("a[href]").forEach((link) => {
+      link.addEventListener("click", (event) => {
+        if (event.ctrlKey || event.metaKey || event.shiftKey || event.button === 1 ||
+            link.target === "_blank" || link.hasAttribute("download") ||
+            link.getAttribute("href").startsWith("#") ||
+            link.getAttribute("href").startsWith("javascript:")) return;
+        showLoader();
+      });
     });
-    if (el.tagName === "FORM") el.addEventListener("submit", start);
+    document.querySelectorAll("form").forEach((form) => {
+      form.addEventListener("submit", () => showLoader());
+    });
   });
-  window.addEventListener("pageshow", () => bar.classList.remove("is-running"));
-});
+  window.addEventListener("pageshow", hideLoader);
+})();
