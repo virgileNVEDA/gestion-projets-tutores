@@ -16,7 +16,7 @@
     <span class="loading-orbit-dot dot-a"></span><span class="loading-orbit-dot dot-b"></span>
     <span class="loading-orbit-dot dot-c"></span><span class="loading-orbit-dot dot-d"></span>
     <span class="loading-orbit-dot dot-e"></span><span class="loading-orbit-dot dot-f"></span>
-    <div class="loading-core"><span>GP</span></div>
+    <div class="loading-core">{% if institution and institution.progress_image_data %}<img src="{{ institution.progress_image_data }}" alt="Chargement">{% elif institution and institution.logo_data %}<img src="{{ institution.logo_data }}" alt="Logo">{% else %}<span>GP</span>{% endif %}</div>
   </div>
   <div class="loading-copy"><b>Préparation de votre espace</b><small>Chargement des modules académiques…</small></div>
   <div class="loading-track"><span></span></div>
@@ -25,7 +25,7 @@
 {% if current_user.is_authenticated %}
 <div class="app-shell">
   <aside class="sidebar" id="sidebar">
-    <a class="brand" href="{{ url_for('main.dashboard') }}"><span class="brand-mark">GP</span><span><b>PROJETS</b><small>ESPACE ACADÉMIQUE</small></span></a>
+    <a class="brand" href="{{ url_for('main.dashboard') }}">{% if institution and institution.logo_data %}<img class="brand-logo" src="{{ institution.logo_data }}" alt="Logo">{% else %}<span class="brand-mark">GP</span>{% endif %}<span><b>{{ institution.acronym if institution and institution.acronym else 'PROJETS' }}</b><small>{{ institution.name if institution else 'ESPACE ACADÉMIQUE' }}</small></span></a>
     <div class="nav-caption">MENU PRINCIPAL</div>
     <a class="nav-link active" href="{{ url_for('main.dashboard') }}"><span>▦</span> Tableau de bord</a>
     <a class="nav-link" href="{{ url_for('modules.section',section='sujets') }}"><span>▤</span> Sujets & mémoires</a>
