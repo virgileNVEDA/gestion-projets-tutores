@@ -198,24 +198,31 @@ button,.settings-save{letter-spacing:.01em}
 
 .brand-logo{width:46px;height:46px;object-fit:contain;border-radius:12px;background:#fff;padding:4px;flex:0 0 auto}.loading-core img{width:66%;height:66%;object-fit:contain;border-radius:50%;background:#fff;padding:5px}
 
-/* Barre supérieure persistante : navigation toujours accessible pendant le défilement */
+/* Barre de navigation réellement fixe sur toutes les tailles d'écran */
 .topbar{
-  position:sticky;
-  top:0;
+  position:fixed!important;
+  top:0!important;
+  left:278px;
+  right:0;
   z-index:1000;
   min-height:76px;
   box-shadow:0 5px 18px rgba(10,31,51,.12);
 }
+.main-area{padding-top:76px}
+@media(max-width:1150px) and (min-width:781px){
+  .topbar{left:250px}
+}
 @media(max-width:780px){
   .topbar{
-    top:0;
+    left:0;
+    right:0;
     min-height:68px;
     padding-top:env(safe-area-inset-top, 0px);
   }
-  .main-area{min-width:0}
+  .main-area{min-width:0;padding-top:68px}
   .page-content{scroll-margin-top:76px}
 }
-/* Fin de la barre persistante */
+/* Fin de la barre fixe */
 
 /* Harmonisation institutionnelle : en-têtes au ton du menu latéral */
 .topbar{background:#142d49;border-bottom:1px solid #244563;color:#fff}
