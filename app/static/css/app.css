@@ -194,3 +194,5 @@ table{font-size:12px}thead th{font-size:9px;letter-spacing:1.1px;color:#8393a2;f
 button,.settings-save{letter-spacing:.01em}
 @media(max-width:760px){.page-content{padding:23px 15px 36px}.panel{padding:18px 16px}.loading-orbit{width:116px;height:116px}.loading-orbit-dot.dot-a{transform:translate(-50%,-50%) translateY(-57px)}.loading-orbit-dot.dot-b{transform:translate(-50%,-50%) rotate(60deg) translateY(-57px)}.loading-orbit-dot.dot-c{transform:translate(-50%,-50%) rotate(120deg) translateY(-57px)}.loading-orbit-dot.dot-d{transform:translate(-50%,-50%) rotate(180deg) translateY(-57px)}.loading-orbit-dot.dot-e{transform:translate(-50%,-50%) rotate(240deg) translateY(-57px)}.loading-orbit-dot.dot-f{transform:translate(-50%,-50%) rotate(300deg) translateY(-57px)}}
 @media(prefers-reduced-motion:reduce){.loading-orbit,.loading-track span{animation:none}.loading-orbit-dot{display:none}}
+
+.brand-logo{width:46px;height:46px;object-fit:contain;border-radius:12px;background:#fff;padding:4px;flex:0 0 auto}.loading-core img{width:66%;height:66%;object-fit:contain;border-radius:50%;background:#fff;padding:5px}
