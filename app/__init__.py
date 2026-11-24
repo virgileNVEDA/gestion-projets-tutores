@@ -31,6 +31,16 @@ def create_app():
         from .models import User, Institution
         db.create_all()
         from sqlalchemy import inspect, text
+        # Ajout idempotent des champs de personnalisation de l'établissement.
+        institution_columns = {column["name"] for column in inspect(db.engine).get_columns("institution")}
+        institution_additions = {
+            "logo_data": "TEXT", "secondary_logo_data": "TEXT", "address": "VARCHAR(300)",
+            "phone": "VARCHAR(80)", "contact_email": "VARCHAR(180)", "website": "VARCHAR(240)",
+            "motto": "VARCHAR(240)", "academic_year": "VARCHAR(40)", "progress_image_data": "TEXT"
+        }
+        for name, sql_type in institution_additions.items():
+            if name not in institution_columns:
+                db.session.execute(text(f'ALTER TABLE "institution" ADD COLUMN {name} {sql_type}'))
         columns = {column["name"] for column in inspect(db.engine).get_columns("user")}
         for name, sql_type in (("option_name", "VARCHAR(120)"), ("mention", "VARCHAR(120)"), ("promotion", "VARCHAR(80)")):
             if name not in columns:
