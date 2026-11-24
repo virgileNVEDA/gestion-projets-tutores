@@ -28,13 +28,18 @@ def create_app():
     @app.cli.command("init-db")
     def init_db():
         """Créer les tables et le premier administrateur si les variables sont définies."""
-        from .models import User
+        from .models import User, Institution
         db.create_all()
         from sqlalchemy import inspect, text
         columns = {column["name"] for column in inspect(db.engine).get_columns("user")}
         for name, sql_type in (("option_name", "VARCHAR(120)"), ("mention", "VARCHAR(120)"), ("promotion", "VARCHAR(80)")):
             if name not in columns:
                 db.session.execute(text(f'ALTER TABLE "user" ADD COLUMN {name} {sql_type}'))
+        # Créer une identité par défaut pour préserver l'installation existante.
+        if Institution.query.count() == 0:
+            db.session.add(Institution(name=os.getenv("INSTITUTION_NAME", "Établissement académique"),
+                                       acronym=os.getenv("INSTITUTION_ACRONYM", "")))
+            db.session.commit()
         db.session.commit()
         email = os.getenv("ADMIN_EMAIL")
         password = os.getenv("ADMIN_PASSWORD")
