@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 from functools import wraps
 from werkzeug.utils import secure_filename
-from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app, send_from_directory, abort
+from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app, send_from_directory, abort, jsonify
 from flask_login import login_required, current_user
 from .extensions import db
 from .models import User, AcademicProgram, ProjectTopic, WorkflowEvent, Message, DocumentVersion, Meeting, Notification, ROLES
@@ -51,15 +51,15 @@ def section(section):
             if action == "create_user" and current_user.role == "admin":
                 email=request.form.get("email","").strip().lower()
                 if User.query.filter_by(email=email).first(): raise ValueError("Cette adresse e-mail existe déjà.")
-                matricule=request.form.get("matricule","").strip() or None
-                if matricule and User.query.filter_by(matricule=matricule).first(): raise ValueError("Ce matricule est déjà utilisé.")
                 role=request.form.get("role","student")
                 if role not in ROLES: raise ValueError("Rôle invalide.")
-                user=User(full_name=request.form.get("full_name","").strip(),email=email,role=role,matricule=matricule)
+                user=User(full_name=request.form.get("full_name","").strip(),email=email,role=role,option_name=request.form.get("option_name","").strip() or None,mention=request.form.get("mention","").strip() or None,promotion=request.form.get("promotion","").strip() or None)
                 password=request.form.get("password","")
                 if len(user.full_name)<3 or len(password)<10: raise ValueError("Nom obligatoire et mot de passe de 10 caractères minimum.")
                 user.set_password(password); db.session.add(user); db.session.flush()
-                flash("Compte créé avec succès.","success")
+                if role == "student": user.matricule = f"PT{datetime.utcnow().year}-{user.id:06d}"
+                db.session.commit()
+                flash(f"Compte créé avec succès. Matricule : {user.matricule}" if role == "student" else "Compte créé avec succès.", "success")
             elif action == "create_program" and current_user.role == "admin":
                 name=request.form.get("name","").strip()
                 if not name: raise ValueError("Le nom du programme est obligatoire.")
@@ -153,6 +153,24 @@ def section(section):
     notes=Notification.query.filter_by(user_id=current_user.id).order_by(Notification.created_at.desc()).limit(100).all()
     stats={"students":User.query.filter_by(role="student").count(),"tutors":User.query.filter_by(role="tutor").count(),"topics":ProjectTopic.query.count(),"pending":ProjectTopic.query.filter(ProjectTopic.status.in_(["draft","submitted","revision","in_review"])).count(),"approved":ProjectTopic.query.filter_by(status="approved").count()}
     return render_template("module.html",section=section,topics=topics,users=users,programs=programs,messages=messages,docs=docs,meetings=meetings,history=history,notes=notes,stats=stats,roles=ROLES,now=datetime.utcnow())
+
+
+@modules_bp.get("/api/etudiants/<string:matricule>")
+@login_required
+def student_by_matricule(matricule):
+    if current_user.role not in {"admin","section_head","department_head","coordination","tutor","codirector"}:
+        abort(403)
+    student = User.query.filter_by(matricule=matricule.strip(), role="student").first_or_404()
+    topic = ProjectTopic.query.filter_by(student_id=student.id).order_by(ProjectTopic.updated_at.desc()).first()
+    return jsonify({"full_name":student.full_name,"matricule":student.matricule,"email":student.email,"option":student.option_name or "","mention":student.mention or "","promotion":student.promotion or "","subject":topic.title if topic else "Aucun sujet enregistré","program":topic.program.name if topic and topic.program else "","level":topic.program.level if topic and topic.program else "","tutor":topic.tutor.full_name if topic and topic.tutor else "À attribuer","codirector":topic.codirector.full_name if topic and topic.codirector else "À attribuer","status":topic.status if topic else "Sans sujet"})
+
+@modules_bp.get("/rapports/imprimer")
+@login_required
+def print_student_report():
+    if current_user.role not in {"admin","section_head","department_head","coordination"}: abort(403)
+    students = User.query.filter_by(role="student").order_by(User.promotion.desc(),User.full_name.asc()).all()
+    rows = [{"student":s,"topic":ProjectTopic.query.filter_by(student_id=s.id).order_by(ProjectTopic.updated_at.desc()).first()} for s in students]
+    return render_template("print_students.html",rows=rows,now=datetime.utcnow())
 
 @modules_bp.get("/documents/<int:doc_id>")
 @login_required
