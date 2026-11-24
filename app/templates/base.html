@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/modules.css') }}">
 </head>
 <body>
-<div class="app-loading" id="appLoading" aria-live="polite" aria-label="Chargement en cours">
+{% if not institution or institution.progress_enabled %}<div class="app-loading" id="appLoading" aria-live="polite" aria-label="Chargement en cours">
   <div class="loading-orbit">
     <span class="loading-orbit-dot dot-a"></span><span class="loading-orbit-dot dot-b"></span>
     <span class="loading-orbit-dot dot-c"></span><span class="loading-orbit-dot dot-d"></span>
@@ -20,7 +20,7 @@
   </div>
   <div class="loading-copy"><b>Préparation de votre espace</b><small>Chargement des modules académiques…</small></div>
   <div class="loading-track"><span></span></div>
-</div>
+</div>{% endif %}
 {% if current_user.is_authenticated and institution and institution.progress_enabled %}<div class="global-progress" id="globalProgress"></div>{% endif %}
 {% if current_user.is_authenticated %}
 <div class="app-shell">
