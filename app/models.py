@@ -1,0 +1,89 @@
+from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin
+from .extensions import db, login_manager
+
+ROLES = {
+    "admin": "Administration",
+    "student": "Étudiant",
+    "tutor": "Directeur de mémoire",
+    "codirector": "Codirecteur",
+    "section_head": "Chef de section",
+    "department_head": "Chef de département",
+    "coordination": "Coordination académique",
+}
+
+
+class User(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    full_name = db.Column(db.String(140), nullable=False)
+    email = db.Column(db.String(180), unique=True, nullable=False, index=True)
+    password_hash = db.Column(db.String(255), nullable=False)
+    role = db.Column(db.String(30), nullable=False, default="student")
+    matricule = db.Column(db.String(60), unique=True, nullable=True, index=True)
+    active = db.Column(db.Boolean, default=True, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+    @property
+    def role_label(self):
+        return ROLES.get(self.role, self.role)
+
+
+class AcademicProgram(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), nullable=False)
+    level = db.Column(db.String(80), nullable=True)
+    active = db.Column(db.Boolean, default=True, nullable=False)
+
+
+class ProjectTopic(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(300), nullable=False)
+    problem_statement = db.Column(db.Text)
+    objectives = db.Column(db.Text)
+    methodology = db.Column(db.Text)
+    keywords = db.Column(db.String(500))
+    status = db.Column(db.String(40), default="draft", nullable=False)
+    student_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    tutor_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    codirector_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    program_id = db.Column(db.Integer, db.ForeignKey("academic_program.id"))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+
+    student = db.relationship("User", foreign_keys=[student_id], backref="student_topics")
+    tutor = db.relationship("User", foreign_keys=[tutor_id], backref="tutored_topics")
+    codirector = db.relationship("User", foreign_keys=[codirector_id], backref="codirected_topics")
+    program = db.relationship("AcademicProgram", backref="topics")
+
+
+class WorkflowEvent(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    topic_id = db.Column(db.Integer, db.ForeignKey("project_topic.id"), nullable=False)
+    actor_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    action = db.Column(db.String(80), nullable=False)
+    comment = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    topic = db.relationship("ProjectTopic", backref="history")
+    actor = db.relationship("User")
+
+
+class Message(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    topic_id = db.Column(db.Integer, db.ForeignKey("project_topic.id"), nullable=False)
+    sender_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    body = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    topic = db.relationship("ProjectTopic", backref="messages")
+    sender = db.relationship("User")
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return db.session.get(User, int(user_id))
