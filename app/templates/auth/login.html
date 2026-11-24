@@ -1,38 +1,23 @@
 {% extends "base.html" %}
 {% block title %}Connexion · Gestion des projets tutorés{% endblock %}
 {% block public_content %}
-<div class="login-page">
-  <section class="login-art">
-    <div class="art-brand"><span class="brand-mark">GP</span><b>PROJETS TUTORÉS</b></div>
-    <div class="art-copy">
-      <span class="eyebrow">PLATEFORME ACADÉMIQUE</span>
-      <h1>Construire<br>les idées.<br><em>Valoriser le savoir.</em></h1>
-      <p>Un environnement de travail structuré pour proposer les sujets, accompagner les étudiants, suivre les mémoires et organiser les validations académiques.</p>
-      <div class="art-points"><span>✓ Suivi des projets</span><span>✓ Collaboration encadrée</span><span>✓ Traçabilité des décisions</span></div>
-    </div>
-    <div class="art-footer">EXCELLENCE · INNOVATION · RIGUEUR</div>
+<main class="signin-page">
+  <header class="signin-header"><a class="portal-brand" href="/"><span class="brand-mark">GP</span><span><b>GESTION ACADÉMIQUE</b><small>PROJETS TUTORÉS · TFC · MÉMOIRES</small></span></a><a class="signin-back" href="/">← Retour à l’accueil</a></header>
+  <section class="signin-card">
+    <div class="signin-symbol">GP</div>
+    <span class="eyebrow green">ESPACE SÉCURISÉ</span>
+    <h1>Bienvenue</h1>
+    <p class="signin-subtitle">Connectez-vous pour accéder à votre espace de travail.</p>
+    {% if error %}<div class="flash error" role="alert">{{ error }}</div>{% endif %}
+    <form method="post" class="signin-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label for="email">Adresse e-mail</label><input id="email" type="email" name="email" placeholder="nom@etablissement.cd" required autocomplete="username">
+      <label for="password">Mot de passe</label><div class="password-field"><input id="password" type="password" name="password" placeholder="Saisissez votre mot de passe" required autocomplete="current-password"><button type="button" class="password-eye" id="togglePassword" aria-label="Afficher le mot de passe" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+      <label class="signin-remember"><input type="checkbox" name="remember"> Se souvenir de moi</label>
+      <button class="signin-submit" type="submit">Se connecter <span>→</span></button>
+    </form>
+    <div class="signin-security"><span>✓</span> Connexion protégée · Accès selon votre profil</div>
   </section>
-  <section class="login-panel">
-    <div class="login-box">
-      <div class="mobile-brand"><span class="brand-mark">GP</span><b>PROJETS TUTORÉS</b></div>
-      <span class="eyebrow green">ESPACE DE CONNEXION</span>
-      <h2>Bienvenue</h2>
-      <p class="muted">Connectez-vous pour accéder à votre espace académique.</p>
-      {% if error %}<div class="flash error" role="alert">{{ error }}</div>{% endif %}
-      <form method="post" class="login-form">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <label for="email">Adresse e-mail</label>
-        <input id="email" type="email" name="email" placeholder="nom@etablissement.cd" required autocomplete="username">
-        <label for="password">Mot de passe</label>
-        <input id="password" type="password" name="password" placeholder="Saisissez votre mot de passe" required autocomplete="current-password">
-        <div class="form-between">
-          <label class="remember"><input type="checkbox" name="remember"> Se souvenir de moi</label>
-        </div>
-        <button class="primary-btn" type="submit">Se connecter <span>→</span></button>
-      </form>
-      <div class="secure-note">♢ Accès sécurisé · Vos autorisations dépendent de votre rôle</div>
-    </div>
-    <div class="login-copyright">© 2026 · Gestion des sujets des projets tutorés</div>
-  </section>
-</div>
+  <footer class="signin-footer">© 2026 · Gestion des sujets des projets tutorés · Tous droits réservés</footer>
+</main>
 {% endblock %}
