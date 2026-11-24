@@ -37,6 +37,10 @@ def notify(user_id, topic_id, title, body):
         db.session.add(Notification(user_id=user_id, topic_id=topic_id, title=title, body=body))
 
 
+@modules_bp.app_context_processor
+def inject_institution():
+    return {"institution": Institution.query.order_by(Institution.id.asc()).first()}
+
 @modules_bp.route("/parametres", methods=["GET", "POST"])
 @login_required
 def settings():
