@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, request, abort, make_response
 from flask_login import login_required, current_user
 from sqlalchemy import func, extract
 from .models import ProjectTopic, User
@@ -12,8 +12,39 @@ def index():
     from flask import redirect, url_for
     if current_user.is_authenticated:
         return redirect(url_for("main.dashboard"))
-    return redirect(url_for("auth.login"))
+    return render_template("public_home.html")
 
+
+
+@main_bp.get("/recherche-etudiant")
+def public_student_lookup():
+    matricule = request.args.get("matricule", "").strip()
+    student = User.query.filter_by(matricule=matricule, role="student", active=True).first() if matricule else None
+    topic = ProjectTopic.query.filter_by(student_id=student.id).order_by(ProjectTopic.updated_at.desc()).first() if student else None
+    return render_template("public_home.html", student=student, topic=topic, matricule=matricule, searched=bool(matricule))
+
+@main_bp.get("/fiche-etudiant/<string:matricule>/imprimer")
+def public_student_print(matricule):
+    student = User.query.filter_by(matricule=matricule, role="student", active=True).first_or_404()
+    topic = ProjectTopic.query.filter_by(student_id=student.id).order_by(ProjectTopic.updated_at.desc()).first()
+    return render_template("public_student_print.html", student=student, topic=topic, now=datetime.utcnow())
+
+@main_bp.get("/export-etudiants.csv")
+@login_required
+def export_students_csv():
+    if current_user.role not in {"admin","section_head","department_head","coordination"}: abort(403)
+    import csv, io
+    buffer = io.StringIO()
+    writer = csv.writer(buffer, delimiter=";")
+    writer.writerow(["Matricule","Nom complet","Option","Mention","Promotion","Sujet","Programme","Niveau","Directeur","Codirecteur","Statut"])
+    students = User.query.filter_by(role="student").order_by(User.full_name.asc()).all()
+    for student in students:
+        topic = ProjectTopic.query.filter_by(student_id=student.id).order_by(ProjectTopic.updated_at.desc()).first()
+        writer.writerow([student.matricule or "",student.full_name,student.option_name or "",student.mention or "",student.promotion or "",topic.title if topic else "",topic.program.name if topic and topic.program else "",topic.program.level if topic and topic.program else "",topic.tutor.full_name if topic and topic.tutor else "",topic.codirector.full_name if topic and topic.codirector else "",topic.status if topic else ""])
+    response = make_response("\\ufeff" + buffer.getvalue())
+    response.headers["Content-Type"] = "text/csv; charset=utf-8"
+    response.headers["Content-Disposition"] = "attachment; filename=liste_academique_etudiants.csv"
+    return response
 
 @main_bp.get("/dashboard")
 @login_required
