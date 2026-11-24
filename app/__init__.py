@@ -30,6 +30,12 @@ def create_app():
         """Créer les tables et le premier administrateur si les variables sont définies."""
         from .models import User
         db.create_all()
+        from sqlalchemy import inspect, text
+        columns = {column["name"] for column in inspect(db.engine).get_columns("user")}
+        for name, sql_type in (("option_name", "VARCHAR(120)"), ("mention", "VARCHAR(120)"), ("promotion", "VARCHAR(80)")):
+            if name not in columns:
+                db.session.execute(text(f'ALTER TABLE "user" ADD COLUMN {name} {sql_type}'))
+        db.session.commit()
         email = os.getenv("ADMIN_EMAIL")
         password = os.getenv("ADMIN_PASSWORD")
         if email and password and not User.query.filter_by(email=email.lower()).first():
