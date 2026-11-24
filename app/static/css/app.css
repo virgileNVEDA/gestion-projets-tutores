@@ -196,3 +196,22 @@ button,.settings-save{letter-spacing:.01em}
 @media(prefers-reduced-motion:reduce){.loading-orbit,.loading-track span{animation:none}.loading-orbit-dot{display:none}}
 
 .brand-logo{width:46px;height:46px;object-fit:contain;border-radius:12px;background:#fff;padding:4px;flex:0 0 auto}.loading-core img{width:66%;height:66%;object-fit:contain;border-radius:50%;background:#fff;padding:5px}
+
+/* Harmonisation institutionnelle : en-têtes au ton du menu latéral */
+.topbar{background:#142d49;border-bottom:1px solid #244563;color:#fff}
+.topbar .breadcrumb,.topbar .breadcrumb span{color:#d4e0eb}
+.topbar .breadcrumb b,.topbar .top-user b{color:#fff}
+.topbar .top-user small{color:#c2d0dc}
+.topbar .icon-button{background:#244563;color:#fff}
+.topbar .icon-button i{background:#e5a52b}
+.panel-heading{background:#142d49;margin:-23px -24px 20px;padding:16px 20px;border-radius:15px 15px 0 0}
+.panel-heading h3{color:#fff!important;font-weight:800}
+.panel-heading p{color:#d0dce7!important}
+.panel-heading .text-link{color:#6fe0c8}
+.panel-heading .chart-tag{background:#ffffff20;color:#fff}
+.page-content h1,.page-content h2,.page-content h3,.page-content h4{color:#334155}
+.page-content h1{color:#142d49}
+.stat-card strong,.settings-group summary b{color:#334155}
+tbody td, .muted, .panel-heading p{color:#475569}
+thead th{background:#e8eef4;color:#334155}
+@media(max-width:760px){.panel-heading{margin:-18px -16px 18px;padding:14px 16px}}
