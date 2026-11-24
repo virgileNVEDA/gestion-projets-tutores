@@ -46,3 +46,14 @@ document.addEventListener("DOMContentLoaded",()=>{const input=document.getElemen
   });
   window.addEventListener("pageshow", hideLoader);
 })();
+
+
+/* Présence : actualise le statut en ligne pendant la session authentifiée. */
+document.addEventListener("DOMContentLoaded", () => {
+  const token = document.querySelector('meta[name="csrf-token"]')?.content;
+  if (!token || !document.querySelector(".profile-entry")) return;
+  const ping = () => fetch("/auth/presence", {method:"POST", headers:{"X-CSRFToken":token}, credentials:"same-origin", keepalive:true}).catch(() => {});
+  ping();
+  window.setInterval(ping, 60000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) ping(); });
+});
