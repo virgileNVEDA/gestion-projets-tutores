@@ -129,3 +129,17 @@ class Notification(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     user = db.relationship("User", backref="notifications")
     topic = db.relationship("ProjectTopic")
+
+
+class Institution(db.Model):
+    """Identité et préférences visuelles d'un établissement."""
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(180), nullable=False, default="Établissement académique")
+    acronym = db.Column(db.String(40), nullable=True)
+    logo_url = db.Column(db.String(500), nullable=True)
+    primary_color = db.Column(db.String(20), nullable=False, default="#142D49")
+    accent_color = db.Column(db.String(20), nullable=False, default="#079B83")
+    carousel_images = db.Column(db.Text, nullable=True)
+    progress_enabled = db.Column(db.Boolean, nullable=False, default=True)
+    progress_color = db.Column(db.String(20), nullable=False, default="#079B83")
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
