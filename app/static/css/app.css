@@ -239,3 +239,51 @@ thead th{background:#e8eef4;color:#334155}
 .global-progress.is-running{width:100%;animation:loading-track-flow 1.1s ease-in-out infinite!important}
 @media(max-width:760px){.app-loading{gap:25px}.loading-orbit{width:150px;height:150px}.loading-orbit-dot.dot-a{transform:translate(-50%,-50%) translateY(-74px)}.loading-orbit-dot.dot-b{transform:translate(-50%,-50%) rotate(60deg) translateY(-74px)}.loading-orbit-dot.dot-c{transform:translate(-50%,-50%) rotate(120deg) translateY(-74px)}.loading-orbit-dot.dot-d{transform:translate(-50%,-50%) rotate(180deg) translateY(-74px)}.loading-orbit-dot.dot-e{transform:translate(-50%,-50%) rotate(240deg) translateY(-74px)}.loading-orbit-dot.dot-f{transform:translate(-50%,-50%) rotate(300deg) translateY(-74px)}.loading-core{inset:43px;font-size:19px}.loading-copy b{font-size:17px}.loading-copy small{font-size:12px}.loading-track{height:7px}}
 @media(prefers-reduced-motion:reduce){.global-progress.is-running{animation:none!important;width:72%}}
+
+/* Profil utilisateur : accès direct depuis les deux zones de navigation */
+.profile-entry,.profile-top-entry{cursor:pointer;text-decoration:none;transition:background .2s,transform .2s}
+.profile-entry{border-radius:12px;padding:8px 6px;margin:4px 0}
+.profile-entry:hover{background:rgba(255,255,255,.1);transform:translateY(-1px)}
+.profile-name{min-width:0;flex:1}
+.profile-name b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.profile-name small{display:block;color:#c4d5e2;font-size:11px;margin-top:3px}
+.profile-avatar{position:relative;overflow:visible}
+.profile-avatar img,.dashboard-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block}
+.online-dot{position:absolute;right:-1px;bottom:0;width:13px;height:13px;border-radius:50%;background:#20c879;border:2px solid #fff;box-shadow:0 0 0 2px rgba(32,200,121,.18)}
+.profile-top-entry{padding:5px 9px;border-radius:12px;gap:10px}
+.profile-top-entry:hover{background:#ffffff18}
+.profile-top-entry .profile-avatar{width:43px;height:43px}
+.dashboard-profile{display:flex;align-items:center;gap:14px;min-width:260px;padding:12px 15px;background:#fff;border:1px solid #e4ebf1;border-radius:16px;box-shadow:0 8px 24px rgba(20,45,73,.07);text-decoration:none;transition:transform .2s,box-shadow .2s}
+.dashboard-profile:hover{transform:translateY(-2px);box-shadow:0 14px 30px rgba(20,45,73,.12)}
+.dashboard-avatar{width:62px;height:62px;flex:0 0 62px;position:relative;display:grid;place-items:center;border-radius:50%;background:linear-gradient(145deg,#d9eee9,#c9dced);color:#142d49;font:800 23px Manrope;overflow:visible}
+.dashboard-avatar img{border:3px solid #fff}
+.dashboard-avatar .online-dot{width:16px;height:16px;right:0;bottom:1px}
+.dashboard-profile-copy{display:flex;flex-direction:column;gap:3px;min-width:0}
+.dashboard-profile-copy b{font:800 13px Manrope;color:#142d49;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dashboard-profile-copy small{font-size:11px;color:#708398}
+.dashboard-profile-copy em{font-size:10px;color:#078f7a;font-style:normal;font-weight:800;display:flex;align-items:center;gap:5px;margin-top:3px}
+.dashboard-profile-copy em i,.profile-online-pill i{width:7px;height:7px;border-radius:50%;background:#20c879}
+.profile-edit-icon{margin-left:auto;color:#71869a;font-size:18px}
+.profile-page{max-width:980px;margin:0 auto}
+.profile-page-heading{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:24px}
+.profile-page-heading h1{margin:8px 0}
+.profile-online-pill{display:flex;align-items:center;gap:8px;padding:10px 14px;background:#e5f8ef;color:#078453;border-radius:30px;font-size:12px;font-weight:800}
+.profile-form{padding:26px}
+.profile-photo-section{display:flex;align-items:center;gap:23px;padding-bottom:26px;border-bottom:1px solid #e9eef2}
+.profile-photo-preview{width:112px;height:112px;flex:0 0 112px;border-radius:50%;display:grid;place-items:center;position:relative;background:linear-gradient(145deg,#d9eee9,#c9dced);color:#142d49;font:800 38px Manrope;overflow:visible}
+.profile-photo-preview img{width:100%;height:100%;object-fit:cover;border-radius:50%;border:4px solid #fff;box-shadow:0 5px 20px #142d4920}
+.profile-photo-preview .online-dot{width:19px;height:19px;right:4px;bottom:5px}
+.profile-photo-section h2{font:800 18px Manrope;color:#142d49;margin:0 0 7px}
+.profile-photo-section p{margin:0 0 12px}
+.profile-upload{display:inline-flex;align-items:center;justify-content:center;padding:10px 15px;border-radius:9px;background:#142d49;color:#fff;font-size:12px;font-weight:800;cursor:pointer}
+.profile-upload input{display:none}
+.profile-photo-section small{display:block;margin-top:8px;color:#8493a2;font-size:11px}
+.profile-remove{display:flex;align-items:center;gap:7px;margin-top:10px;color:#a64d43;font-size:12px}
+.profile-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;padding:25px 0}
+.profile-fields label{display:flex;flex-direction:column;gap:8px;color:#43566a;font-size:12px;font-weight:800}
+.profile-fields input{height:46px;border:1px solid #dce5ec;border-radius:9px;padding:0 13px;color:#24364a;background:#fbfcfd;font:14px 'DM Sans';outline:none}
+.profile-fields input:focus{border-color:#079b83;box-shadow:0 0 0 3px #079b8315}
+.profile-fields input:disabled{background:#f0f3f6;color:#8795a3}
+.profile-actions{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-top:18px;border-top:1px solid #e9eef2}
+.profile-actions span{font-size:11px;color:#8493a2}
+@media(max-width:760px){.welcome-row{align-items:flex-start;flex-direction:column}.dashboard-profile{width:100%;min-width:0}.profile-top-entry{padding:3px}.profile-top-entry>span:last-child{display:none}.profile-top-entry .profile-avatar{width:40px;height:40px}.profile-form{padding:19px}.profile-photo-section{align-items:flex-start;gap:15px}.profile-photo-preview{width:84px;height:84px;flex-basis:84px}.profile-fields{grid-template-columns:1fr;gap:14px}.profile-actions{align-items:stretch;flex-direction:column}.profile-actions .settings-save{width:100%}.profile-page-heading{align-items:flex-start}}
