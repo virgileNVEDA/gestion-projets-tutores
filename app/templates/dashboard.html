@@ -6,5 +6,22 @@
 {% if current_user.role == 'admin' %}<article class="stat-card"><div class="stat-icon blue">♙</div><span>Étudiants inscrits</span><strong>{{ stats.students }}</strong><small>Comptes étudiants actifs</small></article><article class="stat-card"><div class="stat-icon green">◎</div><span>Encadreurs</span><strong>{{ stats.tutors }}</strong><small>Directeurs de mémoire</small></article>{% endif %}
 <article class="stat-card"><div class="stat-icon gold">▤</div><span>{% if current_user.role == 'student' %}Mon sujet{% else %}Projets suivis{% endif %}</span><strong>{{ stats.topics }}</strong><small>Dossiers dans votre espace</small></article><article class="stat-card"><div class="stat-icon violet">◷</div><span>En attente d'action</span><strong>{{ stats.pending }}</strong><small>À examiner ou compléter</small></article>
 </div>
+<div class="charts-grid">
+<section class="panel chart-panel">
+  <div class="panel-heading"><div><h3>Répartition des projets</h3><p>État d'avancement des dossiers</p></div><span class="chart-tag">Vue globale</span></div>
+  {% if status_chart %}
+  <div class="donut-layout">
+    <div class="donut-chart" style="background:conic-gradient({% for item in status_chart %}{{ item.color }} {{ loop.index0 == 0 and 0 or status_chart[:loop.index0]|sum(attribute='percent') }}% {{ status_chart[:loop.index]|sum(attribute='percent') }}%{% if not loop.last %}, {% endif %}{% endfor %});">
+      <div class="donut-hole"><strong>{{ stats.topics }}</strong><span>Projets</span></div>
+    </div>
+    <div class="chart-legend">{% for item in status_chart %}<div class="legend-row"><span class="legend-dot" style="background:{{ item.color }}"></span><span>{{ item.label }}</span><b>{{ item.count }}</b></div>{% endfor %}</div>
+  </div>
+  {% else %}<div class="chart-empty">Les graphiques apparaîtront dès l'enregistrement des premiers projets.</div>{% endif %}
+</section>
+<section class="panel chart-panel">
+  <div class="panel-heading"><div><h3>Activité des six derniers mois</h3><p>Nombre de nouveaux sujets enregistrés</p></div><span class="chart-tag">Tendance</span></div>
+  <div class="bar-chart">{% for item in monthly_chart %}<div class="bar-column"><strong>{{ item.count }}</strong><div class="bar-track"><div class="bar-fill" style="height:{{ item.height }}%"></div></div><span>{{ item.label }}</span></div>{% endfor %}</div>
+</section>
+</div>
 <div class="content-grid"><section class="panel"><div class="panel-heading"><div><h3>Projets récents</h3><p>Derniers dossiers mis à jour</p></div><a href="#" class="text-link">Voir tout →</a></div>{% if topics %}<div class="table-wrap"><table><thead><tr><th>SUJET / PROJET</th><th>ÉTUDIANT</th><th>STATUT</th><th>MISE À JOUR</th></tr></thead><tbody>{% for topic in topics %}<tr><td><b>{{ topic.title }}</b><small class="table-sub">{{ topic.program.name if topic.program else 'Programme non défini' }}</small></td><td>{{ topic.student.full_name }}</td><td><span class="status {{ topic.status }}">{{ topic.status|replace('_',' ')|title }}</span></td><td>{{ topic.updated_at.strftime('%d/%m/%Y') }}</td></tr>{% endfor %}</tbody></table></div>{% else %}<div class="empty-state"><div>▤</div><b>Aucun dossier pour le moment</b><p>Les projets qui vous sont attribués apparaîtront ici.</p></div>{% endif %}</section><aside class="panel side-panel"><div class="panel-heading"><div><h3>À retenir</h3><p>Votre espace en un coup d'œil</p></div></div><div class="notice-item"><span class="notice-icon green">✓</span><div><b>Espace sécurisé</b><p>Vos accès sont limités à votre rôle et à vos dossiers.</p></div></div><div class="notice-item"><span class="notice-icon gold">✦</span><div><b>Suivi des mémoires</b><p>Les prochaines étapes intégreront les dépôts et corrections de documents.</p></div></div><div class="tip-card"><b>Un projet bien suivi commence ici.</b><p>Centralisez les échanges et gardez une trace de chaque décision académique.</p></div></aside></div>
 {% endblock %}
