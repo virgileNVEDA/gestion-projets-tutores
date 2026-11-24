@@ -26,6 +26,12 @@ class User(UserMixin, db.Model):
     promotion = db.Column(db.String(80))
     active = db.Column(db.Boolean, default=True, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    profile_photo_data = db.Column(db.Text, nullable=True)
+    last_seen_at = db.Column(db.DateTime, nullable=True)
+
+    @property
+    def is_online(self):
+        return bool(self.last_seen_at and (datetime.utcnow() - self.last_seen_at).total_seconds() <= 180)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
