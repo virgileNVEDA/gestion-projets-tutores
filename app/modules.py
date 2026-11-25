@@ -11,6 +11,7 @@ from .services.workflow import apply_decision
 from .services.topics import validate_topic_data
 from .services.assignments import validate_supervisor
 from .services.documents import LocalDocumentStorage, validate_document
+from .services.communications import validate_message, validate_meeting
 
 modules_bp = Blueprint("modules", __name__, url_prefix="/modules")
 ALLOWED = {"pdf", "doc", "docx", "odt", "xlsx", "pptx", "png", "jpg", "jpeg"}
@@ -270,8 +271,7 @@ def section(section):
             elif action == "message":
                 topic=ProjectTopic.query.get_or_404(int(request.form.get("topic_id")))
                 if not can_access(topic): abort(403)
-                body=request.form.get("body","").strip()
-                if not body: raise ValueError("Le message ne peut pas être vide.")
+                body=validate_message(request.form.get("body"))
                 db.session.add(Message(topic_id=topic.id,sender_id=current_user.id,body=body))
                 recipients={topic.student_id,topic.tutor_id,topic.codirector_id}-{None,current_user.id}
                 for uid in recipients: notify(uid,topic.id,"Nouveau message sur votre projet",body[:180])
@@ -279,8 +279,8 @@ def section(section):
             elif action == "meeting":
                 topic=ProjectTopic.query.get_or_404(int(request.form.get("topic_id")))
                 if not can_access(topic): abort(403)
-                when=datetime.strptime(request.form.get("scheduled_at"),"%Y-%m-%dT%H:%M")
-                db.session.add(Meeting(topic_id=topic.id,organizer_id=current_user.id,title=request.form.get("title","").strip(),scheduled_at=when,location=request.form.get("location","").strip(),notes=request.form.get("notes","").strip()))
+                meeting_data=validate_meeting(request.form.get("title"),request.form.get("scheduled_at"),request.form.get("location"),request.form.get("notes"))
+                db.session.add(Meeting(topic_id=topic.id,organizer_id=current_user.id,**meeting_data))
                 flash("Réunion planifiée.","success")
             elif action == "upload":
                 topic=ProjectTopic.query.get_or_404(int(request.form.get("topic_id")))
