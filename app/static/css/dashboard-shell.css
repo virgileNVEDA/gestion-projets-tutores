@@ -538,3 +538,11 @@ body{font-family:'DM Sans',Arial,sans-serif;color:var(--workspace-ink);backgroun
 .profile-photo-preview img{width:100%;height:100%;object-fit:cover}
 @media(max-width:850px){.hierarchy-grid{grid-template-columns:1fr 1fr}.workspace-footer-contact{max-width:100%}}
 @media(max-width:560px){.hierarchy-grid{grid-template-columns:1fr}.workspace-footer{display:grid;gap:12px}.workspace-footer-contact{display:grid;gap:7px}.hierarchy-option-row{display:grid}.hierarchy-option-row>span{justify-content:flex-start}}
+
+
+.public-institution-footer{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap;padding:24px clamp(16px,4vw,48px);border-top:1px solid #dfe8ee;background:#fff;color:#718398}
+.public-institution-footer>div:first-child b,.public-institution-footer>div:first-child span,.public-institution-footer>div:first-child small{display:block}
+.public-institution-footer b{font:800 12px Manrope;color:#173b59;letter-spacing:.08em}
+.public-institution-footer span,.public-institution-footer a,.public-institution-footer small{font-size:11px}
+.public-institution-footer>div:nth-child(2){display:flex;gap:8px 14px;flex-wrap:wrap}
+.public-institution-footer a{color:#087f75;font-weight:700}
