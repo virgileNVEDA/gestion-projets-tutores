@@ -44,6 +44,34 @@ class User(UserMixin, db.Model):
         return ROLES.get(self.role, self.role)
 
 
+
+class AcademicSection(db.Model):
+    __tablename__ = "academic_section"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), nullable=False, unique=True)
+    active = db.Column(db.Boolean, nullable=False, default=True)
+    options = db.relationship("AcademicOption", backref="section", cascade="all, delete-orphan", order_by="AcademicOption.name")
+
+
+class AcademicOption(db.Model):
+    __tablename__ = "academic_option"
+    id = db.Column(db.Integer, primary_key=True)
+    section_id = db.Column(db.Integer, db.ForeignKey("academic_section.id", ondelete="CASCADE"), nullable=False, index=True)
+    name = db.Column(db.String(120), nullable=False)
+    active = db.Column(db.Boolean, nullable=False, default=True)
+    mentions = db.relationship("AcademicMention", backref="option", cascade="all, delete-orphan", order_by="AcademicMention.name")
+    __table_args__ = (db.UniqueConstraint("section_id", "name", name="uq_option_section_name"),)
+
+
+class AcademicMention(db.Model):
+    __tablename__ = "academic_mention"
+    id = db.Column(db.Integer, primary_key=True)
+    option_id = db.Column(db.Integer, db.ForeignKey("academic_option.id", ondelete="CASCADE"), nullable=False, index=True)
+    name = db.Column(db.String(120), nullable=False)
+    active = db.Column(db.Boolean, nullable=False, default=True)
+    __table_args__ = (db.UniqueConstraint("option_id", "name", name="uq_mention_option_name"),)
+
+
 class AcademicProgram(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
