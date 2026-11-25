@@ -72,28 +72,3 @@ document.addEventListener("DOMContentLoaded", () => {
   window.setInterval(ping, 60000);
   document.addEventListener("visibilitychange", () => { if (!document.hidden) ping(); });
 });
-
-
-
-
-
-/* Position initiale du tableau de bord : neutraliser la restauration tardive du navigateur. */
-(() => {
-  if ("scrollRestoration" in history) history.scrollRestoration = "manual";
-  const resetDashboardScroll = () => {
-    if (!document.querySelector(".welcome-row")) return;
-    const reset = () => {
-      window.scrollTo(0, 0);
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
-    };
-    requestAnimationFrame(() => {
-      reset();
-      requestAnimationFrame(reset);
-    });
-    window.setTimeout(reset, 120);
-  };
-  document.addEventListener("DOMContentLoaded", resetDashboardScroll, {once:true});
-  window.addEventListener("pageshow", resetDashboardScroll);
-  window.addEventListener("load", resetDashboardScroll, {once:true});
-})();
