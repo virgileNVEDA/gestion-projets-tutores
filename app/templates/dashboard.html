@@ -18,6 +18,38 @@
     <article class="gp-dashboard-stat"><span class="gp-dashboard-stat-icon">▤</span><span class="gp-dashboard-stat-label">{% if current_user.role == 'student' %}Mon sujet{% else %}Projets suivis{% endif %}</span><strong>{{ stats.topics }}</strong><small>Dossiers dans votre espace</small></article>
     <article class="gp-dashboard-stat"><span class="gp-dashboard-stat-icon">◷</span><span class="gp-dashboard-stat-label">En attente d'action</span><strong>{{ stats.pending }}</strong><small>À examiner ou compléter</small></article>
   </section>
+  <section class="gp-dashboard-analytics" aria-label="Analyses des projets">
+    <article class="gp-dashboard-chart-card">
+      <h2>Répartition des projets</h2>
+      <p>État des dossiers auxquels vous avez accès</p>
+      <div class="gp-dashboard-bars">
+        {% for item in status_chart %}
+        <div class="gp-dashboard-bar-row">
+          <span>{{ item.label }}</span>
+          <div class="gp-dashboard-bar-track"><i style="width:{{ item.percent }}%;background:{{ item.color }}"></i></div>
+          <b>{{ item.count }}</b>
+        </div>
+        {% else %}
+        <div class="gp-dashboard-empty"><b>Aucune donnée disponible</b></div>
+        {% endfor %}
+      </div>
+    </article>
+    <article class="gp-dashboard-chart-card">
+      <h2>Évolution des six derniers mois</h2>
+      <p>Nombre de projets créés par mois</p>
+      <div class="gp-dashboard-month-bars">
+        {% for item in monthly_chart %}
+        <div class="gp-dashboard-month">
+          <strong>{{ item.count }}</strong>
+          <div class="gp-dashboard-month-track"><i style="height:{{ item.height }}%"></i></div>
+          <small>{{ item.label }}</small>
+        </div>
+        {% else %}
+        <div class="gp-dashboard-empty"><b>Aucune donnée disponible</b></div>
+        {% endfor %}
+      </div>
+    </article>
+  </section>
   <section class="gp-dashboard-grid">
     <article class="gp-dashboard-panel">
       <header class="gp-dashboard-panel-head"><div><h2>Projets récents</h2><p>Derniers dossiers mis à jour</p></div><span class="gp-dashboard-stat-label">Suivi académique</span></header>
