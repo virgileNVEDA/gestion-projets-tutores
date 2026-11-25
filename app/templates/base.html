@@ -11,8 +11,8 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/modules.css', v='20261126-responsive1') }}">
   <style>:root{--gp-primary:{{ institution.primary_color if institution else '#142D49' }};--gp-accent:{{ institution.accent_color if institution else '#079B83' }};--gp-primary-rgb:20,45,73} .topbar{border-bottom:3px solid var(--gp-accent)} .page-content h1,.page-content h2,.page-content h3{color:var(--gp-primary)} .eyebrow.green,.small-btn,.primary-btn,.settings-save{border-color:var(--gp-accent)} .primary-btn,.small-btn:not(.danger-btn),.settings-save{background-color:var(--gp-accent)} .panel-heading{border-bottom-color:var(--gp-accent)} .stat-card{border-top:3px solid var(--gp-accent)}</style>
   {% block extra_css %}{% endblock %}
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard-shell.css', v='20261125-corrections2') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/premium-ui.css', v='20261126-branding4') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard-shell.css', v='20261126-sticky3') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/premium-ui.css', v='20261126-contrast5') }}">
 </head>
 <body>
 {% if current_user.is_authenticated %}<div class="global-progress" id="globalProgress" role="progressbar" aria-label="Chargement de la page"></div>{% endif %}
