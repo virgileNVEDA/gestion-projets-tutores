@@ -73,7 +73,7 @@ def create_app():
             if account.role != "student" and (not account.matricule or not account.matricule.startswith(expected_prefix + "-")):
                 account.matricule = generate_matricule(account.full_name, account.role, exclude_user_id=account.id)
         db.session.commit()
-        db.session.execute(text("UPDATE user SET role = 'tutor' WHERE role = 'codirector'"))
+        db.session.execute(text("UPDATE "user" SET role = 'tutor' WHERE role = 'codirector'"))
         db.session.execute(text("UPDATE user SET role = 'admin' WHERE role IN ('section_head', 'department_head', 'coordination')"))
         db.session.commit()
         email = os.getenv("ADMIN_EMAIL")
