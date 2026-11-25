@@ -10,72 +10,8 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css', v='20261125-clean-mobile-flow1') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/modules.css', v='20261125-audit2') }}">
   {% block extra_css %}{% endblock %}
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard-shell.css', v='20261125-dom-sibling-fix3') }}">
-  <style id="mobile-shell-grid-layout-v4">
-    @media (max-width: 780px) {
-      html, body {
-        width: 100% !important; min-height: 100% !important;
-        margin: 0 !important; padding: 0 !important;
-        overflow-x: hidden !important;
-      }
-      body > .app-shell {
-        display: grid !important;
-        grid-template-columns: minmax(0, 1fr) !important;
-        grid-template-rows: 84px auto !important;
-        align-content: start !important;
-        position: relative !important;
-        width: 100% !important; min-height: 100dvh !important;
-        height: auto !important; margin: 0 !important; padding: 0 !important;
-        transform: none !important;
-      }
-      body > .app-shell > aside.sidebar {
-        position: fixed !important; inset: 0 auto 0 0 !important;
-        width: min(86vw, 300px) !important; height: 100dvh !important;
-        margin: 0 !important; z-index: 1300 !important;
-        transform: translateX(-105%) !important;
-        visibility: hidden !important; pointer-events: none !important;
-      }
-      body > .app-shell > aside.sidebar.open {
-        transform: translateX(0) !important;
-        visibility: visible !important; pointer-events: auto !important;
-      }
-      body > .app-shell > header.topbar {
-        grid-column: 1 !important; grid-row: 1 !important;
-        display: flex !important; position: sticky !important;
-        top: 0 !important; align-self: start !important;
-        inset: auto !important; width: 100% !important;
-        height: 84px !important; min-height: 84px !important;
-        max-height: 84px !important; margin: 0 !important;
-        padding: 8px 14px !important; box-sizing: border-box !important;
-        transform: none !important; z-index: 1200 !important;
-      }
-      body > .app-shell > header.topbar .menu-toggle {
-        flex: 0 0 52px !important; width: 52px !important;
-        height: 52px !important; padding: 0 !important;
-      }
-      body > .app-shell > header.topbar .breadcrumb {
-        flex: 1 1 auto !important; min-width: 0 !important;
-        margin: 0 8px !important; overflow: hidden !important;
-        white-space: nowrap !important; text-overflow: ellipsis !important;
-      }
-      body > .app-shell > main.main-area {
-        grid-column: 1 !important; grid-row: 2 !important;
-        display: block !important; position: relative !important;
-        inset: auto !important; width: 100% !important;
-        min-width: 0 !important; max-width: 100% !important;
-        height: auto !important; min-height: 0 !important;
-        margin: 0 !important; padding: 0 !important;
-        transform: none !important;
-      }
-      body > .app-shell > main.main-area > section.page-content {
-        display: block !important; position: relative !important;
-        width: 100% !important; max-width: none !important;
-        min-height: 0 !important; height: auto !important;
-        margin: 0 !important; padding: 0 14px 30px !important;
-        transform: none !important; box-sizing: border-box !important;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard-shell.css', v='20261125-shell-audit-v1') }}">
+
 </head>
 <body>
 {# Le chargeur plein écran est désactivé : il masquait parfois le contenu mobile. #}
