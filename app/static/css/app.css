@@ -290,14 +290,6 @@ thead th{background:#e8eef4;color:#334155}
 .profile-actions span{font-size:11px;color:#8493a2}
 @media(max-width:760px){.welcome-row{align-items:flex-start;flex-direction:column}.dashboard-profile{width:100%;min-width:0}.profile-top-entry{padding:3px}.profile-top-entry>span:last-child{display:none}.profile-top-entry .profile-avatar{width:40px;height:40px}.profile-form{padding:19px}.profile-photo-section{align-items:flex-start;gap:15px}.profile-photo-preview{width:84px;height:84px;flex-basis:84px}.profile-fields{grid-template-columns:1fr;gap:14px}.profile-actions{align-items:stretch;flex-direction:column}.profile-actions .settings-save{width:100%}.profile-page-heading{align-items:flex-start}}
 
-@media(max-width:780px){
-  .sidebar{pointer-events:none;visibility:hidden;z-index:1300;will-change:transform}
-  .sidebar.open{pointer-events:auto;visibility:visible}
-  body.menu-open:after{content:"";position:fixed;inset:0;background:rgba(8,24,40,.48);z-index:1250}
-  body.menu-open .topbar{z-index:1100}
-  .main-area{padding-top:68px!important}
-  .page-content{padding-top:22px!important;margin-top:0!important}
-}
 .row-actions{display:flex;align-items:flex-start;gap:7px;flex-wrap:wrap;min-width:150px}
 .edit-details{position:relative}
 .edit-details>summary{list-style:none;cursor:pointer}
