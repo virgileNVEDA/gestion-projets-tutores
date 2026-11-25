@@ -8,9 +8,9 @@
 <label>Matricule officiel *</label><input name="matricule" required maxlength="60" placeholder="Votre matricule d'établissement">
 <label>Nom complet *</label><input name="full_name" required minlength="3">
 <label>Adresse e-mail *</label><input type="email" name="email" required>
-<label>Section *</label><select id="sectionSelect" required><option value="commerciale">Technique commerciale</option></select>
-<label>Option *</label><select name="option_name" required><option value="">Choisir une option</option>{% for option in options %}<option value="{{ option }}">{{ option }}</option>{% endfor %}</select>
-<label>Mention / spécialité</label><select name="mention"><option value="">Choisir (facultatif)</option><option>Comptabilité</option><option>Gestion</option><option>Secrétariat</option></select>
+<label>Section *</label><select id="sectionSelect" name="section_name" required><option value="">Choisir une section</option>{% for s in sections %}<option value="{{ s.name }}">{{ s.name }}</option>{% endfor %}</select>
+<label>Option *</label><select id="optionSelect" name="option_name" required disabled><option value="">Choisir d’abord une section</option></select>
+<label>Mention</label><select id="mentionSelect" name="mention_name" disabled><option value="">Choisir d’abord une option</option></select>
 <label>Promotion</label><input name="promotion" placeholder="Ex. 2026-2027">
 <label>Mot de passe (10 caractères minimum) *</label><input type="password" name="password" minlength="10" required>
 <button class="signin-submit" type="submit">Créer mon compte <span>→</span></button></form>
