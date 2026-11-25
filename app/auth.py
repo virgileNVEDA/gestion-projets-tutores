@@ -43,13 +43,11 @@ def register():
         promotion = request.form.get("promotion", "").strip().upper()
         password = request.form.get("password", "")
         section = AcademicSection.query.filter_by(name=section_name, active=True).first()
-        valid_mentions = []
-        if section:
-            valid_mentions = [m.name for option_item in section.options if option_item.active
-                              for m in option_item.mentions if m.active]
+        # Les anciennes valeurs du champ « Option » deviennent les choix du champ « Mention ».
+        selected_option = AcademicOption.query.filter_by(name=mention, section_id=section.id, active=True).first() if section and mention else None
         valid_promotions = {"L3", "M2"}
         if (len(full_name) < 3 or not matricule or not email or not section
-                or mention not in valid_mentions or promotion not in valid_promotions
+                or not selected_option or promotion not in valid_promotions
                 or len(password) < 10):
             flash("Complétez les champs obligatoires. Choisissez une section, une mention correspondante et la promotion L3 ou M2. Le mot de passe doit contenir au moins 10 caractères.", "error")
         elif User.query.filter_by(matricule=matricule).first():
@@ -59,7 +57,7 @@ def register():
         else:
             user = User(full_name=full_name, email=email, role="student",
                         matricule=matricule, section_name=section_name,
-                        option_name=None, mention_name=mention, mention=mention,
+                        option_name=selected_option.name, mention_name=selected_option.name, mention=selected_option.name,
                         promotion=promotion)
             user.set_password(password)
             db.session.add(user)
