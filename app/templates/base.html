@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css', v='20261125-audit2') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/modules.css', v='20261125-audit2') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard-fix.css', v='20261125-audit2') }}">
+  {% block extra_css %}{% endblock %}
 </head>
 <body>
 {# Le chargeur plein écran est désactivé : il masquait parfois le contenu mobile. #}
