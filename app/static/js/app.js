@@ -72,3 +72,20 @@ document.addEventListener("DOMContentLoaded", () => {
   window.setInterval(ping, 60000);
   document.addEventListener("visibilitychange", () => { if (!document.hidden) ping(); });
 });
+
+
+/* Tableau de bord : empêcher la restauration d'une ancienne position de défilement
+   qui laisse le haut de la page vide sous la barre fixe sur certains navigateurs mobiles. */
+(() => {
+  const resetDashboardScroll = () => {
+    if (!document.querySelector(".page-content.dashboard-page")) return;
+    if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  };
+  document.addEventListener("DOMContentLoaded", resetDashboardScroll, { once: true });
+  window.addEventListener("pageshow", () => {
+    window.requestAnimationFrame(resetDashboardScroll);
+  });
+})();
