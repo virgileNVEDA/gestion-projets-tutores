@@ -37,7 +37,7 @@
     </nav>
     <section class="gp-footer-resources">
       <h3>Documents & téléchargements</h3>
-      <a href="{{ url_for('main.index') }}#documents">Ressources académiques</a>
+      <a href="{{ url_for('modules.section',section='documents') if current_user.is_authenticated else url_for('auth.login') }}">Ressources académiques</a>
       {% if current_user.is_authenticated and current_user.role in ['admin','section_head','department_head','coordination'] %}
       <a href="{{ url_for('main.export_students_csv') }}">Télécharger la liste des étudiants (CSV)</a>
       {% endif %}
