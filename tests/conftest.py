@@ -21,7 +21,9 @@ def app():
         admin.set_password("MotDePasse-Test-2026!")
         student = User(full_name="Étudiante Test", email="student@test.local", role="student")
         student.set_password("MotDePasse-Test-2026!")
-        db.session.add_all([admin, student])
+        tutor = User(full_name="Directeur Test", email="tutor@test.local", role="tutor")
+        tutor.set_password("MotDePasse-Test-2026!")
+        db.session.add_all([admin, student, tutor])
         db.session.commit()
         yield app
         db.session.remove()
