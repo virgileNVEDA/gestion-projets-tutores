@@ -43,7 +43,7 @@ def create_app():
         institution_additions = {
             "logo_data": "TEXT", "secondary_logo_data": "TEXT", "address": "VARCHAR(300)",
             "phone": "VARCHAR(80)", "contact_email": "VARCHAR(180)", "website": "VARCHAR(240)",
-            "motto": "VARCHAR(240)", "academic_year": "VARCHAR(40)", "progress_image_data": "TEXT"
+            "motto": "VARCHAR(240)", "academic_year": "VARCHAR(40)", "progress_image_data": "TEXT", "promotions_json": "TEXT"
         }
         for name, sql_type in institution_additions.items():
             if name not in institution_columns:
