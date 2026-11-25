@@ -49,7 +49,7 @@ def create_app():
             if name not in institution_columns:
                 db.session.execute(text(f'ALTER TABLE "institution" ADD COLUMN {name} {sql_type}'))
         columns = {column["name"] for column in inspect(db.engine).get_columns("user")}
-        for name, sql_type in (("option_name", "VARCHAR(120)"), ("section_name", "VARCHAR(120)"), ("mention_name", "VARCHAR(120)"), ("mention", "VARCHAR(120)"), ("promotion", "VARCHAR(80)"), ("profile_photo_data", "TEXT"), ("last_seen_at", "TIMESTAMP"), ("section_id", "INTEGER"), ("option_id", "INTEGER"), ("mention_id", "INTEGER")):
+        for name, sql_type in (("phone", "VARCHAR(40)"), ("option_name", "VARCHAR(120)"), ("section_name", "VARCHAR(120)"), ("mention_name", "VARCHAR(120)"), ("mention", "VARCHAR(120)"), ("promotion", "VARCHAR(80)"), ("profile_photo_data", "TEXT"), ("last_seen_at", "TIMESTAMP"), ("section_id", "INTEGER"), ("option_id", "INTEGER"), ("mention_id", "INTEGER")):
             if name not in columns:
                 db.session.execute(text(f'ALTER TABLE "user" ADD COLUMN {name} {sql_type}'))
         section = AcademicSection.query.filter_by(name="Sciences commerciales").first()
@@ -69,9 +69,12 @@ def create_app():
         # Harmoniser les matricules existants : identifiant court lié au rôle et aux initiales.
         from .models import ROLES
         for account in User.query.order_by(User.id.asc()).all():
-            expected_prefix = {"student":"ET","tutor":"DIR","codirector":"COD","section_head":"SEC","department_head":"DEP","coordination":"COO","admin":"ADM"}.get(account.role, "USR")
+            expected_prefix = {"student":"ET","tutor":"DIR","admin":"ADM"}.get(account.role, "USR")
             if account.role != "student" and (not account.matricule or not account.matricule.startswith(expected_prefix + "-")):
                 account.matricule = generate_matricule(account.full_name, account.role, exclude_user_id=account.id)
+        db.session.commit()
+        db.session.execute(text("UPDATE user SET role = 'tutor' WHERE role = 'codirector'"))
+        db.session.execute(text("UPDATE user SET role = 'admin' WHERE role IN ('section_head', 'department_head', 'coordination')"))
         db.session.commit()
         email = os.getenv("ADMIN_EMAIL")
         password = os.getenv("ADMIN_PASSWORD")
