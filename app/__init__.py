@@ -28,7 +28,7 @@ def create_app():
     @app.cli.command("init-db")
     def init_db():
         """Créer les tables et le premier administrateur si les variables sont définies."""
-        from .models import User, Institution
+        from .models import User, Institution, AcademicSection, AcademicOption
         db.create_all()
         from sqlalchemy import inspect, text
         # Ajout idempotent des champs de personnalisation de l'établissement.
@@ -42,9 +42,18 @@ def create_app():
             if name not in institution_columns:
                 db.session.execute(text(f'ALTER TABLE "institution" ADD COLUMN {name} {sql_type}'))
         columns = {column["name"] for column in inspect(db.engine).get_columns("user")}
-        for name, sql_type in (("option_name", "VARCHAR(120)"), ("mention", "VARCHAR(120)"), ("promotion", "VARCHAR(80)"), ("profile_photo_data", "TEXT"), ("last_seen_at", "TIMESTAMP")):
+        for name, sql_type in (("option_name", "VARCHAR(120)"), ("mention", "VARCHAR(120)"), ("promotion", "VARCHAR(80)"), ("profile_photo_data", "TEXT"), ("last_seen_at", "TIMESTAMP"), ("section_id", "INTEGER"), ("option_id", "INTEGER"), ("mention_id", "INTEGER")):
             if name not in columns:
                 db.session.execute(text(f'ALTER TABLE "user" ADD COLUMN {name} {sql_type}'))
+        section = AcademicSection.query.filter_by(name="Sciences commerciales").first()
+        if section is None:
+            section = AcademicSection(name="Sciences commerciales")
+            db.session.add(section)
+            db.session.flush()
+        for option_name in ["Banque, Microfinance et Assurance (BMA)", "Marketing", "Comptabilité et Finance", "Administration et Gestion des Ressources Humaines (AGRH)", "Logistique"]:
+            if not AcademicOption.query.filter_by(section_id=section.id, name=option_name).first():
+                db.session.add(AcademicOption(section_id=section.id, name=option_name))
+        db.session.commit()
         # Créer une identité par défaut pour préserver l'installation existante.
         if Institution.query.count() == 0:
             db.session.add(Institution(name=os.getenv("INSTITUTION_NAME", "Établissement académique"),
