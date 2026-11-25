@@ -393,3 +393,15 @@ html,body{scroll-behavior:auto!important}
  .main-area{padding-top:64px!important}
  .page-content{padding:14px 14px 28px!important}
 }
+
+
+/* FIX CIBLE MOBILE : retirer le wrapper main-area du flux, source du décalage vertical.
+   La barre est fixed ; le contenu devient directement enfant visuel de app-shell. */
+@media(max-width:780px){
+  .app-shell{display:block!important;position:relative!important;padding:0!important;margin:0!important}
+  .main-area{display:contents!important}
+  .topbar{position:fixed!important;top:0!important;left:0!important;right:0!important;height:64px!important;min-height:64px!important}
+  .page-content{display:block!important;position:relative!important;top:auto!important;margin:64px 0 0!important;padding:14px 14px 28px!important;width:100%!important;max-width:none!important}
+  .page-content>.flash:first-child{margin-top:0!important}
+  .page-content>.welcome-row:first-child{margin-top:0!important}
+}
