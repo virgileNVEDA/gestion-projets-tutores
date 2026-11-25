@@ -198,31 +198,6 @@ button,.settings-save{letter-spacing:.01em}
 
 .brand-logo{width:46px;height:46px;object-fit:contain;border-radius:12px;background:#fff;padding:4px;flex:0 0 auto}.loading-core img{width:66%;height:66%;object-fit:contain;border-radius:50%;background:#fff;padding:5px}
 
-/* Barre de navigation réellement fixe sur toutes les tailles d'écran */
-.topbar{
-  position:fixed!important;
-  top:0!important;
-  left:278px;
-  right:0;
-  z-index:1000;
-  min-height:76px;
-  box-shadow:0 5px 18px rgba(10,31,51,.12);
-}
-.main-area{padding-top:76px}
-@media(max-width:1150px) and (min-width:781px){
-  .topbar{left:250px}
-}
-@media(max-width:780px){
-  .topbar{
-    left:0;
-    right:0;
-    min-height:68px;
-    padding-top:env(safe-area-inset-top, 0px);
-  }
-  .main-area{min-width:0;padding-top:68px}
-  .page-content{scroll-margin-top:76px}
-}
-/* Fin de la barre fixe */
 
 /* Harmonisation institutionnelle : en-têtes au ton du menu latéral */
 .topbar{background:#142d49;border-bottom:1px solid #244563;color:#fff}
@@ -315,17 +290,6 @@ thead th{background:#e8eef4;color:#334155}
 .profile-actions span{font-size:11px;color:#8493a2}
 @media(max-width:760px){.welcome-row{align-items:flex-start;flex-direction:column}.dashboard-profile{width:100%;min-width:0}.profile-top-entry{padding:3px}.profile-top-entry>span:last-child{display:none}.profile-top-entry .profile-avatar{width:40px;height:40px}.profile-form{padding:19px}.profile-photo-section{align-items:flex-start;gap:15px}.profile-photo-preview{width:84px;height:84px;flex-basis:84px}.profile-fields{grid-template-columns:1fr;gap:14px}.profile-actions{align-items:stretch;flex-direction:column}.profile-actions .settings-save{width:100%}.profile-page-heading{align-items:flex-start}}
 
-/* Correctif mobile : menu latéral au premier plan et contenu sans décalage parasite */
-@media(max-width:780px){
-  .sidebar{z-index:1200;top:0;bottom:0;pointer-events:auto}
-  .sidebar.open{transform:translateX(0);visibility:visible}
-  .topbar{z-index:1100}
-  .main-area{padding-top:68px!important}
-  .page-content{margin-top:0!important}
-  .profile-page{margin-top:0!important;padding-top:0!important}
-}
-
-/* Correctifs de structure mobile et actions CRUD */
 @media(max-width:780px){
   .sidebar{pointer-events:none;visibility:hidden;z-index:1300;will-change:transform}
   .sidebar.open{pointer-events:auto;visibility:visible}
@@ -358,22 +322,6 @@ thead th{background:#e8eef4;color:#334155}
 .danger-btn{background:#fff0ee;color:#b4433b}
 @media(max-width:650px){.row-actions{min-width:135px}.inline-edit-form{position:static;min-width:240px}}
 
-/* Barre fixe maîtrisée, basée sur la structure d'origine */
-.topbar{position:fixed;top:0;left:278px;right:0;z-index:1000;min-height:78px}
-.main-area{padding-top:78px}
-@media(max-width:1150px) and (min-width:781px){
- .topbar{left:250px}
- .main-area{padding-top:78px}
-}
-@media(max-width:780px){
- .topbar{left:0;right:0;top:0;min-height:68px;height:68px;z-index:1400}
- .main-area{margin-left:0;padding-top:68px}
- .sidebar{z-index:1500}
- body.menu-open:after{content:"";position:fixed;inset:0;background:rgba(8,24,40,.48);z-index:1450}
-}
-
-
-/* STRUCTURE FINALE DU TABLEAU DE BORD — une seule compensation pour l'en-tête */
 html body .app-shell{
   min-height:100vh;
 }
