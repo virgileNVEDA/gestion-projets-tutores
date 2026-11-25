@@ -7,6 +7,7 @@ from flask_login import login_required, current_user
 from .extensions import db
 from .models import User, AcademicProgram, ProjectTopic, WorkflowEvent, Message, DocumentVersion, Meeting, Notification, Institution, ROLES
 from .policies import can_access_topic, can_create_topic_for, can_decide_topic
+from .services.workflow import apply_decision
 
 modules_bp = Blueprint("modules", __name__, url_prefix="/modules")
 ALLOWED = {"pdf", "doc", "docx", "odt", "xlsx", "pptx", "png", "jpg", "jpeg"}
@@ -260,11 +261,7 @@ def section(section):
                 topic=ProjectTopic.query.get_or_404(int(request.form.get("topic_id")))
                 if not can_decide_topic(current_user, topic): abort(403)
                 decision=request.form.get("decision")
-                valid={"revision","approved","rejected","in_review"}
-                if decision not in valid: raise ValueError("Décision non valide.")
-                comment=request.form.get("comment","").strip()
-                if decision in {"revision","rejected"} and len(comment)<8: raise ValueError("Veuillez motiver le retour ou le refus.")
-                topic.status=decision
+                comment=apply_decision(topic, decision, request.form.get("comment",""))
                 db.session.add(WorkflowEvent(topic_id=topic.id,actor_id=current_user.id,action=decision,comment=comment))
                 notify(topic.student_id,topic.id,"Mise à jour de votre dossier",comment or decision)
                 flash("Décision enregistrée et historisée.","success")
