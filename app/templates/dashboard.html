@@ -1,48 +1,75 @@
 {% extends "base.html" %}
-{% block title %}Tableau de bord · Projets tutorés{% endblock %}
+{% block title %}Tableau de bord · Gestion des projets tutorés{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard-v3.css', v='20261125-v3') }}">{% endblock %}
 {% block content %}
-<style>
-/* Rendu autonome du tableau de bord : ne dépend pas des anciennes classes de mise en page. */
-.dashboard-render-check{display:block!important;position:relative!important;visibility:visible!important;opacity:1!important;width:100%!important;height:auto!important;min-height:1px!important;overflow:visible!important;color:#142d49!important;background:transparent!important;transform:none!important}
-.dashboard-render-check *{visibility:visible!important;opacity:1!important}
-.dashboard-render-check h1,.dashboard-render-check h2,.dashboard-render-check h3,.dashboard-render-check p,.dashboard-render-check span,.dashboard-render-check b,.dashboard-render-check strong,.dashboard-render-check small{color:inherit}
-.dashboard-render-check .dr-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:20px 0}
-.dashboard-render-check .dr-card{display:block!important;background:#fff!important;border:1px solid #dfe8ef!important;border-radius:14px!important;padding:18px!important;min-width:0!important;box-shadow:0 5px 18px rgba(20,45,73,.06)}
-.dashboard-render-check .dr-card strong{display:block;font-size:28px;color:#142d49!important}
-.dashboard-render-check .dr-muted{color:#64788c!important;font-size:13px}
-.dashboard-render-check .dr-table{width:100%;border-collapse:collapse;background:#fff}
-.dashboard-render-check .dr-table th,.dashboard-render-check .dr-table td{padding:12px 10px;border-bottom:1px solid #e8eef3;text-align:left;color:#334155!important;font-size:13px}
-@media(max-width:700px){.dashboard-render-check{padding:4px 0 24px!important}.dashboard-render-check .dr-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.dashboard-render-check .dr-card{padding:14px!important}.dashboard-render-check .dr-card strong{font-size:24px}.dashboard-render-check .dr-table-wrap{overflow-x:auto}}
-</style>
-<div class="dashboard-render-check">
-  <div style="display:block!important;margin:0 0 20px!important;padding:0!important">
-    <div class="dr-muted" style="font-weight:800;letter-spacing:1.4px;color:#078f7a!important">VOTRE ESPACE DE TRAVAIL</div>
-    <h1 style="display:block!important;visibility:visible!important;color:#142d49!important;font-size:clamp(25px,4vw,34px)!important;margin:8px 0!important">Bonjour, {{ current_user.full_name.split(' ')[0] }} ✦</h1>
-    <p class="dr-muted" style="display:block!important">Voici un aperçu de l'activité de vos projets aujourd'hui.</p>
-  </div>
-  <div class="dr-grid">
+<div class="dashboard-v3">
+  <header class="dash-heading">
+    <div>
+      <div class="dash-kicker">Espace de pilotage académique</div>
+      <h1>Bonjour {{ current_user.full_name.split(' ')[0] }} 👋</h1>
+      <p class="dash-subtitle">Retrouvez en un coup d’œil l’état de vos projets et les actions à suivre.</p>
+      <a class="dash-profile" href="{{ url_for('auth.profile') }}">
+        <span class="dash-avatar">{% if current_user.profile_photo_data %}<img src="{{ current_user.profile_photo_data }}" alt="">{% else %}{{ current_user.full_name[:1]|upper }}{% endif %}</span>
+        <span><b>{{ current_user.full_name }}</b><small>{{ current_user.role_label }} · Mon profil</small></span>
+      </a>
+    </div>
+    <div class="dash-date">◷ {{ now.strftime('%d/%m/%Y') }}</div>
+  </header>
+
+  <section class="dash-stats" aria-label="Indicateurs principaux">
     {% if current_user.role == 'admin' %}
-    <div class="dr-card"><span class="dr-muted">Étudiants inscrits</span><strong>{{ stats.students }}</strong><small class="dr-muted">Comptes étudiants actifs</small></div>
-    <div class="dr-card"><span class="dr-muted">Encadreurs</span><strong>{{ stats.tutors }}</strong><small class="dr-muted">Directeurs de mémoire</small></div>
+    <article class="dash-stat"><div class="dash-stat-top"><span class="dash-stat-label">Étudiants inscrits</span><span class="dash-stat-icon">♙</span></div><strong>{{ stats.students }}</strong><small>Comptes étudiants enregistrés</small></article>
+    <article class="dash-stat"><div class="dash-stat-top"><span class="dash-stat-label">Encadreurs</span><span class="dash-stat-icon">◎</span></div><strong>{{ stats.tutors }}</strong><small>Directeurs de mémoire</small></article>
     {% endif %}
-    <div class="dr-card"><span class="dr-muted">{% if current_user.role == 'student' %}Mon sujet{% else %}Projets suivis{% endif %}</span><strong>{{ stats.topics }}</strong><small class="dr-muted">Dossiers dans votre espace</small></div>
-    <div class="dr-card"><span class="dr-muted">En attente d'action</span><strong>{{ stats.pending }}</strong><small class="dr-muted">À examiner ou compléter</small></div>
-  </div>
-  <div class="dr-card" style="margin-bottom:18px">
-    <h2 style="font-size:19px!important;margin:0 0 6px!important;color:#142d49!important">Projets récents</h2>
-    <p class="dr-muted" style="margin:0 0 12px">Derniers dossiers mis à jour</p>
-    {% if topics %}
-    <div class="dr-table-wrap"><table class="dr-table"><thead><tr><th>Sujet / Projet</th><th>Étudiant</th><th>Statut</th><th>Mise à jour</th></tr></thead><tbody>
-    {% for topic in topics %}<tr><td><b>{{ topic.title }}</b><br><small class="dr-muted">{{ topic.program.name if topic.program else 'Programme non défini' }}</small></td><td>{{ topic.student.full_name }}</td><td>{{ topic.status|replace('_',' ')|title }}</td><td>{{ topic.updated_at.strftime('%d/%m/%Y') }}</td></tr>{% endfor %}
-    </tbody></table></div>
-    {% else %}
-    <div style="padding:22px 8px;text-align:center;color:#64788c!important"><b style="display:block;color:#142d49!important">Aucun dossier pour le moment</b><p class="dr-muted">Les projets qui vous sont attribués apparaîtront ici.</p></div>
+    <article class="dash-stat"><div class="dash-stat-top"><span class="dash-stat-label">{% if current_user.role == 'student' %}Mon sujet{% else %}Projets accessibles{% endif %}</span><span class="dash-stat-icon">▤</span></div><strong>{{ stats.topics }}</strong><small>Dossiers dans votre périmètre</small></article>
+    <article class="dash-stat"><div class="dash-stat-top"><span class="dash-stat-label">En attente d’action</span><span class="dash-stat-icon">◷</span></div><strong>{{ stats.pending }}</strong><small>Brouillons, soumissions et corrections</small></article>
+    {% if current_user.role != 'admin' %}
+    <article class="dash-stat"><div class="dash-stat-top"><span class="dash-stat-label">Projets validés</span><span class="dash-stat-icon">✓</span></div><strong>{{ status_chart|selectattr('key','equalto','approved')|map(attribute='count')|sum }}</strong><small>Décisions favorables</small></article>
     {% endif %}
-  </div>
-  <div class="dr-card">
-    <h2 style="font-size:18px!important;margin:0 0 8px!important;color:#142d49!important">À retenir</h2>
-    <p class="dr-muted">Espace sécurisé : vos accès sont limités à votre rôle et à vos dossiers.</p>
-    <p class="dr-muted">Centralisez les échanges et gardez une trace de chaque décision académique.</p>
-  </div>
+  </section>
+
+  <section class="dash-panels">
+    <article class="dash-panel">
+      <div class="dash-panel-head"><div><h2>État d’avancement des projets</h2><p>Répartition des dossiers selon leur statut</p></div><span class="dash-tag">Vue synthétique</span></div>
+      {% if status_chart %}
+      <div class="dash-status-list">
+        {% for item in status_chart %}
+        <div class="dash-status-row"><span>{{ item.label }}</span><div class="dash-track"><span style="width:{{ item.percent }}%;background:{{ item.color }}"></span></div><b>{{ item.count }}</b></div>
+        {% endfor %}
+      </div>
+      {% else %}<div class="dash-empty"><b>Aucune donnée à présenter</b>Les indicateurs évolueront dès l’enregistrement des premiers projets.</div>{% endif %}
+    </article>
+    <article class="dash-panel">
+      <div class="dash-panel-head"><div><h2>Activité récente</h2><p>Nouveaux sujets enregistrés sur six mois</p></div><span class="dash-tag">6 mois</span></div>
+      <div class="dash-months">
+        {% for item in monthly_chart %}
+        <div class="dash-month"><strong>{{ item.count }}</strong><div class="dash-month-track"><span style="height:{{ item.height }}%"></span></div><small>{{ item.label }}</small></div>
+        {% endfor %}
+      </div>
+    </article>
+  </section>
+
+  <section class="dash-panels">
+    <article class="dash-panel">
+      <div class="dash-panel-head"><div><h2>Projets récemment mis à jour</h2><p>Les huit derniers dossiers accessibles</p></div><span class="dash-tag">{{ topics|length }} dossier(s)</span></div>
+      {% if topics %}
+      <div class="dash-table-wrap"><table><thead><tr><th>SUJET / PROJET</th><th>ÉTUDIANT</th><th>STATUT</th><th>MISE À JOUR</th></tr></thead><tbody>
+      {% for topic in topics %}
+      <tr><td><b>{{ topic.title }}</b><small>{{ topic.program.name if topic.program else 'Programme non défini' }}</small></td><td>{{ topic.student.full_name }}</td><td><span class="dash-status">{{ topic.status|replace('_',' ')|title }}</span></td><td>{{ topic.updated_at.strftime('%d/%m/%Y') }}</td></tr>
+      {% endfor %}
+      </tbody></table></div>
+      {% else %}<div class="dash-empty"><b>Aucun projet dans votre espace pour le moment</b>Les dossiers qui vous seront attribués apparaîtront ici.</div>{% endif %}
+    </article>
+    <aside class="dash-panel">
+      <div class="dash-panel-head"><div><h2>Accès rapides</h2><p>Accédez directement aux espaces utiles</p></div></div>
+      <nav class="dash-actions">
+        <a class="dash-action" href="{{ url_for('modules.section',section='sujets') }}"><span>▤</span> Sujets et mémoires</a>
+        <a class="dash-action" href="{{ url_for('modules.section',section='encadrement') }}"><span>◎</span> Encadrement</a>
+        <a class="dash-action" href="{{ url_for('modules.section',section='validations') }}"><span>✓</span> Validations</a>
+        <a class="dash-action" href="{{ url_for('modules.section',section='documents') }}"><span>▧</span> Documents</a>
+        <a class="dash-action" href="{{ url_for('modules.section',section='notifications') }}"><span>♧</span> Notifications</a>
+      </nav>
+    </aside>
+  </section>
 </div>
 {% endblock %}
