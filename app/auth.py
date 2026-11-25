@@ -139,6 +139,7 @@ def profile():
             return redirect(url_for("auth.profile"))
         current_user.full_name = full_name
         current_user.email = email
+        current_user.phone = request.form.get("phone", "").strip() or None
         cropped = request.form.get("profile_photo_cropped", "").strip()
         photo = request.files.get("profile_photo")
         if cropped:
