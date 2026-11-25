@@ -154,9 +154,8 @@ def api_mentions(option_id):
 @modules_bp.get("/api/sections/<int:section_id>/mentions")
 def api_section_mentions(section_id):
     section_item = AcademicSection.query.filter_by(id=section_id, active=True).first_or_404()
-    # Les options déjà configurées sont présentées dans le formulaire sous le libellé « Mention ».
-    options = AcademicOption.query.filter_by(section_id=section_item.id, active=True).order_by(AcademicOption.name).all()
-    return jsonify([{"id": item.id, "name": item.name} for item in options])
+    mentions = AcademicOption.query.filter_by(section_id=section_item.id, active=True).order_by(AcademicOption.name).all()
+    return jsonify([{"id": item.id, "name": item.name} for item in mentions])
 
 
 @modules_bp.route("/<section>", methods=["GET","POST"])
@@ -177,20 +176,14 @@ def section(section):
                 if AcademicSection.query.filter_by(name=name).first(): raise ValueError("Cette section existe déjà.")
                 db.session.add(AcademicSection(name=name))
                 flash("Section ajoutée.","success")
-            elif action == "create_option" and current_user.role == "admin":
+            elif action in {"create_option", "create_mention"} and current_user.role == "admin":
                 parent=AcademicSection.query.get_or_404(int(request.form.get("section_id")))
                 name=request.form.get("name","").strip()
-                if not name: raise ValueError("Le nom de l'option est obligatoire.")
-                if AcademicOption.query.filter_by(section_id=parent.id,name=name).first(): raise ValueError("Cette option existe déjà dans cette section.")
-                db.session.add(AcademicOption(section_id=parent.id,name=name))
-                flash("Option ajoutée à la section.","success")
-            elif action == "create_mention" and current_user.role == "admin":
-                parent=AcademicOption.query.get_or_404(int(request.form.get("option_id")))
-                name=request.form.get("name","").strip()
                 if not name: raise ValueError("Le nom de la mention est obligatoire.")
-                if AcademicMention.query.filter_by(option_id=parent.id,name=name).first(): raise ValueError("Cette mention existe déjà dans cette option.")
-                db.session.add(AcademicMention(option_id=parent.id,name=name))
-                flash("Mention ajoutée à l'option.","success")
+                duplicate=AcademicOption.query.filter(AcademicOption.section_id==parent.id,db.func.lower(AcademicOption.name)==name.lower()).first()
+                if duplicate: raise ValueError("Cette mention existe déjà dans cette section.")
+                db.session.add(AcademicOption(section_id=parent.id,name=name))
+                flash("Mention ajoutée à la section.","success")
             elif action == "edit_section" and current_user.role == "admin":
                 item=AcademicSection.query.get_or_404(int(request.form.get("section_id")))
                 name=request.form.get("name","").strip()
@@ -203,11 +196,11 @@ def section(section):
                 item=AcademicOption.query.get_or_404(int(request.form.get("option_id")))
                 parent=AcademicSection.query.get_or_404(int(request.form.get("section_id")))
                 name=request.form.get("name","").strip()
-                if not name: raise ValueError("Le nom de l'option est obligatoire.")
-                duplicate=AcademicOption.query.filter(AcademicOption.section_id==parent.id,AcademicOption.name==name,AcademicOption.id!=item.id).first()
-                if duplicate: raise ValueError("Cette option existe déjà dans cette section.")
+                if not name: raise ValueError("Le nom de la mention est obligatoire.")
+                duplicate=AcademicOption.query.filter(AcademicOption.section_id==parent.id,db.func.lower(AcademicOption.name)==name.lower(),AcademicOption.id!=item.id).first()
+                if duplicate: raise ValueError("Cette mention existe déjà dans cette section.")
                 item.section_id=parent.id; item.name=name
-                flash("Option modifiée.","success")
+                flash("Mention modifiée.","success")
             elif action == "edit_mention" and current_user.role == "admin":
                 item=AcademicMention.query.get_or_404(int(request.form.get("mention_id")))
                 parent=AcademicOption.query.get_or_404(int(request.form.get("option_id")))
@@ -231,17 +224,15 @@ def section(section):
                 role=request.form.get("role","student")
                 if role not in ROLES: raise ValueError("Rôle invalide.")
                 section_name=request.form.get("section_name","").strip()
-                option_name=request.form.get("option_name","").strip()
                 mention_name=request.form.get("mention_name","").strip()
                 matricule=request.form.get("matricule","").strip().upper()
                 if role=="student":
                     if not matricule: raise ValueError("Le matricule officiel de l’étudiant est obligatoire.")
                     if User.query.filter_by(matricule=matricule).first(): raise ValueError("Ce matricule est déjà utilisé.")
                     parent=AcademicSection.query.filter_by(name=section_name,active=True).first()
-                    opt=AcademicOption.query.filter_by(name=option_name,active=True,section_id=parent.id).first() if parent else None
-                    men=AcademicMention.query.filter_by(name=mention_name,active=True,option_id=opt.id).first() if opt and mention_name else None
-                    if not parent or not opt or (mention_name and not men): raise ValueError("La section, l'option et la mention doivent respecter leur rattachement.")
-                user=User(full_name=request.form.get("full_name","").strip(),email=email,phone=request.form.get("phone","").strip() or None,role=role,section_name=section_name or None,option_name=option_name or None,mention_name=mention_name or None,mention=mention_name or None,promotion=request.form.get("promotion","").strip() or None)
+                    men=AcademicOption.query.filter_by(name=mention_name,active=True,section_id=parent.id).first() if parent and mention_name else None
+                    if not parent or not men: raise ValueError("La section et la mention doivent respecter leur rattachement.")
+                user=User(full_name=request.form.get("full_name","").strip(),email=email,phone=request.form.get("phone","").strip() or None,role=role,section_name=section_name or None,option_name=None,mention_name=mention_name or None,mention=mention_name or None,promotion=request.form.get("promotion","").strip() or None)
                 password=request.form.get("password","")
                 if len(user.full_name)<3 or len(password)<10: raise ValueError("Nom obligatoire et mot de passe de 10 caractères minimum.")
                 user.set_password(password); db.session.add(user); db.session.flush()
@@ -309,15 +300,13 @@ def section(section):
                 elif old_role != role or not user.matricule:
                     user.matricule=generate_matricule(full_name, role, exclude_user_id=user.id)
                 section_name=request.form.get("section_name","").strip()
-                option_name=request.form.get("option_name","").strip()
                 mention_name=request.form.get("mention_name","").strip()
                 if role=="student":
                     parent=AcademicSection.query.filter_by(name=section_name,active=True).first()
-                    opt=AcademicOption.query.filter_by(name=option_name,active=True,section_id=parent.id).first() if parent else None
-                    men=AcademicMention.query.filter_by(name=mention_name,active=True,option_id=opt.id).first() if opt and mention_name else None
-                    if not parent or not opt or (mention_name and not men): raise ValueError("La section, l'option et la mention doivent respecter leur rattachement.")
+                    men=AcademicOption.query.filter_by(name=mention_name,active=True,section_id=parent.id).first() if parent and mention_name else None
+                    if not parent or not men: raise ValueError("La section et la mention doivent respecter leur rattachement.")
                 user.section_name=section_name or None
-                user.option_name=option_name or None
+                user.option_name=None
                 user.mention_name=mention_name or None
                 user.mention=mention_name or None
                 user.promotion=request.form.get("promotion","").strip() or None
