@@ -10,6 +10,28 @@
     </div>
     <div class="date-chip">◷ &nbsp; Espace académique</div>
   </section>
+  <section class="workspace-modules" aria-label="Tous les modules">
+    <div class="workspace-section-heading"><div><span class="eyebrow green">VOTRE ENVIRONNEMENT</span><h2>Accès aux modules</h2><p>Choisissez un espace pour ouvrir ses outils et travailler.</p></div></div>
+    <div class="workspace-module-grid">
+      <a class="workspace-module-card" href="{{ url_for('modules.section',section='sujets') }}"><span class="module-card-icon">▤</span><span><b>Sujets & mémoires</b><small>Soumission et suivi des dossiers</small></span><i>↗</i></a>
+      <a class="workspace-module-card" href="{{ url_for('modules.section',section='encadrement') }}"><span class="module-card-icon">◎</span><span><b>Encadrement</b><small>Affectation et suivi des encadreurs</small></span><i>↗</i></a>
+      <a class="workspace-module-card" href="{{ url_for('modules.section',section='validations') }}"><span class="module-card-icon">⇄</span><span><b>Validations</b><small>Décisions et circuit académique</small></span><i>↗</i></a>
+      <a class="workspace-module-card" href="{{ url_for('modules.section',section='documents') }}"><span class="module-card-icon">▧</span><span><b>Documents</b><small>Dépôt et versions des fichiers</small></span><i>↗</i></a>
+      <a class="workspace-module-card" href="{{ url_for('modules.section',section='messagerie') }}"><span class="module-card-icon">✉</span><span><b>Messagerie</b><small>Échanges autour des projets</small></span><i>↗</i></a>
+      <a class="workspace-module-card" href="{{ url_for('modules.section',section='reunions') }}"><span class="module-card-icon">◷</span><span><b>Réunions</b><small>Rendez-vous et calendrier</small></span><i>↗</i></a>
+      <a class="workspace-module-card" href="{{ url_for('modules.section',section='notifications') }}"><span class="module-card-icon">♧</span><span><b>Notifications</b><small>Alertes et mises à jour</small>{% if unread_notifications %}<em>{{ unread_notifications }}</em>{% endif %}</span><i>↗</i></a>
+      {% if current_user.role == 'admin' %}
+      <a class="workspace-module-card" href="{{ url_for('modules.section',section='etudiants') }}"><span class="module-card-icon">♙</span><span><b>Étudiants</b><small>Inscriptions et dossiers</small></span><i>↗</i></a>
+      <a class="workspace-module-card" href="{{ url_for('modules.section',section='enseignants') }}"><span class="module-card-icon">♟</span><span><b>Enseignants</b><small>Corps enseignant</small></span><i>↗</i></a>
+      <a class="workspace-module-card" href="{{ url_for('modules.section',section='programmes') }}"><span class="module-card-icon">▦</span><span><b>Programmes</b><small>Filières et niveaux</small></span><i>↗</i></a>
+      <a class="workspace-module-card" href="{{ url_for('modules.section',section='utilisateurs') }}"><span class="module-card-icon">⚙</span><span><b>Utilisateurs & rôles</b><small>Comptes et autorisations</small></span><i>↗</i></a>
+      <a class="workspace-module-card" href="{{ url_for('modules.section',section='rapports') }}"><span class="module-card-icon">▥</span><span><b>Rapports</b><small>Statistiques académiques</small></span><i>↗</i></a>
+      <a class="workspace-module-card" href="{{ url_for('modules.settings') }}"><span class="module-card-icon">⚙</span><span><b>Paramètres</b><small>Configuration de l'établissement</small></span><i>↗</i></a>
+      {% elif current_user.role in ['section_head','department_head','coordination'] %}
+      <a class="workspace-module-card" href="{{ url_for('modules.section',section='rapports') }}"><span class="module-card-icon">▥</span><span><b>Rapports</b><small>Statistiques académiques</small></span><i>↗</i></a>
+      {% endif %}
+    </div>
+  </section>
   <section class="gp-dashboard-stats" aria-label="Indicateurs du tableau de bord">
     {% if current_user.role == 'admin' %}
     <article class="gp-dashboard-stat"><span class="gp-dashboard-stat-icon">♙</span><span class="gp-dashboard-stat-label">Étudiants inscrits</span><strong>{{ stats.students }}</strong><small>Comptes étudiants actifs</small></article>
@@ -64,7 +86,7 @@
       <div class="gp-dashboard-panel-body">
         <div class="gp-dashboard-notice"><span class="gp-dashboard-notice-icon">✓</span><div><b>Espace sécurisé</b><p>Vos accès sont limités à votre rôle et à vos dossiers.</p></div></div>
         <div class="gp-dashboard-notice"><span class="gp-dashboard-notice-icon gold">✦</span><div><b>Suivi des mémoires</b><p>Centralisez les échanges et gardez une trace de chaque décision académique.</p></div></div>
-        <div class="gp-dashboard-tip"><b>Un projet bien suivi commence ici.</b><p>Les prochaines étapes de votre travail académique restent accessibles depuis le menu latéral.</p></div>
+        <div class="gp-dashboard-tip"><b>Un projet bien suivi commence ici.</b><p>Tous vos espaces de travail sont regroupés dans les cartes ci-dessus.</p></div>
       </div>
     </aside>
   </section>
