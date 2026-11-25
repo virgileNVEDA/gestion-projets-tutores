@@ -1,1 +1,19 @@
-<div class="table-wrap"><table><thead><tr><th>SUJET / PROJET</th><th>ÉTUDIANT</th><th>DIRECTEUR</th><th>STATUT</th><th>DATE</th></tr></thead><tbody>{% for t in topics %}<tr><td><b>{{ t.title }}</b><small class="table-sub">{{ t.program.name if t.program else 'Programme non défini' }}</small></td><td>{{ t.student.full_name }}</td><td>{{ t.tutor.full_name if t.tutor else 'À attribuer' }}</td><td><span class="status {{ t.status }}">{{ t.status|replace('_',' ')|title }}</span></td><td>{{ t.updated_at.strftime('%d/%m/%Y') }}</td></tr>{% else %}<tr><td colspan="5">Aucun dossier disponible.</td></tr>{% endfor %}</tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th>SUJET / PROJET</th><th>ÉTUDIANT</th><th>DIRECTEUR</th><th>STATUT</th><th>DATE</th><th>ACTIONS</th></tr></thead><tbody>
+{% for t in topics %}
+<tr>
+<td><b>{{ t.title }}</b><small class="table-sub">{{ t.program.name if t.program else 'Programme non défini' }}</small></td>
+<td>{{ t.student.full_name }}</td><td>{{ t.tutor.full_name if t.tutor else 'À attribuer' }}</td>
+<td><span class="status {{ t.status }}">{{ t.status|replace('_',' ')|title }}</span></td><td>{{ t.updated_at.strftime('%d/%m/%Y') }}</td>
+<td><div class="row-actions">
+{% if current_user.role=='admin' or (current_user.role=='student' and t.student_id==current_user.id and t.status in ['draft','revision','rejected']) %}
+<details class="edit-details"><summary class="small-btn">Modifier</summary>
+<form method="post" class="inline-edit-form"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="edit_topic"><input type="hidden" name="topic_id" value="{{ t.id }}">
+<label>Titre<input name="title" minlength="12" required value="{{ t.title }}"></label>
+<label>Programme<select name="program_id"><option value="">Non défini</option>{% for p in programs %}<option value="{{ p.id }}" {% if t.program_id==p.id %}selected{% endif %}>{{ p.name }}</option>{% endfor %}</select></label>
+<label>Problématique<textarea name="problem_statement">{{ t.problem_statement or '' }}</textarea></label><label>Objectifs<textarea name="objectives">{{ t.objectives or '' }}</textarea></label><label>Méthodologie<textarea name="methodology">{{ t.methodology or '' }}</textarea></label><label>Mots-clés<input name="keywords" value="{{ t.keywords or '' }}"></label>
+<button class="small-btn" type="submit">Enregistrer</button></form></details>{% endif %}
+{% if current_user.role=='admin' %}<form method="post" onsubmit="return confirm('Supprimer définitivement ce dossier et son historique ?');"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="delete_topic"><input type="hidden" name="topic_id" value="{{ t.id }}"><button class="small-btn danger-btn" type="submit">Supprimer</button></form>{% endif %}
+</div></td>
+</tr>
+{% else %}<tr><td colspan="6">Aucun dossier disponible.</td></tr>{% endfor %}
+</tbody></table></div>
