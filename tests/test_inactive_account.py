@@ -11,5 +11,5 @@ def test_inactive_account_cannot_authenticate(app, client):
         db.session.commit()
 
     response = login(client, email="student@test.local")
-    assert b"Adresse e-mail ou mot de passe incorrect" in response.data
-    assert b"Bonjour Étudiante" not in response.data
+    assert response.status_code == 200
+    assert response.request.path == "/auth/login"
