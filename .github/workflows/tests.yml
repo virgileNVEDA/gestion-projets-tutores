@@ -1,0 +1,29 @@
+name: Tests de l'application
+
+on:
+  push:
+    branches:
+      - main
+      - rebuild/**
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v4
+      - name: Installer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Installer les dépendances de test
+        run: pip install -r requirements-dev.txt
+      - name: Exécuter les tests
+        env:
+          FLASK_ENV: testing
+          SECRET_KEY: ci-test-secret
+        run: pytest -q
