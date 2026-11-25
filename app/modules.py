@@ -6,7 +6,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from flask_login import login_required, current_user
 from .extensions import db
 from .models import User, AcademicProgram, ProjectTopic, WorkflowEvent, Message, DocumentVersion, Meeting, Notification, Institution, ROLES
-from .policies import can_access_topic, can_create_topic_for
+from .policies import can_access_topic, can_create_topic_for, can_decide_topic
 
 modules_bp = Blueprint("modules", __name__, url_prefix="/modules")
 ALLOWED = {"pdf", "doc", "docx", "odt", "xlsx", "pptx", "png", "jpg", "jpeg"}
@@ -248,15 +248,17 @@ def section(section):
                 topic=ProjectTopic.query.get_or_404(int(request.form.get("topic_id")))
                 tutor_id=int(request.form.get("tutor_id")) if request.form.get("tutor_id") else None
                 codir_id=int(request.form.get("codirector_id")) if request.form.get("codirector_id") else None
-                if tutor_id and User.query.get(tutor_id).role!="tutor": raise ValueError("Le directeur doit avoir le rôle Directeur de mémoire.")
-                if codir_id and User.query.get(codir_id).role!="codirector": raise ValueError("Le codirecteur doit avoir le rôle Codirecteur.")
+                tutor=User.query.get(tutor_id) if tutor_id else None
+                if tutor_id and (tutor is None or tutor.role!="tutor" or not tutor.active): raise ValueError("Le directeur doit être un compte actif avec le rôle Directeur de mémoire.")
+                codirector=User.query.get(codir_id) if codir_id else None
+                if codir_id and (codirector is None or codirector.role!="codirector" or not codirector.active): raise ValueError("Le codirecteur doit être un compte actif avec le rôle Codirecteur.")
                 topic.tutor_id=tutor_id; topic.codirector_id=codir_id
                 db.session.add(WorkflowEvent(topic_id=topic.id,actor_id=current_user.id,action="Attribution de l'encadrement"))
                 notify(tutor_id,topic.id,"Nouveau projet attribué",topic.title); notify(codir_id,topic.id,"Nouveau projet attribué",topic.title)
                 flash("Encadrement mis à jour.","success")
             elif action == "decision":
                 topic=ProjectTopic.query.get_or_404(int(request.form.get("topic_id")))
-                if not can_access(topic) or current_user.role=="student": abort(403)
+                if not can_decide_topic(current_user, topic): abort(403)
                 decision=request.form.get("decision")
                 valid={"revision","approved","rejected","in_review"}
                 if decision not in valid: raise ValueError("Décision non valide.")
