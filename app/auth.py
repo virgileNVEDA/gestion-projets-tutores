@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
 from flask_login import login_user, logout_user, current_user, login_required
-from .models import User
+from .models import User, AcademicSection, AcademicOption, AcademicMention
 from .extensions import db
 from datetime import datetime
 import base64, os, smtplib
@@ -33,28 +33,32 @@ def login():
 def register():
     if current_user.is_authenticated:
         return redirect(url_for("main.dashboard"))
-    options = ["Commerciale et Gestion", "Secrétariat-Administration"]
+    sections = AcademicSection.query.filter_by(active=True).order_by(AcademicSection.name).all()
     if request.method == "POST":
         matricule = request.form.get("matricule", "").strip().upper()
         full_name = request.form.get("full_name", "").strip()
         email = request.form.get("email", "").strip().lower()
+        section_name = request.form.get("section_name", "").strip()
         option = request.form.get("option_name", "").strip()
-        mention = request.form.get("mention", "").strip()
+        mention = request.form.get("mention_name", "").strip()
         password = request.form.get("password", "")
-        if len(full_name) < 3 or not matricule or not email or option not in options or len(password) < 10:
+        section = AcademicSection.query.filter_by(name=section_name,active=True).first()
+        selected_option = AcademicOption.query.filter_by(name=option,section_id=section.id,active=True).first() if section else None
+        selected_mention = AcademicMention.query.filter_by(name=mention,option_id=selected_option.id,active=True).first() if selected_option and mention else None
+        if len(full_name) < 3 or not matricule or not email or not selected_option or (mention and not selected_mention) or len(password) < 10:
             flash("Complétez les champs obligatoires et utilisez un mot de passe de 10 caractères minimum.", "error")
         elif User.query.filter_by(matricule=matricule).first():
             flash("Ce matricule est déjà associé à un compte. Contactez l'administration.", "error")
         elif User.query.filter_by(email=email).first():
             flash("Cette adresse e-mail est déjà utilisée.", "error")
         else:
-            user = User(full_name=full_name, email=email, role="student", matricule=matricule, option_name=option, mention=mention or None)
+            user = User(full_name=full_name, email=email, role="student", matricule=matricule, section_name=section_name, option_name=option, mention_name=mention or None, mention=mention or None)
             user.set_password(password)
             db.session.add(user)
             db.session.commit()
             flash("Inscription enregistrée. Connectez-vous avec votre adresse e-mail.", "success")
             return redirect(url_for("auth.login"))
-    return render_template("auth/register.html", options=options)
+    return render_template("auth/register.html", sections=sections)
 
 
 def _reset_serializer():
@@ -111,7 +115,6 @@ def reset_password(token):
 @auth_bp.post("/logout")
 def logout():
     logout_user()
-    flash("Vous êtes maintenant déconnecté.", "info")
     return redirect(url_for("auth.login"))
 
 
