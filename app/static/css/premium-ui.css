@@ -181,3 +181,29 @@ body{background:var(--gp-ice)}
 .gp-footer-compact-bottom{max-width:1500px;margin:15px auto 0;padding:12px 0;border-top:1px solid #ffffff20;color:#a9c1df;text-align:center;font-size:9px}
 @media(max-width:760px){.gp-footer-compact-inner{align-items:flex-start;flex-direction:column;gap:16px}.gp-footer-downloads{width:100%;justify-content:flex-start}.gp-footer-download-title{text-align:left}.gp-download-item{flex:1 1 145px;min-width:0}}
 @media(max-width:380px){.gp-footer-downloads{display:grid;grid-template-columns:1fr}.gp-footer-download-title{grid-column:1}.gp-download-item{width:100%}}
+
+
+/* Palette de l'accueil propagée à l'en-tête et aux espaces de travail */
+:root{--gp-primary:#092d68;--gp-accent:#0879e9;--gp-ice:#f2f6ff}
+body{background:#f2f6ff}
+.app-shell>.topbar{background:linear-gradient(105deg,#092d68 0%,#0756bd 72%,#0879c9 100%)!important;border-bottom:3px solid #e5ad3b!important;color:#fff!important;box-shadow:0 8px 24px rgba(7,29,73,.18)!important}
+.workspace-brand,.app-shell .top-user b,.app-shell .top-user small{color:#fff!important}
+.workspace-brand small{color:#d7e6fa!important}
+.workspace-brand .brand-mark{background:#fff!important;color:#0756bd!important;box-shadow:none!important}
+.workspace-controls{background:#ffffff16!important;border-color:#ffffff30!important}
+.workspace-controls .workspace-home-btn{background:#fff!important;color:#092d68!important;box-shadow:none!important}
+.workspace-controls .workspace-nav-btn{color:#fff!important}
+.workspace-controls .workspace-nav-btn:hover{background:#ffffff20!important}
+.premium-top-links a{color:#fff!important}
+.premium-top-links a:hover,.premium-top-links a.active{background:#ffffff20!important;color:#fff!important}
+.profile-avatar{background:#ffffff!important;color:#0756bd!important}
+.workspace-logout{background:#ffffff18!important;color:#fff!important;border-color:#ffffff45!important}
+.page-content.dashboard-page{background:transparent}
+.gp-dashboard-hero{background:radial-gradient(circle at 78% 15%,#2879c7 0,transparent 32%),linear-gradient(110deg,#092d68,#0756bd 72%,#0879c9)!important}
+.workspace-modules{border-color:#d7e4f5}
+.global-progress{height:4px!important;background:#ffffff30!important}
+.global-progress:after{background:#e5ad3b!important;box-shadow:0 0 10px #e5ad3b99}
+@media(max-width:780px){
+ body .app-shell>.topbar{background:linear-gradient(105deg,#092d68,#0756bd)!important}
+ body .app-shell>.topbar .workspace-brand b{color:#fff!important}
+}
