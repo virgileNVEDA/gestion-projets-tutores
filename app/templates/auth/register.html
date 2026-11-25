@@ -19,7 +19,7 @@
 <section class="auth-card register-card">
 <span class="eyebrow green">INSCRIPTION ÉTUDIANTE</span>
 <h1>Créer mon espace</h1>
-<p>Utilisez le matricule officiel déjà attribué par votre établissement.</p>
+<p>Renseignez vos informations académiques pour créer votre compte.</p>
 <form method="post" class="signin-form" id="studentRegisterForm">
 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 <label for="registerMatricule">Matricule officiel *</label>
@@ -33,17 +33,17 @@
 <option value="">Choisir une section</option>
 {% for s in sections %}<option value="{{ s.name }}" data-id="{{ s.id }}">{{ s.name }}</option>{% endfor %}
 </select>
-<label for="optionSelect">Option *</label>
-<select id="optionSelect" name="option_name" required disabled>
+<label for="mentionSelect">Mention *</label>
+<select id="mentionSelect" name="mention_name" required disabled>
 <option value="">Choisir d’abord une section</option>
 </select>
-<label for="mentionSelect">Mention</label>
-<select id="mentionSelect" name="mention_name" disabled>
-<option value="">Choisir d’abord une option</option>
+<p class="field-help" id="academicHierarchyStatus" role="status" aria-live="polite">Sélectionnez une section pour afficher les mentions correspondantes.</p>
+<label for="registerPromotion">Promotion *</label>
+<select id="registerPromotion" name="promotion" required>
+<option value="">Choisir une promotion</option>
+<option value="L3">L3</option>
+<option value="M2">M2</option>
 </select>
-<p class="field-help" id="academicHierarchyStatus" role="status" aria-live="polite">Sélectionnez une section pour afficher ses options.</p>
-<label for="registerPromotion">Promotion</label>
-<input id="registerPromotion" name="promotion" placeholder="Ex. 2026-2027">
 <label for="registerPassword">Mot de passe (10 caractères minimum) *</label>
 <input id="registerPassword" type="password" name="password" minlength="10" required autocomplete="new-password">
 <button class="signin-submit" type="submit">Créer mon compte <span>→</span></button>
@@ -57,63 +57,39 @@
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   const section = document.getElementById("sectionSelect");
-  const option = document.getElementById("optionSelect");
   const mention = document.getElementById("mentionSelect");
   const status = document.getElementById("academicHierarchyStatus");
-  if (!section || !option || !mention) return;
-
-  const setPlaceholder = (select, label, disabled = true) => {
-    select.replaceChildren(new Option(label, ""));
-    select.disabled = disabled;
+  if (!section || !mention) return;
+  let requestSequence = 0;
+  const resetMention = (label, disabled = true) => {
+    mention.replaceChildren(new Option(label, ""));
+    mention.disabled = disabled;
   };
-  const fetchRows = async (url) => {
-    const response = await fetch(url, {headers: {"Accept": "application/json"}, credentials: "same-origin"});
-    if (!response.ok) throw new Error("Impossible de charger les données académiques (" + response.status + ").");
-    const rows = await response.json();
-    if (!Array.isArray(rows)) throw new Error("La réponse du serveur est invalide.");
-    return rows;
-  };
-  const fill = (select, rows, placeholder) => {
-    setPlaceholder(select, placeholder, false);
-    rows.forEach(row => select.add(new Option(row.name, row.name, false, false)));
-    Array.from(select.options).slice(1).forEach((item, index) => { item.dataset.id = rows[index].id; });
-    if (!rows.length) select.disabled = true;
-  };
-
   section.addEventListener("change", async () => {
-    setPlaceholder(option, "Chargement des options…");
-    setPlaceholder(mention, "Choisir d’abord une option");
+    const sequence = ++requestSequence;
     const sectionId = section.selectedOptions[0]?.dataset.id;
+    resetMention(sectionId ? "Chargement des mentions…" : "Choisir d’abord une section");
     if (!sectionId) {
-      setPlaceholder(option, "Choisir d’abord une section");
-      status.textContent = "Sélectionnez une section pour afficher ses options.";
+      status.textContent = "Sélectionnez une section pour afficher les mentions correspondantes.";
       return;
     }
-    status.textContent = "Chargement des options de la section…";
+    status.textContent = "Chargement des mentions de la section…";
     try {
-      const rows = await fetchRows("/modules/api/sections/" + encodeURIComponent(sectionId) + "/options");
-      fill(option, rows, rows.length ? "Choisir une option" : "Aucune option configurée");
-      status.textContent = rows.length ? "Choisissez une option pour afficher les mentions disponibles." : "Aucune option active n’est définie pour cette section. Contactez l’administration.";
+      const response = await fetch("/modules/api/sections/" + encodeURIComponent(sectionId) + "/mentions", {
+        headers: {"Accept": "application/json"}, credentials: "same-origin"
+      });
+      if (!response.ok) throw new Error("Erreur de chargement (" + response.status + ").");
+      const rows = await response.json();
+      if (sequence !== requestSequence) return;
+      if (!Array.isArray(rows)) throw new Error("Réponse du serveur invalide.");
+      resetMention(rows.length ? "Choisir une mention" : "Aucune mention configurée", !rows.length);
+      rows.forEach(row => mention.add(new Option(row.name, row.name)));
+      status.textContent = rows.length
+        ? "Choisissez la mention correspondant à votre parcours."
+        : "Aucune mention n’est encore configurée pour cette section. Contactez l’administration.";
     } catch (error) {
-      setPlaceholder(option, "Erreur de chargement — réessayez");
-      status.textContent = error.message;
-    }
-  });
-
-  option.addEventListener("change", async () => {
-    setPlaceholder(mention, "Chargement des mentions…");
-    const optionId = option.selectedOptions[0]?.dataset.id;
-    if (!optionId) {
-      setPlaceholder(mention, "Choisir d’abord une option");
-      status.textContent = "Choisissez une option pour afficher ses mentions.";
-      return;
-    }
-    try {
-      const rows = await fetchRows("/modules/api/options/" + encodeURIComponent(optionId) + "/mentions");
-      fill(mention, rows, rows.length ? "Choisir une mention (facultatif)" : "Aucune mention définie (facultatif)");
-      status.textContent = rows.length ? "Les mentions proposées correspondent à l’option sélectionnée." : "Cette option ne possède pas encore de mention. Vous pouvez continuer.";
-    } catch (error) {
-      setPlaceholder(mention, "Erreur de chargement — réessayez");
+      if (sequence !== requestSequence) return;
+      resetMention("Erreur de chargement — réessayez");
       status.textContent = error.message;
     }
   });
