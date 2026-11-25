@@ -11,12 +11,12 @@
     {% if error %}<div class="flash error" role="alert">{{ error }}</div>{% endif %}
     <form method="post" class="signin-form">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-      <label for="email">Adresse e-mail</label><input id="email" type="email" name="email" placeholder="nom@etablissement.cd" required autocomplete="username">
+      <label for="email">Adresse e-mail ou matricule</label><input id="email" type="text" name="email" placeholder="Adresse e-mail ou matricule" required autocomplete="username">
       <label for="password">Mot de passe</label><div class="password-field"><input id="password" type="password" name="password" placeholder="Saisissez votre mot de passe" required autocomplete="current-password"><button type="button" class="password-eye" id="togglePassword" aria-label="Afficher le mot de passe" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
       <label class="signin-remember"><input type="checkbox" name="remember"> Se souvenir de moi</label>
       <button class="signin-submit" type="submit">Se connecter <span>→</span></button>
     </form>
-    <div class="signin-security"><span>✓</span> Connexion protégée · Accès selon votre profil</div>
+    <p class="auth-bottom">Mot de passe oublié ? <a href="/auth/mot-de-passe-oublie">Réinitialiser</a> · Nouvel étudiant ? <a href="/auth/inscription">Créer mon compte</a></p><div class="signin-security"><span>✓</span> Connexion protégée · Accès selon votre profil</div>
   </section>
   <footer class="signin-footer">© 2026 · Gestion des sujets des projets tutorés · Tous droits réservés</footer>
 </main>
