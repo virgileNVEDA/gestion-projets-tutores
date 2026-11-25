@@ -39,20 +39,28 @@ def register():
         full_name = request.form.get("full_name", "").strip()
         email = request.form.get("email", "").strip().lower()
         section_name = request.form.get("section_name", "").strip()
-        option = request.form.get("option_name", "").strip()
         mention = request.form.get("mention_name", "").strip()
+        promotion = request.form.get("promotion", "").strip().upper()
         password = request.form.get("password", "")
-        section = AcademicSection.query.filter_by(name=section_name,active=True).first()
-        selected_option = AcademicOption.query.filter_by(name=option,section_id=section.id,active=True).first() if section else None
-        selected_mention = AcademicMention.query.filter_by(name=mention,option_id=selected_option.id,active=True).first() if selected_option and mention else None
-        if len(full_name) < 3 or not matricule or not email or not selected_option or (mention and not selected_mention) or len(password) < 10:
-            flash("Complétez les champs obligatoires et utilisez un mot de passe de 10 caractères minimum.", "error")
+        section = AcademicSection.query.filter_by(name=section_name, active=True).first()
+        valid_mentions = []
+        if section:
+            valid_mentions = [m.name for option_item in section.options if option_item.active
+                              for m in option_item.mentions if m.active]
+        valid_promotions = {"L3", "M2"}
+        if (len(full_name) < 3 or not matricule or not email or not section
+                or mention not in valid_mentions or promotion not in valid_promotions
+                or len(password) < 10):
+            flash("Complétez les champs obligatoires. Choisissez une section, une mention correspondante et la promotion L3 ou M2. Le mot de passe doit contenir au moins 10 caractères.", "error")
         elif User.query.filter_by(matricule=matricule).first():
             flash("Ce matricule est déjà associé à un compte. Contactez l'administration.", "error")
         elif User.query.filter_by(email=email).first():
             flash("Cette adresse e-mail est déjà utilisée.", "error")
         else:
-            user = User(full_name=full_name, email=email, role="student", matricule=matricule, section_name=section_name, option_name=option, mention_name=mention or None, mention=mention or None)
+            user = User(full_name=full_name, email=email, role="student",
+                        matricule=matricule, section_name=section_name,
+                        option_name=None, mention_name=mention, mention=mention,
+                        promotion=promotion)
             user.set_password(password)
             db.session.add(user)
             db.session.commit()
