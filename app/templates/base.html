@@ -51,5 +51,6 @@
   </footer>
 </div>
 {% else %}{% block public_content %}{% endblock %}{% endif %}
+{% block extra_js %}{% endblock %}
 <script src="{{ url_for('static', filename='js/app.js', v='20261125-corrections6') }}"></script>
 </body></html>
