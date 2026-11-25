@@ -8,6 +8,8 @@ from .extensions import db
 from .models import User, AcademicProgram, ProjectTopic, WorkflowEvent, Message, DocumentVersion, Meeting, Notification, Institution, ROLES
 from .policies import can_access_topic, can_create_topic_for, can_decide_topic
 from .services.workflow import apply_decision
+from .services.topics import validate_topic_data
+from .services.assignments import validate_supervisor
 
 modules_bp = Blueprint("modules", __name__, url_prefix="/modules")
 ALLOWED = {"pdf", "doc", "docx", "odt", "xlsx", "pptx", "png", "jpg", "jpeg"}
@@ -174,8 +176,8 @@ def section(section):
                 if not can_create_topic_for(current_user, student): abort(403)
                 if current_user.role=="student" and ProjectTopic.query.filter_by(student_id=current_user.id).filter(ProjectTopic.status!="rejected").first():
                     raise ValueError("Un dossier actif existe déjà dans votre espace. Contactez l'administration pour une nouvelle soumission.")
-                topic=ProjectTopic(title=request.form.get("title","").strip(),problem_statement=request.form.get("problem_statement","").strip(),objectives=request.form.get("objectives","").strip(),methodology=request.form.get("methodology","").strip(),keywords=request.form.get("keywords","").strip(),student_id=student.id,program_id=int(request.form.get("program_id")) if request.form.get("program_id") else None,status="submitted" if current_user.role=="student" else "draft")
-                if len(topic.title)<12: raise ValueError("Le titre doit contenir au moins 12 caractères.")
+                data=validate_topic_data(request.form.get("title"),request.form.get("problem_statement"),request.form.get("objectives"),request.form.get("methodology"),request.form.get("keywords"))
+                topic=ProjectTopic(**data,student_id=student.id,program_id=int(request.form.get("program_id")) if request.form.get("program_id") else None,status="submitted" if current_user.role=="student" else "draft")
                 db.session.add(topic); db.session.flush()
                 db.session.add(WorkflowEvent(topic_id=topic.id,actor_id=current_user.id,action="Soumission du sujet" if topic.status=="submitted" else "Création du dossier"))
                 flash("Sujet enregistré.","success")
@@ -184,13 +186,12 @@ def section(section):
                 if not can_access(topic): abort(403)
                 if current_user.role not in {"admin"} and not (current_user.role=="student" and topic.student_id==current_user.id and topic.status in {"draft","revision","rejected"}):
                     abort(403)
-                title=request.form.get("title","").strip()
-                if len(title)<12: raise ValueError("Le titre doit contenir au moins 12 caractères.")
-                topic.title=title
-                topic.problem_statement=request.form.get("problem_statement","").strip()
-                topic.objectives=request.form.get("objectives","").strip()
-                topic.methodology=request.form.get("methodology","").strip()
-                topic.keywords=request.form.get("keywords","").strip()
+                data=validate_topic_data(request.form.get("title"),request.form.get("problem_statement"),request.form.get("objectives"),request.form.get("methodology"),request.form.get("keywords"))
+                topic.title=data["title"]
+                topic.problem_statement=data["problem_statement"]
+                topic.objectives=data["objectives"]
+                topic.methodology=data["methodology"]
+                topic.keywords=data["keywords"]
                 topic.program_id=int(request.form.get("program_id")) if request.form.get("program_id") else None
                 topic.updated_at=datetime.utcnow()
                 db.session.add(WorkflowEvent(topic_id=topic.id,actor_id=current_user.id,action="Modification du sujet"))
@@ -250,9 +251,9 @@ def section(section):
                 tutor_id=int(request.form.get("tutor_id")) if request.form.get("tutor_id") else None
                 codir_id=int(request.form.get("codirector_id")) if request.form.get("codirector_id") else None
                 tutor=User.query.get(tutor_id) if tutor_id else None
-                if tutor_id and (tutor is None or tutor.role!="tutor" or not tutor.active): raise ValueError("Le directeur doit être un compte actif avec le rôle Directeur de mémoire.")
+                if tutor_id: validate_supervisor(tutor,"tutor","Directeur de mémoire")
                 codirector=User.query.get(codir_id) if codir_id else None
-                if codir_id and (codirector is None or codirector.role!="codirector" or not codirector.active): raise ValueError("Le codirecteur doit être un compte actif avec le rôle Codirecteur.")
+                if codir_id: validate_supervisor(codirector,"codirector","Codirecteur")
                 topic.tutor_id=tutor_id; topic.codirector_id=codir_id
                 db.session.add(WorkflowEvent(topic_id=topic.id,actor_id=current_user.id,action="Attribution de l'encadrement"))
                 notify(tutor_id,topic.id,"Nouveau projet attribué",topic.title); notify(codir_id,topic.id,"Nouveau projet attribué",topic.title)
