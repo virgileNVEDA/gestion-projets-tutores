@@ -17,34 +17,33 @@ document.addEventListener("DOMContentLoaded",()=>{const input=document.getElemen
 document.addEventListener("DOMContentLoaded",()=>{const input=document.getElementById("password"),button=document.getElementById("togglePassword");if(!input||!button)return;button.addEventListener("click",()=>{const visible=input.type==="password";input.type=visible?"text":"password";button.setAttribute("aria-pressed",String(visible));button.setAttribute("aria-label",visible?"Masquer le mot de passe":"Afficher le mot de passe");});});
 
 (() => {
-  const showLoader = () => {
-    const loader = document.getElementById("appLoading");
-    const bar = document.getElementById("globalProgress");
-    if (loader) { loader.classList.remove("is-hidden"); loader.classList.add("is-visible"); }
-    if (bar) bar.classList.add("is-running");
-  };
   const hideLoader = () => {
-    const loader = document.getElementById("appLoading");
-    const bar = document.getElementById("globalProgress");
-    if (loader) { loader.classList.remove("is-visible"); loader.classList.add("is-hidden"); }
-    if (bar) bar.classList.remove("is-running");
+    const loader = document.getElementById('appLoading');
+    const bar = document.getElementById('globalProgress');
+    if (loader) { loader.classList.remove('is-visible'); loader.classList.add('is-hidden'); }
+    if (bar) bar.classList.remove('is-running');
   };
-  document.addEventListener("DOMContentLoaded", () => {
-    window.setTimeout(hideLoader, 220);
-    document.querySelectorAll("a[href]").forEach((link) => {
-      link.addEventListener("click", (event) => {
+  document.addEventListener('DOMContentLoaded', () => {
+    hideLoader();
+    // La navigation mobile conserve le contenu visible : seule la barre fine progresse.
+    document.querySelectorAll('a[href]').forEach((link) => {
+      link.addEventListener('click', (event) => {
+        const href = link.getAttribute('href') || '';
         if (event.ctrlKey || event.metaKey || event.shiftKey || event.button === 1 ||
-            link.target === "_blank" || link.hasAttribute("download") ||
-            link.getAttribute("href").startsWith("#") ||
-            link.getAttribute("href").startsWith("javascript:")) return;
-        showLoader();
+            link.target === '_blank' || link.hasAttribute('download') ||
+            href.startsWith('#') || href.startsWith('javascript:')) return;
+        const bar = document.getElementById('globalProgress');
+        if (bar) bar.classList.add('is-running');
       });
     });
-    document.querySelectorAll("form").forEach((form) => {
-      form.addEventListener("submit", () => showLoader());
-    });
+    document.querySelectorAll('form').forEach((form) => form.addEventListener('submit', () => {
+      const bar = document.getElementById('globalProgress');
+      if (bar) bar.classList.add('is-running');
+    }));
+    window.setTimeout(hideLoader, 1800);
   });
-  window.addEventListener("pageshow", hideLoader);
+  window.addEventListener('pageshow', hideLoader);
+  window.addEventListener('load', hideLoader);
 })();
 
 
