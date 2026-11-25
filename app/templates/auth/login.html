@@ -2,9 +2,9 @@
 {% block title %}Connexion · Gestion des projets tutorés{% endblock %}
 {% block public_content %}
 <main class="signin-page">
-  <header class="signin-header"><a class="portal-brand" href="/"><span class="brand-mark">GP</span><span><b>GESTION ACADÉMIQUE</b><small>PROJETS TUTORÉS · TFC · MÉMOIRES</small></span></a><a class="signin-back" href="/">← Retour à l’accueil</a></header>
+  <header class="signin-header"><a class="portal-brand" href="/">{% if institution and institution.logo_data %}<img class="portal-logo" src="{{ institution.logo_data }}" alt="Logo">{% else %}<span class="brand-mark">GP</span>{% endif %}<span><b>{{ institution.acronym if institution and institution.acronym else "GESTION ACADÉMIQUE" }}</b><small>{{ institution.name if institution else "GESTION DES SUJETS DES PROJETS TUTORÉS" }}</small></span></a><a class="signin-back" href="/">← Retour à l’accueil</a></header>
   <section class="signin-card">
-    <div class="signin-symbol">GP</div>
+    {% if institution and institution.logo_data %}<div class="signin-symbol logo-symbol"><img src="{{ institution.logo_data }}" alt="Logo"></div>{% else %}<div class="signin-symbol">GP</div>{% endif %}
     <span class="eyebrow green">ESPACE SÉCURISÉ</span>
     <h1>Bienvenue</h1>
     <p class="signin-subtitle">Connectez-vous pour accéder à votre espace de travail.</p>
@@ -18,6 +18,6 @@
     </form>
     <p class="auth-bottom">Mot de passe oublié ? <a href="/auth/mot-de-passe-oublie">Réinitialiser</a> · Nouvel étudiant ? <a href="/auth/inscription">Créer mon compte</a></p><div class="signin-security"><span>✓</span> Connexion protégée · Accès selon votre profil</div>
   </section>
-  <footer class="signin-footer">© 2026 · Gestion des sujets des projets tutorés · Tous droits réservés</footer>
+  <footer class="signin-footer">© {{ now.year if now else 2026 }} · {{ institution.name if institution else "Gestion des sujets des projets tutorés" }} · Tous droits réservés</footer>
 </main>
 {% endblock %}
