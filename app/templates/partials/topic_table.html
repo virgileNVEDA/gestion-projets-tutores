@@ -1,4 +1,4 @@
-<div class="table-wrap"><table><thead><tr><th>SUJET / PROJET</th><th>ÉTUDIANT</th><th>DIRECTEUR</th><th>STATUT</th><th>DATE</th><th>ACTIONS</th></tr></thead><tbody>
+<div class="table-wrap"><table><thead><tr><th>SUJET / PROJET</th><th>ÉTUDIANT</th><th>TUTEUR</th><th>STATUT</th><th>DATE</th><th>ACTIONS</th></tr></thead><tbody>
 {% for t in topics %}
 <tr>
 <td><b>{{ t.title }}</b><small class="table-sub">{{ t.program.name if t.program else 'Programme non défini' }}</small></td>
