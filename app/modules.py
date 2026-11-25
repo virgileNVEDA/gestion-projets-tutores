@@ -10,6 +10,7 @@ from .policies import can_access_topic, can_create_topic_for, can_decide_topic
 from .services.workflow import apply_decision
 from .services.topics import validate_topic_data
 from .services.assignments import validate_supervisor
+from .services.documents import LocalDocumentStorage, validate_document
 
 modules_bp = Blueprint("modules", __name__, url_prefix="/modules")
 ALLOWED = {"pdf", "doc", "docx", "odt", "xlsx", "pptx", "png", "jpg", "jpeg"}
@@ -285,15 +286,12 @@ def section(section):
                 topic=ProjectTopic.query.get_or_404(int(request.form.get("topic_id")))
                 if not can_access(topic): abort(403)
                 file=request.files.get("document")
-                if not file or not file.filename: raise ValueError("Sélectionnez un document.")
-                ext=file.filename.rsplit(".",1)[-1].lower() if "." in file.filename else ""
-                if ext not in ALLOWED: raise ValueError("Format non autorisé. Utilisez PDF, DOCX, DOC ou ODT.")
-                safe=secure_filename(file.filename)
-                folder=os.path.join(current_app.instance_path,"uploads",str(topic.id)); os.makedirs(folder,exist_ok=True)
-                existing=DocumentVersion.query.filter_by(topic_id=topic.id,document_type=request.form.get("document_type","memoire")).count()
-                stored=f"{datetime.utcnow().strftime('%Y%m%d%H%M%S%f')}_{safe}"
-                file.save(os.path.join(folder,stored))
-                db.session.add(DocumentVersion(topic_id=topic.id,uploader_id=current_user.id,filename=safe,storage_key=stored,version=existing+1,document_type=request.form.get("document_type","memoire"),comment=request.form.get("comment","").strip()))
+                document_type=request.form.get("document_type","memoire").strip().lower()
+                safe, _extension, _size=validate_document(file,current_app.config.get("MAX_CONTENT_LENGTH",25*1024*1024),document_type)
+                storage=LocalDocumentStorage(current_app.config.get("DOCUMENT_STORAGE_ROOT") or os.path.join(current_app.instance_path,"uploads"))
+                existing=DocumentVersion.query.filter_by(topic_id=topic.id,document_type=document_type).count()
+                stored=storage.save(topic.id,file,safe)
+                db.session.add(DocumentVersion(topic_id=topic.id,uploader_id=current_user.id,filename=safe,storage_key=stored,version=existing+1,document_type=document_type,comment=request.form.get("comment","").strip()))
                 for uid in {topic.student_id,topic.tutor_id,topic.codirector_id}-{None,current_user.id}: notify(uid,topic.id,"Nouveau document déposé",safe)
                 flash("Document déposé. Conservez également une copie locale.","success")
             elif action == "mark_read":
@@ -347,8 +345,8 @@ def download_document(doc_id):
     doc=DocumentVersion.query.get_or_404(doc_id)
     topic=ProjectTopic.query.get_or_404(doc.topic_id)
     if not can_access(topic): abort(403)
-    folder=os.path.join(current_app.instance_path,"uploads",str(topic.id))
-    return send_from_directory(folder,doc.storage_key,as_attachment=True,download_name=doc.filename)
+    storage=LocalDocumentStorage(current_app.config.get("DOCUMENT_STORAGE_ROOT") or os.path.join(current_app.instance_path,"uploads"))
+    return send_from_directory(storage.path_for(topic.id),doc.storage_key,as_attachment=True,download_name=doc.filename)
 
 @modules_bp.app_context_processor
 def inject_unread_notifications():
