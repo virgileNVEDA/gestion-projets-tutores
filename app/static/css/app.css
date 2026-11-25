@@ -391,3 +391,16 @@ thead th{background:#e8eef4;color:#334155}
 /* EN-TÊTE PERSISTANT : reste visible pendant le défilement, sans réserver un espace vertical supplémentaire */
 .topbar{position:sticky!important;top:0!important;z-index:1100!important;align-self:flex-start}
 @media(max-width:780px){.main-area{padding-top:0!important}.topbar{position:sticky!important;top:0!important;min-height:64px!important;height:64px!important;z-index:1100!important}}
+
+
+/* CORRECTION DEFINITIVE MOBILE : l'en-tête est fixé au viewport, hors du flux de défilement */
+@media(min-width:781px){
+  .topbar{position:fixed!important;top:0!important;left:278px!important;right:0!important;width:auto!important;z-index:2000!important}
+  .main-area{margin-left:278px!important;padding-top:68px!important}
+}
+@media(max-width:780px){
+  .app-shell{display:block!important}
+  .main-area{position:relative!important;margin:0!important;padding:64px 0 0!important;width:100%!important;min-height:0!important}
+  .topbar{position:fixed!important;top:0!important;left:0!important;right:0!important;width:100%!important;height:64px!important;min-height:64px!important;padding:0 14px!important;z-index:2000!important}
+  .page-content{position:relative!important;margin:0!important;padding:14px 14px 28px!important;width:100%!important;max-width:none!important;min-height:0!important}
+}
