@@ -1,5 +1,16 @@
 {% extends "base.html" %}
-{% block title %}Inscription étudiant{% endblock %}
+{% block title %}Inscription étudiant
+<script>
+document.addEventListener("DOMContentLoaded",()=>{
+ const section=document.getElementById("sectionSelect"),option=document.getElementById("optionSelect"),mention=document.getElementById("mentionSelect");
+ const reset=(el,label)=>{el.innerHTML="";const x=document.createElement("option");x.value="";x.textContent=label;el.append(x);el.disabled=true};
+ const load=async(url,el,label)=>{reset(el,label);if(!url)return;const response=await fetch(url);if(!response.ok)return;const rows=await response.json();rows.forEach(row=>{const x=document.createElement("option");x.value=row.name;x.textContent=row.name;x.dataset.id=row.id;el.append(x)});el.disabled=false};
+ section.addEventListener("change",async()=>{reset(mention,"Choisir d'abord une option");const rows=await (await fetch("/modules/api/sections")).json();const selected=rows.find(x=>x.name===section.value);await load(selected?"/modules/api/sections/"+selected.id+"/options":null,option,"Choisir une option")});
+ option.addEventListener("change",async()=>{const selected=option.selectedOptions[0];await load(selected?.dataset.id?"/modules/api/options/"+selected.dataset.id+"/mentions":null,mention,"Aucune mention définie (facultatif)")});
+});
+</script>
+
+{% endblock %}
 {% block public_content %}
 <main class="auth-page">
 <header class="auth-brand"><a href="/"><span class="brand-mark">GP</span><span><b>{{ institution.acronym if institution and institution.acronym else 'ESPACE ACADÉMIQUE' }}</b><small>{{ institution.name if institution else 'Gestion des projets tutorés' }}</small></span></a></header>
