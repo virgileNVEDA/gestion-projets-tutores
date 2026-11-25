@@ -267,3 +267,80 @@ button.primary-btn:hover,button.small-btn:not(.danger-btn):hover,a.small-btn:hov
 .workspace-module-card small{color:#52677f!important;font-weight:500!important}
 .workspace-module-card>i{color:#526b87!important}
 .workspace-module-card em{color:#064ba6!important}
+
+
+/* Système de formulaires premium global — champs cohérents et adaptatifs */
+:root{
+ --gp-field-border:#d6e1eb;--gp-field-bg:#fbfdff;--gp-field-focus:#087f75;
+ --gp-field-ink:#183650;--gp-field-muted:#64788d;
+}
+form:not(.orbit-search-form) :is(input:not([type=hidden]):not([type=checkbox]):not([type=radio]):not([type=submit]):not([type=button]):not([type=reset]):not([type=color]):not([type=range]),select,textarea){
+ box-sizing:border-box;max-width:100%;min-width:0;border:1px solid var(--gp-field-border);
+ border-radius:12px;background:var(--gp-field-bg);color:var(--gp-field-ink);
+ font:500 14px/1.45 'DM Sans',sans-serif;transition:border-color .18s,box-shadow .18s,background .18s;
+}
+form:not(.orbit-search-form) :is(input:not([type=hidden]):not([type=checkbox]):not([type=radio]):not([type=submit]):not([type=button]):not([type=reset]):not([type=color]):not([type=range]),select){
+ min-height:48px;padding:11px 14px;
+}
+form:not(.orbit-search-form) textarea{width:100%;min-height:112px;padding:13px 14px;resize:vertical}
+form:not(.orbit-search-form) :is(input,select,textarea):focus{
+ outline:0;border-color:var(--gp-field-focus);background:#fff;
+ box-shadow:0 0 0 4px rgba(8,127,117,.12);
+}
+form:not(.orbit-search-form) :is(input,textarea)::placeholder{color:#91a1b1;opacity:1}
+form:not(.orbit-search-form) select{
+ appearance:auto;cursor:pointer;padding-right:34px;
+}
+form:not(.orbit-search-form) label{
+ color:#344f68;font-weight:700;line-height:1.45;
+}
+form:not(.orbit-search-form) fieldset{
+ min-width:0;margin:0;padding:18px;border:1px solid #e0e8ef;border-radius:14px;
+ background:linear-gradient(180deg,#fff,#fbfdff);
+}
+form:not(.orbit-search-form) legend{
+ padding:0 8px;color:#123b63;font:800 13px Manrope,sans-serif;
+}
+form:not(.orbit-search-form) :is(input[type=checkbox],input[type=radio]){
+ accent-color:#087f75;width:17px;height:17px;vertical-align:middle;
+}
+form:not(.orbit-search-form) input[type=file]{
+ width:100%;min-height:52px;padding:9px;border:1px dashed #9fb6c8;
+ border-radius:12px;background:#f5f9fc;color:#526b82;font-size:12px;
+}
+form:not(.orbit-search-form) :is(button[type=submit],input[type=submit]){
+ min-height:46px;padding:11px 19px;border:0;border-radius:11px;
+ background:linear-gradient(110deg,#0756bd,#087f75);color:#fff;
+ font:800 13px Manrope,sans-serif;box-shadow:0 7px 17px rgba(7,86,189,.16);
+ cursor:pointer;transition:transform .16s,filter .16s,box-shadow .16s;
+}
+form:not(.orbit-search-form) :is(button[type=submit],input[type=submit]):hover{
+ filter:brightness(1.05);transform:translateY(-1px);box-shadow:0 10px 20px rgba(7,86,189,.2);
+}
+form:not(.orbit-search-form) :is(button:disabled,input:disabled,select:disabled,textarea:disabled){
+ opacity:.62;cursor:not-allowed;
+}
+form:not(.orbit-search-form) .form-text,
+form:not(.orbit-search-form) .form-hint,
+form:not(.orbit-search-form) small{color:#657b90}
+form:not(.orbit-search-form) .form-row,
+form:not(.orbit-search-form) .form-group{min-width:0}
+form:not(.orbit-search-form) .form-actions,
+form:not(.orbit-search-form) .actions,
+form:not(.orbit-search-form) .settings-actions{
+ display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap;
+}
+@media(max-width:780px){
+ form:not(.orbit-search-form) :is(input:not([type=hidden]):not([type=checkbox]):not([type=radio]):not([type=submit]):not([type=button]):not([type=reset]):not([type=color]):not([type=range]),select,textarea){
+  width:100%;max-width:100%;font-size:16px;
+ }
+ form:not(.orbit-search-form) :is(button[type=submit],input[type=submit]){max-width:100%}
+ form:not(.orbit-search-form) fieldset{padding:14px}
+ form:not(.orbit-search-form) .form-actions,
+ form:not(.orbit-search-form) .actions{align-items:stretch;flex-direction:column}
+ form:not(.orbit-search-form) .form-actions>*,
+ form:not(.orbit-search-form) .actions>*{width:100%;max-width:100%}
+}
+@media(max-width:420px){
+ form:not(.orbit-search-form) :is(input:not([type=hidden]):not([type=checkbox]):not([type=radio]):not([type=submit]):not([type=button]):not([type=reset]):not([type=color]):not([type=range]),select,textarea){border-radius:10px}
+}
