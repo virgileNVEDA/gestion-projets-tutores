@@ -1,23 +1,56 @@
 {% extends "base.html" %}
 {% block title %}Connexion · Gestion des projets tutorés{% endblock %}
+{% block extra_css %}{% endblock %}
 {% block public_content %}
-<main class="signin-page">
-  <header class="signin-header"><a class="portal-brand" href="/">{% if institution and institution.logo_data %}<img class="portal-logo" src="{{ institution.logo_data }}" alt="Logo">{% else %}<span class="brand-mark">GP</span>{% endif %}<span><b>{{ institution.acronym if institution and institution.acronym else "GESTION ACADÉMIQUE" }}</b><small>{{ institution.name if institution else "GESTION DES SUJETS DES PROJETS TUTORÉS" }}</small></span></a><a class="signin-back" href="/">← Retour à l’accueil</a></header>
-  <section class="signin-card">
-    {% if institution and institution.logo_data %}<div class="signin-symbol logo-symbol"><img src="{{ institution.logo_data }}" alt="Logo"></div>{% else %}<div class="signin-symbol">GP</div>{% endif %}
-    <span class="eyebrow green">ESPACE SÉCURISÉ</span>
-    <h1>Bienvenue</h1>
-    <p class="signin-subtitle">Connectez-vous pour accéder à votre espace de travail.</p>
-    {% if error %}<div class="flash error" role="alert">{{ error }}</div>{% endif %}
-    <form method="post" class="signin-form">
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-      <label for="email">Adresse e-mail ou matricule</label><input id="email" type="text" name="email" placeholder="Adresse e-mail ou matricule" required autocomplete="username">
-      <label for="password">Mot de passe</label><div class="password-field"><input id="password" type="password" name="password" placeholder="Saisissez votre mot de passe" required autocomplete="current-password"><button type="button" class="password-eye" id="togglePassword" aria-label="Afficher le mot de passe" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
-      <label class="signin-remember"><input type="checkbox" name="remember"> Se souvenir de moi</label>
-      <button class="signin-submit" type="submit">Se connecter <span>→</span></button>
-    </form>
-    <p class="auth-bottom">Mot de passe oublié ? <a href="/auth/mot-de-passe-oublie">Réinitialiser</a> · Nouvel étudiant ? <a href="/auth/inscription">Créer mon compte</a></p><div class="signin-security"><span>✓</span> Connexion protégée · Accès selon votre profil</div>
+<main class="premium-login-page">
+  <aside class="premium-login-hero" aria-label="Présentation de la plateforme">
+    <a class="premium-login-brand" href="/">
+      {% if institution and institution.logo_data %}<img src="{{ institution.logo_data }}" alt="Logo de l’établissement">{% else %}<span class="brand-mark">GP</span>{% endif %}
+      <span><b>{{ institution.acronym if institution and institution.acronym else "GESTION ACADÉMIQUE" }}</b><small>{{ institution.name if institution else "GESTION DES PROJETS TUTORÉS" }}</small></span>
+    </a>
+    <div class="premium-login-copy">
+      <span class="eyebrow">ESPACE ACADÉMIQUE SÉCURISÉ</span>
+      <h1>Bienvenue sur votre <em>espace de travail.</em></h1>
+      <p>Retrouvez vos sujets, projets tutorés, mémoires, encadrements et échanges académiques dans un environnement unique.</p>
+      <div class="premium-login-benefits">
+        <span><i>✓</i> Suivi centralisé des projets et mémoires</span>
+        <span><i>✓</i> Collaboration entre étudiants et encadreurs</span>
+        <span><i>✓</i> Validations et documents sécurisés</span>
+        <span><i>✓</i> Accès adapté à votre rôle académique</span>
+      </div>
+    </div>
+    <div class="premium-login-illustration" aria-hidden="true"><div class="screen"></div><div class="base"></div></div>
+    <small class="premium-login-footer">{{ institution.name if institution else "Gestion des sujets des projets tutorés" }} · Plateforme académique</small>
+  </aside>
+  <section class="premium-login-panel">
+    <div class="premium-login-card">
+      {% if institution and institution.logo_data %}<div class="signin-symbol"><img src="{{ institution.logo_data }}" alt="Logo"></div>{% else %}<div class="signin-symbol">GP</div>{% endif %}
+      <span class="eyebrow">CONNEXION SÉCURISÉE</span>
+      <h1>Connexion à votre compte</h1>
+      <p class="signin-subtitle">Veuillez renseigner vos identifiants pour accéder à votre espace de travail.</p>
+      {% if error %}<div class="flash error" role="alert">{{ error }}</div>{% endif %}
+      <form method="post" class="signin-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label for="email">Adresse e-mail ou matricule</label>
+        <input id="email" type="text" name="email" placeholder="Votre adresse e-mail ou matricule" required autocomplete="username">
+        <label for="password">Mot de passe</label>
+        <div class="password-field">
+          <input id="password" type="password" name="password" placeholder="Saisissez votre mot de passe" required autocomplete="current-password">
+          <button type="button" class="password-eye" id="togglePassword" aria-label="Afficher le mot de passe" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        </div>
+        <label class="signin-remember"><input type="checkbox" name="remember"> Se souvenir de moi</label>
+        <button class="signin-submit" type="submit">Se connecter <span>→</span></button>
+      </form>
+      <div class="premium-login-links">
+        <a href="/auth/mot-de-passe-oublie">Mot de passe oublié ?</a>
+        <span aria-hidden="true">·</span>
+        <a href="/auth/inscription">Créer mon compte</a>
+        <span aria-hidden="true">·</span>
+        <a href="/">Accueil</a>
+      </div>
+      <div class="premium-login-security"><b>✓</b> Connexion protégée · Accès selon votre profil</div>
+    </div>
+    <footer class="premium-login-footer">© {{ now.year if now else 2026 }} · {{ institution.name if institution else "Gestion des sujets des projets tutorés" }} · Tous droits réservés</footer>
   </section>
-  <footer class="signin-footer">© {{ now.year if now else 2026 }} · {{ institution.name if institution else "Gestion des sujets des projets tutorés" }} · Tous droits réservés</footer>
 </main>
 {% endblock %}
