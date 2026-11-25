@@ -1,0 +1,4 @@
+/* Tableau de bord : suppression de l'espace supérieur inutile */
+.page-content.dashboard-page{padding-top:0!important;margin-top:0!important}
+.dashboard-page>.welcome-row:first-child{margin-top:0!important}
+@media(max-width:780px){.page-content.dashboard-page{padding-top:0!important}}
