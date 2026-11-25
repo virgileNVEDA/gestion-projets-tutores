@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded",()=>{
 {% endblock %}
 {% block page_section %}{{ section|replace('_',' ')|title }}{% endblock %}
 {% block content %}
-{% set titles={'etudiants':'Gestion des étudiants','enseignants':'Gestion des tuteurs','programmes':'Programmes et filières','sujets':'Sujets et mémoires','encadrement':'Affectation des encadreurs','validations':'Circuit de validation','messagerie':'Messagerie des projets','documents':'Documents et versions','reunions':'Réunions et rendez-vous','rapports':'Rapports académiques','notifications':'Centre de notifications','utilisateurs':'Utilisateurs et rôles'} %}
+{% set titles={'etudiants':'Gestion des étudiants','enseignants':'Espace tuteur','programmes':'Programmes et filières','sujets':'Sujets et mémoires','encadrement':'Affectation des encadreurs','validations':'Circuit de validation','messagerie':'Messagerie des projets','documents':'Documents et versions','reunions':'Réunions et rendez-vous','rapports':'Rapports académiques','notifications':'Centre de notifications','utilisateurs':'Utilisateurs et rôles'} %}
 <div class="welcome-row"><div><span class="eyebrow green">GESTION ACADÉMIQUE</span><h1>{{ titles[section] }}</h1><p class="muted">Espace de travail sécurisé · données selon vos autorisations</p></div><div class="date-chip">◷ {{ now.strftime('%d/%m/%Y') }}</div></div>
 {% with messages=get_flashed_messages(with_categories=true) %}{% for category,message in messages %}<div class="flash {{ category }}">{{ message }}</div>{% endfor %}{% endwith %}
 {% if section=='rapports' %}
@@ -68,4 +68,25 @@ document.addEventListener("DOMContentLoaded",()=>{
 {% elif section=='notifications' %}
 <div class="panel"><h3>Vos notifications</h3>{% for n in notes %}<div class="notification-row {% if not n.read_at %}unread{% endif %}"><div><b>{{ n.title }}</b><p>{{ n.body }}</p><small>{{ n.created_at.strftime('%d/%m/%Y %H:%M') }}</small></div>{% if not n.read_at %}<form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="mark_read"><input type="hidden" name="notification_id" value="{{ n.id }}"><button class="small-btn">Marquer comme lue</button></form>{% endif %}</div>{% else %}<div class="empty-state">Vous êtes à jour.</div>{% endfor %}</div>
 {% endif %}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll("form.module-form, form.inline-edit-form").forEach(form => {
+    const role = form.querySelector('select[name="role"]');
+    const section = form.querySelector('select[name="section_name"]');
+    const mention = form.querySelector('select[name="mention_name"]');
+    const promotion = form.querySelector('[name="promotion"]');
+    const matricule = form.querySelector('[name="matricule"]');
+    if (!role) return;
+    const syncAcademicFields = () => {
+      const academic = ["student", "tutor"].includes(role.value);
+      [section, mention, promotion].forEach(field => {
+        if (field) field.required = academic;
+      });
+      if (matricule) matricule.required = role.value === "student";
+    };
+    role.addEventListener("change", syncAcademicFields);
+    syncAcademicFields();
+  });
+});
+</script>
 {% endblock %}
