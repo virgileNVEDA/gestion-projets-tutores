@@ -6,7 +6,7 @@ from .extensions import db, login_manager
 ROLES = {
     "admin": "Administration",
     "student": "Étudiant",
-    "tutor": "Directeur de mémoire",
+    "tutor": "Tuteur",
     "codirector": "Codirecteur",
     "section_head": "Chef de section",
     "department_head": "Chef de département",
