@@ -88,6 +88,15 @@ def settings():
         institution = Institution(name="Établissement académique")
         db.session.add(institution)
         db.session.commit()
+    import json
+    try:
+        promotions = json.loads(institution.promotions_json or '["L3","M2"]')
+        if not isinstance(promotions, list): promotions = ["L3", "M2"]
+    except (ValueError, TypeError):
+        promotions = ["L3", "M2"]
+    promotions = list(dict.fromkeys(str(x).strip() for x in promotions if str(x).strip()))
+    for required in ("L3", "M2"):
+        if required not in promotions: promotions.append(required)
     if request.method == "POST":
         try:
             institution.name = request.form.get("institution_name", "").strip() or institution.name
@@ -98,6 +107,13 @@ def settings():
             institution.website = request.form.get("website", "").strip() or None
             institution.motto = request.form.get("motto", "").strip() or None
             institution.academic_year = request.form.get("academic_year", "").strip() or None
+            raw_promotions = request.form.get("promotions", "")
+            promotion_items = list(dict.fromkeys(line.strip() for line in raw_promotions.replace(",", "\n").splitlines() if line.strip()))
+            for required in ("L3", "M2"):
+                if required not in promotion_items: promotion_items.append(required)
+            if len(promotion_items) > 50: raise ValueError("Vous pouvez configurer au maximum 50 promotions.")
+            if any(len(item) > 80 for item in promotion_items): raise ValueError("Chaque promotion doit contenir au maximum 80 caractères.")
+            institution.promotions_json = json.dumps(promotion_items, ensure_ascii=False)
             institution.primary_color = request.form.get("primary_color", "#142D49")
             institution.accent_color = request.form.get("accent_color", "#079B83")
             institution.progress_enabled = request.form.get("progress_enabled") == "on"
@@ -131,10 +147,17 @@ def settings():
             flash(str(exc), "error")
     import json
     try:
+        promotions = json.loads(institution.promotions_json or '["L3","M2"]')
+    except (ValueError, TypeError):
+        promotions = ["L3", "M2"]
+    promotions = list(dict.fromkeys(str(x).strip() for x in promotions if str(x).strip()))
+    for required in ("L3", "M2"):
+        if required not in promotions: promotions.append(required)
+    try:
         carousel_images = json.loads(institution.carousel_images or "[]")
     except (ValueError, TypeError):
         carousel_images = []
-    return render_template("settings.html", institution=institution, carousel_images=carousel_images)
+    return render_template("settings.html", institution=institution, carousel_images=carousel_images, promotions=promotions)
 
 
 @modules_bp.get("/api/sections")
