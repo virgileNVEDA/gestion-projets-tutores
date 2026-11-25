@@ -1,30 +1,122 @@
 {% extends "base.html" %}
-{% block title %}Inscription étudiant
-<script>
-document.addEventListener("DOMContentLoaded",()=>{
- const section=document.getElementById("sectionSelect"),option=document.getElementById("optionSelect"),mention=document.getElementById("mentionSelect");
- const reset=(el,label)=>{el.innerHTML="";const x=document.createElement("option");x.value="";x.textContent=label;el.append(x);el.disabled=true};
- const load=async(url,el,label)=>{reset(el,label);if(!url)return;const response=await fetch(url);if(!response.ok)return;const rows=await response.json();rows.forEach(row=>{const x=document.createElement("option");x.value=row.name;x.textContent=row.name;x.dataset.id=row.id;el.append(x)});el.disabled=false};
- section.addEventListener("change",async()=>{reset(mention,"Choisir d'abord une option");const rows=await (await fetch("/modules/api/sections")).json();const selected=rows.find(x=>x.name===section.value);await load(selected?"/modules/api/sections/"+selected.id+"/options":null,option,"Choisir une option")});
- option.addEventListener("change",async()=>{const selected=option.selectedOptions[0];await load(selected?.dataset.id?"/modules/api/options/"+selected.dataset.id+"/mentions":null,mention,"Aucune mention définie (facultatif)")});
-});
-</script>
-
+{% block title %}Inscription étudiant · Gestion des projets tutorés{% endblock %}
+{% block extra_css %}
+<style>
+.auth-card.register-card{width:min(100%,650px)}
+.register-card .signin-form{display:grid;grid-template-columns:1fr 1fr;column-gap:16px;row-gap:9px}
+.register-card .signin-form>label{grid-column:1/-1;margin-top:8px}
+.register-card .signin-form>input,.register-card .signin-form>select{grid-column:1/-1}
+.register-card .signin-form>input:focus,.register-card .signin-form>select:focus{outline:0;border-color:#1675d1;box-shadow:0 0 0 4px #1675d11a}
+.register-card .signin-form select:disabled{background:#f1f4f8;color:#8995a3;cursor:not-allowed}
+.register-card .field-help{grid-column:1/-1;color:#718398;font-size:11px;margin-top:-4px}
+.register-card .signin-submit{grid-column:1/-1}
+@media(max-width:560px){.register-card .signin-form{grid-template-columns:1fr}.register-card .signin-form>*{grid-column:1/-1}}
+</style>
 {% endblock %}
 {% block public_content %}
 <main class="auth-page">
 <header class="auth-brand"><a href="/"><span class="brand-mark">GP</span><span><b>{{ institution.acronym if institution and institution.acronym else 'ESPACE ACADÉMIQUE' }}</b><small>{{ institution.name if institution else 'Gestion des projets tutorés' }}</small></span></a></header>
-<section class="auth-card"><span class="eyebrow green">INSCRIPTION ÉTUDIANTE</span><h1>Créer mon espace</h1><p>Utilisez le matricule officiel déjà attribué par votre établissement.</p>
-<form method="post" class="signin-form"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-<label>Matricule officiel *</label><input name="matricule" required maxlength="60" placeholder="Votre matricule d'établissement">
-<label>Nom complet *</label><input name="full_name" required minlength="3">
-<label>Adresse e-mail *</label><input type="email" name="email" required>
-<label>Section *</label><select id="sectionSelect" name="section_name" required><option value="">Choisir une section</option>{% for s in sections %}<option value="{{ s.name }}">{{ s.name }}</option>{% endfor %}</select>
-<label>Option *</label><select id="optionSelect" name="option_name" required disabled><option value="">Choisir d’abord une section</option></select>
-<label>Mention</label><select id="mentionSelect" name="mention_name" disabled><option value="">Choisir d’abord une option</option></select>
-<label>Promotion</label><input name="promotion" placeholder="Ex. 2026-2027">
-<label>Mot de passe (10 caractères minimum) *</label><input type="password" name="password" minlength="10" required>
-<button class="signin-submit" type="submit">Créer mon compte <span>→</span></button></form>
-<p class="auth-bottom">Déjà inscrit ? <a href="{{ url_for('auth.login') }}">Se connecter</a></p></section>
-<footer class="auth-footer">© {{ now.year if now else 2026 }} · {{ institution.name if institution else 'Gestion des projets tutorés' }}</footer></main>
+<section class="auth-card register-card">
+<span class="eyebrow green">INSCRIPTION ÉTUDIANTE</span>
+<h1>Créer mon espace</h1>
+<p>Utilisez le matricule officiel déjà attribué par votre établissement.</p>
+<form method="post" class="signin-form" id="studentRegisterForm">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<label for="registerMatricule">Matricule officiel *</label>
+<input id="registerMatricule" name="matricule" required maxlength="60" placeholder="Votre matricule d'établissement">
+<label for="registerFullName">Nom complet *</label>
+<input id="registerFullName" name="full_name" required minlength="3" autocomplete="name">
+<label for="registerEmail">Adresse e-mail *</label>
+<input id="registerEmail" type="email" name="email" required autocomplete="email">
+<label for="sectionSelect">Section *</label>
+<select id="sectionSelect" name="section_name" required>
+<option value="">Choisir une section</option>
+{% for s in sections %}<option value="{{ s.name }}" data-id="{{ s.id }}">{{ s.name }}</option>{% endfor %}
+</select>
+<label for="optionSelect">Option *</label>
+<select id="optionSelect" name="option_name" required disabled>
+<option value="">Choisir d’abord une section</option>
+</select>
+<label for="mentionSelect">Mention</label>
+<select id="mentionSelect" name="mention_name" disabled>
+<option value="">Choisir d’abord une option</option>
+</select>
+<p class="field-help" id="academicHierarchyStatus" role="status" aria-live="polite">Sélectionnez une section pour afficher ses options.</p>
+<label for="registerPromotion">Promotion</label>
+<input id="registerPromotion" name="promotion" placeholder="Ex. 2026-2027">
+<label for="registerPassword">Mot de passe (10 caractères minimum) *</label>
+<input id="registerPassword" type="password" name="password" minlength="10" required autocomplete="new-password">
+<button class="signin-submit" type="submit">Créer mon compte <span>→</span></button>
+</form>
+<p class="auth-bottom">Déjà inscrit ? <a href="{{ url_for('auth.login') }}">Se connecter</a></p>
+</section>
+<footer class="auth-footer">© {{ now.year if now else 2026 }} · {{ institution.name if institution else 'Gestion des projets tutorés' }}</footer>
+</main>
+{% endblock %}
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const section = document.getElementById("sectionSelect");
+  const option = document.getElementById("optionSelect");
+  const mention = document.getElementById("mentionSelect");
+  const status = document.getElementById("academicHierarchyStatus");
+  if (!section || !option || !mention) return;
+
+  const setPlaceholder = (select, label, disabled = true) => {
+    select.replaceChildren(new Option(label, ""));
+    select.disabled = disabled;
+  };
+  const fetchRows = async (url) => {
+    const response = await fetch(url, {headers: {"Accept": "application/json"}, credentials: "same-origin"});
+    if (!response.ok) throw new Error("Impossible de charger les données académiques (" + response.status + ").");
+    const rows = await response.json();
+    if (!Array.isArray(rows)) throw new Error("La réponse du serveur est invalide.");
+    return rows;
+  };
+  const fill = (select, rows, placeholder) => {
+    setPlaceholder(select, placeholder, false);
+    rows.forEach(row => select.add(new Option(row.name, row.name, false, false)));
+    Array.from(select.options).slice(1).forEach((item, index) => { item.dataset.id = rows[index].id; });
+    if (!rows.length) select.disabled = true;
+  };
+
+  section.addEventListener("change", async () => {
+    setPlaceholder(option, "Chargement des options…");
+    setPlaceholder(mention, "Choisir d’abord une option");
+    const sectionId = section.selectedOptions[0]?.dataset.id;
+    if (!sectionId) {
+      setPlaceholder(option, "Choisir d’abord une section");
+      status.textContent = "Sélectionnez une section pour afficher ses options.";
+      return;
+    }
+    status.textContent = "Chargement des options de la section…";
+    try {
+      const rows = await fetchRows("/modules/api/sections/" + encodeURIComponent(sectionId) + "/options");
+      fill(option, rows, rows.length ? "Choisir une option" : "Aucune option configurée");
+      status.textContent = rows.length ? "Choisissez une option pour afficher les mentions disponibles." : "Aucune option active n’est définie pour cette section. Contactez l’administration.";
+    } catch (error) {
+      setPlaceholder(option, "Erreur de chargement — réessayez");
+      status.textContent = error.message;
+    }
+  });
+
+  option.addEventListener("change", async () => {
+    setPlaceholder(mention, "Chargement des mentions…");
+    const optionId = option.selectedOptions[0]?.dataset.id;
+    if (!optionId) {
+      setPlaceholder(mention, "Choisir d’abord une option");
+      status.textContent = "Choisissez une option pour afficher ses mentions.";
+      return;
+    }
+    try {
+      const rows = await fetchRows("/modules/api/options/" + encodeURIComponent(optionId) + "/mentions");
+      fill(mention, rows, rows.length ? "Choisir une mention (facultatif)" : "Aucune mention définie (facultatif)");
+      status.textContent = rows.length ? "Les mentions proposées correspondent à l’option sélectionnée." : "Cette option ne possède pas encore de mention. Vous pouvez continuer.";
+    } catch (error) {
+      setPlaceholder(mention, "Erreur de chargement — réessayez");
+      status.textContent = error.message;
+    }
+  });
+});
+</script>
 {% endblock %}
