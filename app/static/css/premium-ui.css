@@ -161,3 +161,23 @@ body{background:var(--gp-ice)}
 @media(max-width:1100px){.gp-footer-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:680px){.gp-site-footer{margin-top:24px;padding:28px 19px 0}.gp-footer-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 18px}.gp-footer-brand{grid-column:1/-1}.gp-footer-bottom{align-items:flex-start;flex-direction:column;gap:6px;margin-top:24px}}
 @media(max-width:380px){.gp-footer-grid{grid-template-columns:1fr}.gp-footer-brand{grid-column:auto}}
+
+
+/* Footer compact premium : téléchargements mis en valeur par des icônes */
+.gp-site-footer.gp-footer-compact{margin-top:28px;padding:20px clamp(16px,4vw,42px) 0;background:linear-gradient(110deg,#071d49,#0a397c 72%,#0756a8);color:#dce9fa}
+.gp-footer-compact-inner{max-width:1500px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.gp-footer-mini-brand{display:flex;align-items:center;gap:12px;min-width:220px}
+.gp-footer-mini-logo{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:linear-gradient(145deg,#2188ef,#0a397c);border:1px solid #ffffff35;color:#fff;font:800 15px Manrope;box-shadow:0 6px 18px #00112e55}
+.gp-footer-mini-brand strong{display:block;color:#fff;font:800 11px Manrope;letter-spacing:.06em}
+.gp-footer-mini-brand small{display:block;margin-top:4px;color:#b9cde6;font-size:10px;line-height:1.4}
+.gp-footer-downloads{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap}
+.gp-footer-download-title{width:100%;text-align:right;color:#f2c65f;font:800 9px Manrope;letter-spacing:.12em}
+.gp-download-item{display:flex;align-items:center;gap:9px;min-width:145px;padding:9px 12px;border:1px solid #ffffff24;border-radius:12px;background:#ffffff0b;color:#fff;text-decoration:none;transition:background .18s,border-color .18s,transform .18s}
+.gp-download-item:hover{background:#ffffff18;border-color:#f2c65f88;transform:translateY(-2px)}
+.gp-download-icon{display:grid;place-items:center;width:34px;height:34px;flex:0 0 34px;border-radius:10px;background:#e7b64a1c;color:#f5ca67}
+.gp-download-icon svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.gp-download-item b{display:block;color:#fff;font:750 10px Manrope}
+.gp-download-item small{display:block;margin-top:3px;color:#b8cde7;font-size:9px}
+.gp-footer-compact-bottom{max-width:1500px;margin:15px auto 0;padding:12px 0;border-top:1px solid #ffffff20;color:#a9c1df;text-align:center;font-size:9px}
+@media(max-width:760px){.gp-footer-compact-inner{align-items:flex-start;flex-direction:column;gap:16px}.gp-footer-downloads{width:100%;justify-content:flex-start}.gp-footer-download-title{text-align:left}.gp-download-item{flex:1 1 145px;min-width:0}}
+@media(max-width:380px){.gp-footer-downloads{display:grid;grid-template-columns:1fr}.gp-footer-download-title{grid-column:1}.gp-download-item{width:100%}}
