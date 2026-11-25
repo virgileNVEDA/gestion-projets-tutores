@@ -74,4 +74,5 @@
     <span class="orbit-bottom-line"></span>
   </div>
 </main>
+<footer class="public-institution-footer"><div><b>{{ institution.acronym if institution and institution.acronym else 'GESTION ACADÉMIQUE' }}</b><span>{{ institution.name if institution else 'Gestion des sujets des projets tutorés' }}</span>{% if institution and institution.motto %}<small>{{ institution.motto }}</small>{% endif %}</div><div>{% if institution and institution.address %}<span>{{ institution.address }}</span>{% endif %}{% if institution and institution.phone %}<a href="tel:{{ institution.phone }}">{{ institution.phone }}</a>{% endif %}{% if institution and institution.contact_email %}<a href="mailto:{{ institution.contact_email }}">{{ institution.contact_email }}</a>{% endif %}{% if institution and institution.website %}<a href="{{ institution.website if institution.website.startswith('http') else 'https://' ~ institution.website }}">Site officiel</a>{% endif %}</div><small>© {{ now.year }} · Tous droits réservés</small></footer>
 {% endblock %}
