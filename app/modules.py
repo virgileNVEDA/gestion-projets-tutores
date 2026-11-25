@@ -420,7 +420,7 @@ def student_by_matricule(matricule):
         abort(403)
     student = User.query.filter_by(matricule=matricule.strip(), role="student").first_or_404()
     topic = ProjectTopic.query.filter_by(student_id=student.id).order_by(ProjectTopic.updated_at.desc()).first()
-    return jsonify({"full_name":student.full_name,"matricule":student.matricule,"email":student.email,"option":student.option_name or "","mention":student.mention or "","promotion":student.promotion or "","subject":topic.title if topic else "Aucun sujet enregistré","program":topic.program.name if topic and topic.program else "","level":topic.program.level if topic and topic.program else "","tutor":topic.tutor.full_name if topic and topic.tutor else "À attribuer","codirector":topic.codirector.full_name if topic and topic.codirector else "À attribuer","status":topic.status if topic else "Sans sujet"})
+    return jsonify({"full_name":student.full_name,"matricule":student.matricule,"email":student.email,"mention":student.mention or student.mention_name or student.option_name or "","mention":student.mention or student.mention_name or student.option_name or "","promotion":student.promotion or "","subject":topic.title if topic else "Aucun sujet enregistré","program":topic.program.name if topic and topic.program else "","level":topic.program.level if topic and topic.program else "","tutor":topic.tutor.full_name if topic and topic.tutor else "À attribuer","codirector":topic.codirector.full_name if topic and topic.codirector else "À attribuer","status":topic.status if topic else "Sans sujet"})
 
 @modules_bp.get("/rapports/imprimer")
 @login_required
