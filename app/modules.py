@@ -194,7 +194,10 @@ def section(section):
                 section_name=request.form.get("section_name","").strip()
                 option_name=request.form.get("option_name","").strip()
                 mention_name=request.form.get("mention_name","").strip()
+                matricule=request.form.get("matricule","").strip().upper()
                 if role=="student":
+                    if not matricule: raise ValueError("Le matricule officiel de l’étudiant est obligatoire.")
+                    if User.query.filter_by(matricule=matricule).first(): raise ValueError("Ce matricule est déjà utilisé.")
                     parent=AcademicSection.query.filter_by(name=section_name,active=True).first()
                     opt=AcademicOption.query.filter_by(name=option_name,active=True,section_id=parent.id).first() if parent else None
                     men=AcademicMention.query.filter_by(name=mention_name,active=True,option_id=opt.id).first() if opt and mention_name else None
@@ -203,7 +206,7 @@ def section(section):
                 password=request.form.get("password","")
                 if len(user.full_name)<3 or len(password)<10: raise ValueError("Nom obligatoire et mot de passe de 10 caractères minimum.")
                 user.set_password(password); db.session.add(user); db.session.flush()
-                user.matricule = generate_matricule(user.full_name, role)
+                user.matricule = matricule if role=="student" else generate_matricule(user.full_name, role)
                 db.session.commit()
                 flash(f"Compte créé avec succès. Matricule : {user.matricule}" if role == "student" else "Compte créé avec succès.", "success")
             elif action == "create_program" and current_user.role == "admin":
@@ -259,7 +262,12 @@ def section(section):
                 if user.id==current_user.id and role!="admin": raise ValueError("Vous ne pouvez pas retirer votre propre rôle administrateur.")
                 old_role=user.role
                 user.full_name=full_name; user.email=email; user.role=role
-                if old_role != role or not user.matricule:
+                if role=="student":
+                    new_matricule=request.form.get("matricule",user.matricule or "").strip().upper()
+                    duplicate=User.query.filter(User.matricule==new_matricule,User.id!=user.id).first()
+                    if not new_matricule or duplicate: raise ValueError("Le matricule étudiant est obligatoire et doit être unique.")
+                    user.matricule=new_matricule
+                elif old_role != role or not user.matricule:
                     user.matricule=generate_matricule(full_name, role, exclude_user_id=user.id)
                 section_name=request.form.get("section_name","").strip()
                 option_name=request.form.get("option_name","").strip()
