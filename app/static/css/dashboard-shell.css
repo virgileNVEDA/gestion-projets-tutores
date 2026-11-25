@@ -133,3 +133,41 @@ body.menu-open .sidebar{z-index:1300!important}
     padding:17px 14px 30px!important;
   }
 }
+
+/* FIX DEFINITIF MOBILE/TABLETTE : ancrage de l'en-tête au viewport,
+   indépendant du flux et de la position initiale du conteneur principal. */
+@media screen and (max-width:1000px){
+  html body .app-shell > main.main-area{
+    display:block!important;
+    position:relative!important;
+    top:0!important;
+    left:0!important;
+    margin:0!important;
+    padding:68px 0 0!important;
+    transform:none!important;
+  }
+  html body .app-shell > main.main-area > header.topbar{
+    display:flex!important;
+    position:fixed!important;
+    inset:0 0 auto 0!important;
+    top:0!important;
+    left:0!important;
+    right:0!important;
+    bottom:auto!important;
+    width:100vw!important;
+    height:68px!important;
+    min-height:68px!important;
+    max-height:68px!important;
+    margin:0!important;
+    transform:none!important;
+    z-index:99999!important;
+  }
+  html body .app-shell > main.main-area > section.page-content{
+    display:block!important;
+    position:relative!important;
+    top:0!important;
+    margin:0!important;
+    padding:17px 14px 30px!important;
+    transform:none!important;
+  }
+}
