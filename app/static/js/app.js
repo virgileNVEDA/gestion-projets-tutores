@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded",()=>{const input=document.getElemen
     const loader = document.getElementById('appLoading');
     const bar = document.getElementById('globalProgress');
     if (loader) { loader.classList.remove('is-visible'); loader.classList.add('is-hidden'); }
-    if (bar) bar.classList.remove('is-running');
+    if (bar) { bar.classList.remove('is-running'); bar.classList.add('is-complete'); window.setTimeout(() => bar.classList.remove('is-complete'), 250); }
   };
   document.addEventListener('DOMContentLoaded', () => {
     hideLoader();
@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded",()=>{const input=document.getElemen
             link.target === '_blank' || link.hasAttribute('download') ||
             href.startsWith('#') || href.startsWith('javascript:')) return;
         const bar = document.getElementById('globalProgress');
-        if (bar) bar.classList.add('is-running');
+        if (bar) { bar.classList.remove('is-complete'); bar.classList.add('is-running'); }
       });
     });
     document.querySelectorAll('form').forEach((form) => form.addEventListener('submit', () => {
