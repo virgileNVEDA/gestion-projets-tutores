@@ -1,28 +1,15 @@
 {% extends "base.html" %}
 {% block title %}{{ section|replace('_',' ')|title }} · Projets tutorés
-<script>
-document.addEventListener("DOMContentLoaded",()=>{
-const fill=async(url,el,placeholder)=>{el.innerHTML="<option value=''>"+placeholder+"</option>";el.disabled=true;if(!url)return;const r=await fetch(url);if(!r.ok)return;(await r.json()).forEach(x=>{const o=document.createElement("option");o.value=x.name;o.textContent=x.name;el.appendChild(o)});el.disabled=false};
-document.querySelectorAll(".user-section").forEach(s=>{const form=s.closest("form"),o=form.querySelector(".user-option"),m=form.querySelector(".user-mention");s.addEventListener("change",async()=>{m.innerHTML="<option value=''>Choisir une option</option>";m.disabled=true;const rows=await (await fetch("/modules/api/sections")).json();const sec=rows.find(x=>x.name===s.value);await fill(sec?"/modules/api/sections/"+sec.id+"/options":null,o,"Choisir une option")});o.addEventListener("change",async()=>{const rows=await (await fetch("/modules/api/sections")).json();const sec=rows.find(x=>x.name===s.value);if(!sec)return;const opts=await (await fetch("/modules/api/sections/"+sec.id+"/options")).json();const opt=opts.find(x=>x.name===o.value);await fill(opt?"/modules/api/options/"+opt.id+"/mentions":null,m,"Aucune mention définie")})});
-});
-</script>
+
+
+
+
+
+
 
 <script>
 document.addEventListener("DOMContentLoaded",()=>{
- const fill=async(url,el,label,chosen)=>{el.innerHTML="<option value=''>"+label+"</option>";el.disabled=true;if(!url)return;const r=await fetch(url);if(!r.ok)return;(await r.json()).forEach(v=>{const o=document.createElement("option");o.value=v.name;o.textContent=v.name;o.selected=v.name===chosen;el.append(o)});el.disabled=false};
- document.querySelectorAll(".user-section").forEach(async s=>{
-  const form=s.closest("form"),o=form.querySelector(".user-option"),m=form.querySelector(".user-mention");
-  const all=await (await fetch("/modules/api/sections")).json(),sec=all.find(v=>v.name===s.value);
-  if(sec){await fill("/modules/api/sections/"+sec.id+"/options",o,"Choisir une option",o.dataset.current);const opts=await (await fetch("/modules/api/sections/"+sec.id+"/options")).json(),opt=opts.find(v=>v.name===o.value);if(opt)await fill("/modules/api/options/"+opt.id+"/mentions",m,"Aucune mention",m.dataset.current)}
-  s.addEventListener("change",async()=>{m.innerHTML="<option value=''>Choisir une option</option>";m.disabled=true;const rows=await (await fetch("/modules/api/sections")).json(),parent=rows.find(v=>v.name===s.value);await fill(parent?"/modules/api/sections/"+parent.id+"/options":null,o,"Choisir une option","")});
-  o.addEventListener("change",async()=>{const rows=await (await fetch("/modules/api/sections")).json(),parent=rows.find(v=>v.name===s.value);if(!parent)return;const opts=await (await fetch("/modules/api/sections/"+parent.id+"/options")).json(),opt=opts.find(v=>v.name===o.value);await fill(opt?"/modules/api/options/"+opt.id+"/mentions":null,m,"Aucune mention","")});
- });
-});
-</script>
-
-<script>
-document.addEventListener("DOMContentLoaded",()=>{
- const fill=async(url,el,label,chosen)=>{el.innerHTML="<option value=''>"+label+"</option>";el.disabled=true;if(!url)return;const r=await fetch(url);if(!r.ok)return;(await r.json()).forEach(v=>{const o=document.createElement("option");o.value=v.name;o.textContent=v.name;if(v.name===chosen)o.selected=true;el.append(o)});el.disabled=false};
+ const fill=async(url,el,label,chosenId)=>{el.innerHTML="<option value=''>"+label+"</option>";el.disabled=true;if(!url)return;const r=await fetch(url);if(!r.ok)return;(await r.json()).forEach(v=>{const o=document.createElement("option");o.value=v.name;o.textContent=v.name;if(v.id===chosenId||v.name===chosenId)o.selected=true;el.append(o)});el.disabled=false};
  document.querySelectorAll(".user-section").forEach(async s=>{
   const form=s.closest("form"),o=form.querySelector(".user-option"),m=form.querySelector(".user-mention");
   const sections=await (await fetch("/modules/api/sections")).json(),sec=sections.find(v=>v.name===s.value);
@@ -30,6 +17,7 @@ document.addEventListener("DOMContentLoaded",()=>{
   s.addEventListener("change",async()=>{m.innerHTML="<option value=''>Choisir une option</option>";m.disabled=true;const rows=await (await fetch("/modules/api/sections")).json(),parent=rows.find(v=>v.name===s.value);await fill(parent?"/modules/api/sections/"+parent.id+"/options":null,o,"Choisir une option","")});
   o.addEventListener("change",async()=>{const rows=await (await fetch("/modules/api/sections")).json(),parent=rows.find(v=>v.name===s.value);if(!parent)return;const opts=await (await fetch("/modules/api/sections/"+parent.id+"/options")).json(),opt=opts.find(v=>v.name===o.value);await fill(opt?"/modules/api/options/"+opt.id+"/mentions":null,m,"Aucune mention (facultatif)","")});
  });
+ document.querySelectorAll(".hierarchy-section").forEach(s=>{const form=s.closest("form"),o=form.querySelector(".hierarchy-option");s.addEventListener("change",async()=>{o.innerHTML="<option value=''>Choisir une option</option>";o.disabled=true;if(!s.value)return;const rows=await (await fetch("/modules/api/sections/"+s.value+"/options")).json();rows.forEach(v=>{const x=document.createElement("option");x.value=v.id;x.textContent=v.name;o.append(x)});o.disabled=false})});
 });
 </script>
 
@@ -58,9 +46,7 @@ document.addEventListener("DOMContentLoaded",()=>{
 <form method="post" class="module-form"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="create_mention"><h4>Ajouter une mention</h4><label>Section</label><select class="hierarchy-section" required><option value="">Choisir</option>{% for s in academic_sections %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}</select><label>Option de rattachement</label><select class="hierarchy-option" name="option_id" required disabled><option value="">Choisir une section</option></select><label>Nom de la mention</label><input name="name" required><button class="primary-btn">Ajouter la mention</button></form>
 </div>
 <div class="hierarchy-list">{% for s in academic_sections %}<article><h4>{{ s.name }}</h4>{% for o in s.options if o.active %}<div class="hierarchy-option-row"><b>{{ o.name }}</b><span>{% for m in o.mentions if m.active %}<em>{{ m.name }}</em>{% else %}<small>Aucune mention enregistrée</small>{% endfor %}</span></div>{% endfor %}</article>{% endfor %}</div></div>
-<script>
-document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll(".hierarchy-section").forEach(s=>{const form=s.closest("form"),o=form.querySelector(".hierarchy-option");s.addEventListener("change",async()=>{o.innerHTML="<option value=''>Chargement…</option>";o.disabled=true;if(!s.value)return;const r=await fetch("/modules/api/sections/"+s.value+"/options");const rows=await r.json();o.innerHTML="<option value=''>Choisir une option</option>";rows.forEach(x=>{const e=document.createElement("option");e.value=x.id;e.textContent=x.name;o.appendChild(e)});o.disabled=false})})});
-</script>
+
 {% endif %}
 <div class="module-grid"><section class="panel"><div class="panel-heading"><h3>Programmes existants</h3></div><div class="table-wrap"><table><thead><tr><th>PROGRAMME / FILIÈRE</th><th>NIVEAU</th><th>ÉTAT</th><th>ACTIONS</th></tr></thead><tbody>{% for p in programs %}<tr><td><b>{{ p.name }}</b></td><td>{{ p.level or '—' }}</td><td><span class="status approved">Actif</span></td><td><div class="row-actions"><details class="edit-details"><summary class="small-btn">Modifier</summary><form method="post" class="inline-edit-form"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="edit_program"><input type="hidden" name="program_id" value="{{ p.id }}"><label>Intitulé<input name="name" value="{{ p.name }}" required></label><label>Niveau<input name="level" value="{{ p.level or '' }}"></label><button class="small-btn" type="submit">Enregistrer</button></form></details><form method="post" onsubmit="return confirm('Supprimer ce programme ?');"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="delete_program"><input type="hidden" name="program_id" value="{{ p.id }}"><button class="small-btn danger-btn" type="submit">Supprimer</button></form></div></td></tr>{% else %}<tr><td colspan="4">Aucun programme.</td></tr>{% endfor %}</tbody></table></div></section><section class="panel form-panel"><h3>Ajouter un programme</h3><form method="post" class="module-form"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="create_program"><label>Intitulé</label><input name="name" required><label>Niveau</label><input name="level" placeholder="Licence, Master 1, Master 2…"><button class="primary-btn">Enregistrer</button></form></section></div>
 {% elif section=='sujets' %}
