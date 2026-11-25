@@ -190,6 +190,7 @@ def section(section):
                 if role not in ROLES: raise ValueError("Rôle invalide.")
                 if user.id==current_user.id and role!="admin": raise ValueError("Vous ne pouvez pas retirer votre propre rôle administrateur.")
                 user.full_name=full_name; user.email=email; user.role=role
+                if role=="student" and not user.matricule: user.matricule=f"PT{datetime.utcnow().year}-{user.id:06d}"
                 user.option_name=request.form.get("option_name","").strip() or None
                 user.mention=request.form.get("mention","").strip() or None
                 user.promotion=request.form.get("promotion","").strip() or None
@@ -202,7 +203,7 @@ def section(section):
                 if user.id==current_user.id: raise ValueError("Vous ne pouvez pas supprimer votre propre compte.")
                 linked=ProjectTopic.query.filter((ProjectTopic.student_id==user.id)|(ProjectTopic.tutor_id==user.id)|(ProjectTopic.codirector_id==user.id)).first()
                 if linked: raise ValueError("Ce compte est lié à un dossier académique. Désactivez-le au lieu de le supprimer.")
-                if Notification.query.filter_by(user_id=user.id).first() or DocumentVersion.query.filter_by(uploader_id=user.id).first() or Message.query.filter_by(sender_id=user.id).first() or Meeting.query.filter_by(organizer_id=user.id).first():
+                if Notification.query.filter_by(user_id=user.id).first() or DocumentVersion.query.filter_by(uploader_id=user.id).first() or Message.query.filter_by(sender_id=user.id).first() or Meeting.query.filter_by(organizer_id=user.id).first() or WorkflowEvent.query.filter_by(actor_id=user.id).first():
                     raise ValueError("Ce compte possède un historique. La suppression est bloquée pour préserver la traçabilité.")
                 db.session.delete(user); flash("Le compte a été supprimé.","success")
             elif action == "edit_program" and current_user.role=="admin":
