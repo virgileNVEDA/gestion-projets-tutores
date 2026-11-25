@@ -72,31 +72,3 @@ document.addEventListener("DOMContentLoaded", () => {
   window.setInterval(ping, 60000);
   document.addEventListener("visibilitychange", () => { if (!document.hidden) ping(); });
 });
-
-
-
-
-/* Correction adaptative de l'espace au-dessus du tableau de bord.
-   Mesure le bas réel de l'en-tête et le début du contenu, puis supprime
-   uniquement l'écart excédentaire constaté, sans masquer ni supprimer le contenu. */
-(() => {
-  const correctDashboardGap = () => {
-    const page = document.querySelector(".page-content.dashboard-page");
-    const header = document.querySelector(".main-area > .topbar");
-    if (!page || !header) return;
-    page.style.marginTop = "0px";
-    const headerBottom = header.getBoundingClientRect().bottom;
-    const pageTop = page.getBoundingClientRect().top;
-    const gap = pageTop - headerBottom;
-    if (gap > 24) page.style.marginTop = `-${Math.ceil(gap)}px`;
-  };
-  const scheduleCorrection = () => {
-    requestAnimationFrame(correctDashboardGap);
-    setTimeout(correctDashboardGap, 80);
-    setTimeout(correctDashboardGap, 300);
-  };
-  document.addEventListener("DOMContentLoaded", scheduleCorrection, { once: true });
-  window.addEventListener("load", scheduleCorrection);
-  window.addEventListener("pageshow", scheduleCorrection);
-  window.addEventListener("resize", scheduleCorrection);
-})();
