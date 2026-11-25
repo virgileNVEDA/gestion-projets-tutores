@@ -6,6 +6,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from flask_login import login_required, current_user
 from .extensions import db
 from .models import User, AcademicProgram, ProjectTopic, WorkflowEvent, Message, DocumentVersion, Meeting, Notification, Institution, ROLES
+from .policies import can_access_topic, can_create_topic_for
 
 modules_bp = Blueprint("modules", __name__, url_prefix="/modules")
 ALLOWED = {"pdf", "doc", "docx", "odt", "xlsx", "pptx", "png", "jpg", "jpeg"}
@@ -53,8 +54,7 @@ def visible_topics():
     return q.order_by(ProjectTopic.updated_at.desc())
 
 def can_access(topic):
-    if current_user.role == "admin" or current_user.role in {"section_head","department_head","coordination"}: return True
-    return current_user.id in {topic.student_id, topic.tutor_id, topic.codirector_id}
+    return can_access_topic(current_user, topic)
 
 def notify(user_id, topic_id, title, body):
     if user_id and user_id != current_user.id:
@@ -170,6 +170,7 @@ def section(section):
             elif action == "create_topic":
                 student_id=current_user.id if current_user.role=="student" else int(request.form.get("student_id"))
                 student=User.query.get_or_404(student_id)
+                if not can_create_topic_for(current_user, student): abort(403)
                 if current_user.role=="student" and ProjectTopic.query.filter_by(student_id=current_user.id).filter(ProjectTopic.status!="rejected").first():
                     raise ValueError("Un dossier actif existe déjà dans votre espace. Contactez l'administration pour une nouvelle soumission.")
                 topic=ProjectTopic(title=request.form.get("title","").strip(),problem_statement=request.form.get("problem_statement","").strip(),objectives=request.form.get("objectives","").strip(),methodology=request.form.get("methodology","").strip(),keywords=request.form.get("keywords","").strip(),student_id=student.id,program_id=int(request.form.get("program_id")) if request.form.get("program_id") else None,status="submitted" if current_user.role=="student" else "draft")
