@@ -546,3 +546,11 @@ body{font-family:'DM Sans',Arial,sans-serif;color:var(--workspace-ink);backgroun
 .public-institution-footer span,.public-institution-footer a,.public-institution-footer small{font-size:11px}
 .public-institution-footer>div:nth-child(2){display:flex;gap:8px 14px;flex-wrap:wrap}
 .public-institution-footer a{color:#087f75;font-weight:700}
+
+
+.hierarchy-edit-form,.hierarchy-toggle{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.hierarchy-edit-form input,.hierarchy-edit-form select{min-width:120px;min-height:34px;padding:6px 8px;border:1px solid #dce5ec;border-radius:8px;box-sizing:border-box}
+.hierarchy-edit-form button,.hierarchy-toggle button{white-space:nowrap}
+.hierarchy-option-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
+.hierarchy-mentions{grid-column:1/-1;display:grid;gap:6px;padding-left:12px}
+.hierarchy-mentions .hierarchy-edit-form{padding:5px 0}
