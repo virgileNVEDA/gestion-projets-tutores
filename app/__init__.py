@@ -54,7 +54,7 @@ def create_app():
         from .models import ROLES
         for account in User.query.order_by(User.id.asc()).all():
             expected_prefix = {"student":"ET","tutor":"DIR","codirector":"COD","section_head":"SEC","department_head":"DEP","coordination":"COO","admin":"ADM"}.get(account.role, "USR")
-            if not account.matricule or not account.matricule.startswith(expected_prefix + "-"):
+            if account.role != "student" and (not account.matricule or not account.matricule.startswith(expected_prefix + "-")):
                 account.matricule = generate_matricule(account.full_name, account.role, exclude_user_id=account.id)
         db.session.commit()
         email = os.getenv("ADMIN_EMAIL")
