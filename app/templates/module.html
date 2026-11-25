@@ -7,24 +7,7 @@
 
 
 
-<script>
-document.addEventListener("DOMContentLoaded",()=>{
- const fillMentions=async(sectionSelect,mentionSelect)=>{
-  mentionSelect.innerHTML="<option value=''>Choisir une mention</option>";mentionSelect.disabled=true;
-  if(!sectionSelect.value)return;
-  const sections=await (await fetch("/modules/api/sections")).json();
-  const section=sections.find(item=>item.name===sectionSelect.value);if(!section)return;
-  const response=await fetch("/modules/api/sections/"+section.id+"/mentions");if(!response.ok)return;
-  (await response.json()).forEach(item=>{const option=document.createElement("option");option.value=item.name;option.textContent=item.name;mentionSelect.append(option)});
-  mentionSelect.disabled=false;const current=mentionSelect.dataset.current||"";if(current)mentionSelect.value=current;
- };
- document.querySelectorAll(".user-section").forEach(sectionSelect=>{
-  const form=sectionSelect.closest("form"),mentionSelect=form.querySelector(".user-mention");
-  fillMentions(sectionSelect,mentionSelect);
-  sectionSelect.addEventListener("change",()=>{mentionSelect.dataset.current="";fillMentions(sectionSelect,mentionSelect)});
- });
-});
-</script>
+
 
 {% endblock %}
 {% block page_section %}{{ section|replace('_',' ')|title }}{% endblock %}
@@ -38,7 +21,7 @@ document.addEventListener("DOMContentLoaded",()=>{
 {% elif section in ['etudiants','enseignants','utilisateurs'] %}
 <div class="module-grid"><section class="panel"><div class="panel-heading"><div><h3>Comptes enregistrés</h3><p>{{ users|length }} compte(s)</p></div></div>
 {% if section == "etudiants" %}
-<form method="get" action="{{ url_for('modules.print_student_report') }}" class="student-print-filters"><label>Section<select name="section"><option value="">Toutes les sections</option>{% for s in academic_sections %}<option value="{{ s.name }}">{{ s.name }}</option>{% endfor %}</select></label><label>Mention<input name="mention" list="studentMentions" placeholder="Toutes les mentions"></label><datalist id="studentMentions">{% for u in users if u.role=='student' and u.mention %}<option value="{{ u.mention }}">{% endfor %}</datalist><label>Promotion<select name="promotion"><option value="">Toutes les promotions</option>{% for p in users|selectattr('promotion')|map(attribute='promotion')|unique|sort %}<option value="{{ p }}">{{ p }}</option>{% endfor %}</select></label><button class="small-btn" type="submit">Imprimer la liste filtrée</button></form><p> <a class="small-btn" href="{{ url_for('main.export_students_csv') }}">Exporter Excel / CSV</a></p>
+<form method="get" action="{{ url_for('modules.print_student_report') }}" class="student-print-filters"><label>Section<select name="section"><option value="">Toutes les sections</option>{% for s in academic_sections %}<option value="{{ s.name }}">{{ s.name }}</option>{% endfor %}</select></label><label>Mention<select name="mention" id="studentMentionFilter" disabled><option value="">Toutes les mentions</option></select></label><label>Promotion<select name="promotion"><option value="">Toutes les promotions</option>{% for p in users|selectattr('promotion')|map(attribute='promotion')|unique|sort %}<option value="{{ p }}">{{ p }}</option>{% endfor %}</select></label><button class="small-btn" type="submit">Imprimer la liste filtrée</button></form><p> <a class="small-btn" href="{{ url_for('main.export_students_csv') }}">Exporter Excel / CSV</a></p>
 <div class="student-lookup"><label for="studentMatricule">Recherche par matricule</label><div><input id="studentMatricule" list="studentMatricules" placeholder="Saisir un matricule"><datalist id="studentMatricules">{% for u in users %}<option value="{{ u.matricule or '' }}">{{ u.full_name }} · {{ u.matricule or "Sans matricule" }}</option>{% endfor %}</datalist><button type="button" class="small-btn" id="findStudent">Rechercher</button></div><div id="studentResult" class="student-result" hidden></div></div>
 {% endif %}<div class="table-wrap"><table><thead><tr><th>NOM COMPLET</th><th>EMAIL</th><th>TÉLÉPHONE</th><th>RÔLE</th><th>MATRICULE</th><th>MENTION</th><th>PROMOTION</th><th>STATUT</th><th>ACTIONS</th></tr></thead><tbody>{% for u in users %}<tr><td><b>{{ u.full_name }}</b></td><td>{{ u.email }}</td><td>{{ u.phone or "—" }}</td><td>{{ u.role_label }}</td><td>{{ u.matricule or '—' }}</td><td>{{ u.mention or '—' }}</td><td>{{ u.promotion or '—' }}</td><td><span class="status approved">Actif</span></td><td><details class="edit-details"><summary class="small-btn">Modifier</summary><form method="post" class="inline-edit-form"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="edit_user"><input type="hidden" name="user_id" value="{{ u.id }}"><label>Nom complet<input name="full_name" required value="{{ u.full_name }}"></label><label>E-mail<input type="email" name="email" required value="{{ u.email }}"></label><label>Téléphone<input type="tel" name="phone" value="{{ u.phone or '' }}" placeholder="+243…"></label><label>Matricule officiel<input name="matricule" value="{{ u.matricule or '' }}"></label><label>Rôle<select name="role">{% for key,label in roles.items() %}<option value="{{ key }}" {% if u.role==key %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></label><label>Section<select class="user-section" name="section_name"><option value="">Choisir</option>{% for s in academic_sections %}<option value="{{ s.name }}" {% if u.section_name==s.name %}selected{% endif %}>{{ s.name }}</option>{% endfor %}</select></label><label>Mention<select class="user-mention" name="mention_name" data-current="{{ u.mention_name or u.mention or '' }}" disabled><option value="">Chargement…</option></select></label><label>Promotion<input name="promotion" value="{{ u.promotion or '' }}"></label><label>Nouveau mot de passe (facultatif)<input type="password" name="password" minlength="10"></label><button class="small-btn" type="submit">Enregistrer</button></form></details><form method="post" onsubmit="return confirm('Supprimer ce compte ? La suppression sera refusée si un dossier ou un historique y est lié.');"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="delete_user"><input type="hidden" name="user_id" value="{{ u.id }}"><button class="small-btn danger-btn" type="submit">Supprimer</button></form></td></tr>{% else %}<tr><td colspan="9">Aucun compte enregistré.</td></tr>{% endfor %}</tbody></table></div></section>
 {% if current_user.role=='admin' %}<section class="panel form-panel"><div class="panel-heading"><div><h3>Créer un compte</h3><p>Accès initial à la plateforme</p></div></div><form method="post" class="module-form"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="create_user"><label>Nom complet</label><input name="full_name" required minlength="3"><label>Adresse e-mail</label><input type="email" name="email" required><label>Téléphone</label><input type="tel" name="phone" placeholder="+243…"><label>Matricule officiel étudiant</label><input name="matricule" placeholder="Attribué par le secrétariat"><label>Section</label><select class="user-section" name="section_name"><option value="">Choisir une section</option>{% for s in academic_sections %}<option value="{{ s.name }}">{{ s.name }}</option>{% endfor %}</select><label>Mention</label><select class="user-mention" name="mention_name" disabled><option value="">Choisir une section</option></select><label>Promotion</label><input name="promotion" placeholder="2026-2027"><p class="form-hint">Pour un étudiant, le matricule officiel est obligatoire et ne sera jamais généré automatiquement.</p><label>Rôle</label><select name="role">{% for key,label in roles.items() %}<option value="{{ key }}">{{ label }}</option>{% endfor %}</select><label>Mot de passe provisoire</label><input type="password" name="password" minlength="10" required><button class="primary-btn">Créer le compte</button></form></section>{% endif %}</div>
@@ -87,6 +70,67 @@ document.addEventListener("DOMContentLoaded", () => {
     role.addEventListener("change", syncAcademicFields);
     syncAcademicFields();
   });
+});
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+ const sectionsUrl = "/modules/api/sections";
+ async function fetchMentions(sectionName) {
+  const sr = await fetch(sectionsUrl, {headers: {"Accept":"application/json"}});
+  if (!sr.ok) throw new Error("Sections indisponibles");
+  const sections = await sr.json();
+  const selected = sections.find(x => x.name === sectionName);
+  if (!selected) return [];
+  const mr = await fetch("/modules/api/sections/" + encodeURIComponent(selected.id) + "/mentions", {headers: {"Accept":"application/json"}});
+  if (!mr.ok) throw new Error("Mentions indisponibles");
+  return await mr.json();
+ }
+ document.querySelectorAll("form").forEach(form => {
+  const section = form.querySelector("select.user-section");
+  const mention = form.querySelector("select.user-mention");
+  if (!section || !mention) return;
+  async function refresh() {
+   const keep = mention.dataset.current || mention.value || "";
+   mention.replaceChildren(new Option("Choisir une mention", ""));
+   mention.disabled = true;
+   if (!section.value) return;
+   try {
+    const items = await fetchMentions(section.value);
+    items.forEach(x => mention.add(new Option(x.name, x.name)));
+    mention.disabled = false;
+    if (items.some(x => x.name === keep)) mention.value = keep;
+    mention.dataset.current = "";
+   } catch (e) {
+    console.error("Chargement des mentions", e);
+    mention.replaceChildren(new Option("Erreur de chargement — réessayez", ""));
+   }
+  }
+  section.addEventListener("change", () => { mention.dataset.current = ""; refresh(); });
+  refresh();
+ });
+ const sectionFilter = document.querySelector('select[name="section"]');
+ const mentionFilter = document.getElementById("studentMentionFilter");
+ if (sectionFilter && mentionFilter) {
+  async function refreshFilter() {
+   const keep = mentionFilter.value;
+   mentionFilter.replaceChildren(new Option("Toutes les mentions", ""));
+   mentionFilter.disabled = true;
+   try {
+    let items = [];
+    if (sectionFilter.value) items = await fetchMentions(sectionFilter.value);
+    else {
+     const sr = await fetch(sectionsUrl);
+     for (const s of await sr.json()) items.push(...await fetchMentions(s.name));
+    }
+    const names = [...new Set(items.map(x => x.name))].sort((a,b) => a.localeCompare(b,"fr"));
+    names.forEach(name => mentionFilter.add(new Option(name,name)));
+    mentionFilter.disabled = false;
+    if (names.includes(keep)) mentionFilter.value = keep;
+   } catch (e) { console.error("Filtre des mentions", e); }
+  }
+  sectionFilter.addEventListener("change", refreshFilter);
+  refreshFilter();
+ }
 });
 </script>
 {% endblock %}
