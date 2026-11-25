@@ -57,7 +57,7 @@
             <div><small>Promotion</small><b>{{ student.promotion or 'Non renseignée' }}</b></div>
             <div><small>Programme</small><b>{{ topic.program.name if topic and topic.program else 'Non renseigné' }}</b></div>
             <div><small>Sujet</small><b>{{ topic.title if topic else 'Aucun sujet enregistré' }}</b></div>
-            <div><small>Directeur / Tuteur</small><b>{{ topic.tutor.full_name if topic and topic.tutor else 'À attribuer' }}</b></div>
+            <div><small>Tuteur</small><b>{{ topic.tutor.full_name if topic and topic.tutor else 'À attribuer' }}</b></div>
             <div><small>Codirecteur</small><b>{{ topic.codirector.full_name if topic and topic.codirector else 'À attribuer' }}</b></div>
             <div><small>État du dossier</small><b>{{ topic.status|replace('_',' ')|title if topic else 'Sans sujet' }}</b></div>
           </div>
