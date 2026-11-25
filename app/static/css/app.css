@@ -324,3 +324,23 @@ thead th{background:#e8eef4;color:#334155}
   .page-content{margin-top:0!important}
   .profile-page{margin-top:0!important;padding-top:0!important}
 }
+
+/* Correctifs de structure mobile et actions CRUD */
+@media(max-width:780px){
+  .sidebar{pointer-events:none;visibility:hidden;z-index:1300;will-change:transform}
+  .sidebar.open{pointer-events:auto;visibility:visible}
+  body.menu-open:after{content:"";position:fixed;inset:0;background:rgba(8,24,40,.48);z-index:1250}
+  body.menu-open .topbar{z-index:1100}
+  .main-area{padding-top:68px!important}
+  .page-content{padding-top:22px!important;margin-top:0!important}
+}
+.row-actions{display:flex;align-items:flex-start;gap:7px;flex-wrap:wrap;min-width:150px}
+.edit-details{position:relative}
+.edit-details>summary{list-style:none;cursor:pointer}
+.edit-details>summary::-webkit-details-marker{display:none}
+.inline-edit-form{display:grid;gap:9px;min-width:min(280px,75vw);max-width:420px;padding:14px;background:#fff;border:1px solid #dce5ec;border-radius:12px;box-shadow:0 12px 30px rgba(20,45,73,.16);margin-top:8px}
+.inline-edit-form label{display:grid;gap:4px;font-size:11px;font-weight:800;color:#475569}
+.inline-edit-form input,.inline-edit-form select,.inline-edit-form textarea{width:100%;min-height:38px;padding:8px 10px;border:1px solid #dce5ec;border-radius:7px;background:#fbfcfd;color:#24364a;font:12px 'DM Sans',sans-serif}
+.inline-edit-form textarea{min-height:62px;resize:vertical}
+.danger-btn{background:#fff0ee;color:#b4433b}
+@media(max-width:650px){.row-actions{min-width:135px}.inline-edit-form{position:static;min-width:240px}}
