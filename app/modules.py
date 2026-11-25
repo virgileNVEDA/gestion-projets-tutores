@@ -5,7 +5,7 @@ from werkzeug.utils import secure_filename
 from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app, send_from_directory, abort, jsonify
 from flask_login import login_required, current_user
 from .extensions import db
-from .models import User, AcademicProgram, ProjectTopic, WorkflowEvent, Message, DocumentVersion, Meeting, Notification, Institution, ROLES
+from .models import User, AcademicProgram, ProjectTopic, WorkflowEvent, Message, DocumentVersion, Meeting, Notification, Institution, ROLES, AcademicSection, AcademicOption, AcademicMention
 
 modules_bp = Blueprint("modules", __name__, url_prefix="/modules")
 ALLOWED = {"pdf", "doc", "docx", "odt", "xlsx", "pptx", "png", "jpg", "jpeg"}
@@ -138,6 +138,22 @@ def settings():
         carousel_images = []
     return render_template("settings.html", institution=institution, carousel_images=carousel_images)
 
+
+@modules_bp.get("/api/sections")
+def api_sections():
+    return jsonify([{"id":s.id,"name":s.name} for s in AcademicSection.query.filter_by(active=True).order_by(AcademicSection.name).all()])
+
+
+@modules_bp.get("/api/sections/<int:section_id>/options")
+def api_options(section_id):
+    return jsonify([{"id":o.id,"name":o.name} for o in AcademicOption.query.filter_by(section_id=section_id,active=True).order_by(AcademicOption.name).all()])
+
+
+@modules_bp.get("/api/options/<int:option_id>/mentions")
+def api_mentions(option_id):
+    return jsonify([{"id":m.id,"name":m.name} for m in AcademicMention.query.filter_by(option_id=option_id,active=True).order_by(AcademicMention.name).all()])
+
+
 @modules_bp.route("/<section>", methods=["GET","POST"])
 @login_required
 def section(section):
@@ -150,12 +166,40 @@ def section(section):
     if request.method == "POST":
         action = request.form.get("action","")
         try:
-            if action == "create_user" and current_user.role == "admin":
+            if action == "create_section" and current_user.role == "admin":
+                name=request.form.get("name","").strip()
+                if not name: raise ValueError("Le nom de la section est obligatoire.")
+                if AcademicSection.query.filter_by(name=name).first(): raise ValueError("Cette section existe déjà.")
+                db.session.add(AcademicSection(name=name))
+                flash("Section ajoutée.","success")
+            elif action == "create_option" and current_user.role == "admin":
+                parent=AcademicSection.query.get_or_404(int(request.form.get("section_id")))
+                name=request.form.get("name","").strip()
+                if not name: raise ValueError("Le nom de l'option est obligatoire.")
+                if AcademicOption.query.filter_by(section_id=parent.id,name=name).first(): raise ValueError("Cette option existe déjà dans cette section.")
+                db.session.add(AcademicOption(section_id=parent.id,name=name))
+                flash("Option ajoutée à la section.","success")
+            elif action == "create_mention" and current_user.role == "admin":
+                parent=AcademicOption.query.get_or_404(int(request.form.get("option_id")))
+                name=request.form.get("name","").strip()
+                if not name: raise ValueError("Le nom de la mention est obligatoire.")
+                if AcademicMention.query.filter_by(option_id=parent.id,name=name).first(): raise ValueError("Cette mention existe déjà dans cette option.")
+                db.session.add(AcademicMention(option_id=parent.id,name=name))
+                flash("Mention ajoutée à l'option.","success")
+            elif action == "create_user" and current_user.role == "admin":
                 email=request.form.get("email","").strip().lower()
                 if User.query.filter_by(email=email).first(): raise ValueError("Cette adresse e-mail existe déjà.")
                 role=request.form.get("role","student")
                 if role not in ROLES: raise ValueError("Rôle invalide.")
-                user=User(full_name=request.form.get("full_name","").strip(),email=email,role=role,option_name=request.form.get("option_name","").strip() or None,mention=request.form.get("mention","").strip() or None,promotion=request.form.get("promotion","").strip() or None)
+                section_name=request.form.get("section_name","").strip()
+                option_name=request.form.get("option_name","").strip()
+                mention_name=request.form.get("mention_name","").strip()
+                if role=="student":
+                    parent=AcademicSection.query.filter_by(name=section_name,active=True).first()
+                    opt=AcademicOption.query.filter_by(name=option_name,active=True,section_id=parent.id).first() if parent else None
+                    men=AcademicMention.query.filter_by(name=mention_name,active=True,option_id=opt.id).first() if opt and mention_name else None
+                    if not parent or not opt or (mention_name and not men): raise ValueError("La section, l'option et la mention doivent respecter leur rattachement.")
+                user=User(full_name=request.form.get("full_name","").strip(),email=email,role=role,section_name=section_name or None,option_name=option_name or None,mention_name=mention_name or None,mention=mention_name or None,promotion=request.form.get("promotion","").strip() or None)
                 password=request.form.get("password","")
                 if len(user.full_name)<3 or len(password)<10: raise ValueError("Nom obligatoire et mot de passe de 10 caractères minimum.")
                 user.set_password(password); db.session.add(user); db.session.flush()
@@ -217,8 +261,10 @@ def section(section):
                 user.full_name=full_name; user.email=email; user.role=role
                 if old_role != role or not user.matricule:
                     user.matricule=generate_matricule(full_name, role, exclude_user_id=user.id)
+                user.section_name=request.form.get("section_name","").strip() or None
                 user.option_name=request.form.get("option_name","").strip() or None
-                user.mention=request.form.get("mention","").strip() or None
+                user.mention_name=request.form.get("mention_name","").strip() or None
+                user.mention=user.mention_name
                 user.promotion=request.form.get("promotion","").strip() or None
                 if request.form.get("password",""):
                     if len(request.form["password"])<10: raise ValueError("Le mot de passe doit contenir au moins 10 caractères.")
@@ -247,7 +293,7 @@ def section(section):
                 topic=ProjectTopic.query.get_or_404(int(request.form.get("topic_id")))
                 tutor_id=int(request.form.get("tutor_id")) if request.form.get("tutor_id") else None
                 codir_id=int(request.form.get("codirector_id")) if request.form.get("codirector_id") else None
-                if tutor_id and User.query.get(tutor_id).role!="tutor": raise ValueError("Le directeur doit avoir le rôle Directeur de mémoire.")
+                if tutor_id and (not User.query.get(tutor_id) or User.query.get(tutor_id).role!="tutor"): raise ValueError("Le tuteur sélectionné doit avoir le rôle Tuteur.")
                 if codir_id and User.query.get(codir_id).role!="codirector": raise ValueError("Le codirecteur doit avoir le rôle Codirecteur.")
                 topic.tutor_id=tutor_id; topic.codirector_id=codir_id
                 db.session.add(WorkflowEvent(topic_id=topic.id,actor_id=current_user.id,action="Attribution de l'encadrement"))
@@ -320,7 +366,7 @@ def section(section):
     history=WorkflowEvent.query.filter(WorkflowEvent.topic_id.in_(topic_ids)).order_by(WorkflowEvent.created_at.desc()).limit(100).all() if topic_ids else []
     notes=Notification.query.filter_by(user_id=current_user.id).order_by(Notification.created_at.desc()).limit(100).all()
     stats={"students":User.query.filter_by(role="student").count(),"tutors":User.query.filter_by(role="tutor").count(),"topics":ProjectTopic.query.count(),"pending":ProjectTopic.query.filter(ProjectTopic.status.in_(["draft","submitted","revision","in_review"])).count(),"approved":ProjectTopic.query.filter_by(status="approved").count()}
-    return render_template("module.html",section=section,topics=topics,users=users,programs=programs,messages=messages,docs=docs,meetings=meetings,history=history,notes=notes,stats=stats,roles=ROLES,now=datetime.utcnow())
+    return render_template("module.html",section=section,topics=topics,users=users,programs=programs,academic_sections=AcademicSection.query.filter_by(active=True).order_by(AcademicSection.name).all(),messages=messages,docs=docs,meetings=meetings,history=history,notes=notes,stats=stats,roles=ROLES,now=datetime.utcnow())
 
 
 @modules_bp.get("/api/etudiants/<string:matricule>")
