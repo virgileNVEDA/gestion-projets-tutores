@@ -22,9 +22,7 @@ def roles_required(*roles):
     return deco
 
 ROLE_MATRICULE_PREFIX = {
-    "student": "ET", "tutor": "DIR", "codirector": "COD",
-    "section_head": "SEC", "department_head": "DEP",
-    "coordination": "COO", "admin": "ADM"
+    "student": "ET", "tutor": "DIR", "admin": "ADM"
 }
 
 def generate_matricule(full_name, role, exclude_user_id=None):
@@ -53,7 +51,7 @@ def visible_topics():
     return q.order_by(ProjectTopic.updated_at.desc())
 
 def can_access(topic):
-    if current_user.role == "admin" or current_user.role in {"section_head","department_head","coordination"}: return True
+    if current_user.role == "admin": return True
     return current_user.id in {topic.student_id, topic.tutor_id, topic.codirector_id}
 
 def notify(user_id, topic_id, title, body):
@@ -168,7 +166,7 @@ def section(section):
     if section not in allowed: abort(404)
     admin_sections = {"etudiants","enseignants","programmes","utilisateurs"}
     if section in admin_sections and current_user.role != "admin": abort(403)
-    if section == "rapports" and current_user.role not in {"admin","section_head","department_head","coordination"}: abort(403)
+    if section == "rapports" and current_user.role != "admin": abort(403)
 
     if request.method == "POST":
         action = request.form.get("action","")
@@ -243,7 +241,7 @@ def section(section):
                     opt=AcademicOption.query.filter_by(name=option_name,active=True,section_id=parent.id).first() if parent else None
                     men=AcademicMention.query.filter_by(name=mention_name,active=True,option_id=opt.id).first() if opt and mention_name else None
                     if not parent or not opt or (mention_name and not men): raise ValueError("La section, l'option et la mention doivent respecter leur rattachement.")
-                user=User(full_name=request.form.get("full_name","").strip(),email=email,role=role,section_name=section_name or None,option_name=option_name or None,mention_name=mention_name or None,mention=mention_name or None,promotion=request.form.get("promotion","").strip() or None)
+                user=User(full_name=request.form.get("full_name","").strip(),email=email,phone=request.form.get("phone","").strip() or None,role=role,section_name=section_name or None,option_name=option_name or None,mention_name=mention_name or None,mention=mention_name or None,promotion=request.form.get("promotion","").strip() or None)
                 password=request.form.get("password","")
                 if len(user.full_name)<3 or len(password)<10: raise ValueError("Nom obligatoire et mot de passe de 10 caractères minimum.")
                 user.set_password(password); db.session.add(user); db.session.flush()
@@ -302,7 +300,7 @@ def section(section):
                 if role not in ROLES: raise ValueError("Rôle invalide.")
                 if user.id==current_user.id and role!="admin": raise ValueError("Vous ne pouvez pas retirer votre propre rôle administrateur.")
                 old_role=user.role
-                user.full_name=full_name; user.email=email; user.role=role
+                user.full_name=full_name; user.email=email; user.phone=request.form.get("phone","").strip() or None; user.role=role
                 if role=="student":
                     new_matricule=request.form.get("matricule",user.matricule or "").strip().upper()
                     duplicate=User.query.filter(User.matricule==new_matricule,User.id!=user.id).first()
@@ -351,8 +349,8 @@ def section(section):
                 tutor_id=int(request.form.get("tutor_id")) if request.form.get("tutor_id") else None
                 codir_id=int(request.form.get("codirector_id")) if request.form.get("codirector_id") else None
                 if tutor_id and (not User.query.get(tutor_id) or User.query.get(tutor_id).role!="tutor"): raise ValueError("Le tuteur sélectionné doit avoir le rôle Tuteur.")
-                if codir_id and User.query.get(codir_id).role!="codirector": raise ValueError("Le codirecteur doit avoir le rôle Codirecteur.")
-                topic.tutor_id=tutor_id; topic.codirector_id=codir_id
+                if codir_id: raise ValueError("Seul un tuteur peut être affecté à un projet.")
+                topic.tutor_id=tutor_id; topic.codirector_id=None
                 db.session.add(WorkflowEvent(topic_id=topic.id,actor_id=current_user.id,action="Attribution de l'encadrement"))
                 notify(tutor_id,topic.id,"Nouveau projet attribué",topic.title); notify(codir_id,topic.id,"Nouveau projet attribué",topic.title)
                 flash("Encadrement mis à jour.","success")
@@ -415,7 +413,7 @@ def section(section):
     if section in {"etudiants","enseignants","utilisateurs"}:
         users=User.query.order_by(User.full_name).all()
         if section=="etudiants": users=[u for u in users if u.role=="student"]
-        elif section=="enseignants": users=[u for u in users if u.role in {"tutor","codirector","section_head","department_head"}]
+        elif section=="enseignants": users=[u for u in users if u.role=="tutor"]
     topic_ids=[t.id for t in topics]
     messages=Message.query.filter(Message.topic_id.in_(topic_ids)).order_by(Message.created_at.desc()).limit(100).all() if topic_ids else []
     docs=DocumentVersion.query.filter(DocumentVersion.topic_id.in_(topic_ids)).order_by(DocumentVersion.created_at.desc()).all() if topic_ids else []
@@ -429,7 +427,7 @@ def section(section):
 @modules_bp.get("/api/etudiants/<string:matricule>")
 @login_required
 def student_by_matricule(matricule):
-    if current_user.role not in {"admin","section_head","department_head","coordination","tutor","codirector"}:
+    if current_user.role not in {"admin","tutor"}:
         abort(403)
     student = User.query.filter_by(matricule=matricule.strip(), role="student").first_or_404()
     topic = ProjectTopic.query.filter_by(student_id=student.id).order_by(ProjectTopic.updated_at.desc()).first()
@@ -438,10 +436,17 @@ def student_by_matricule(matricule):
 @modules_bp.get("/rapports/imprimer")
 @login_required
 def print_student_report():
-    if current_user.role not in {"admin","section_head","department_head","coordination"}: abort(403)
-    students = User.query.filter_by(role="student").order_by(User.promotion.desc(),User.full_name.asc()).all()
+    if current_user.role != "admin": abort(403)
+    query = User.query.filter_by(role="student")
+    section_name = request.args.get("section", "").strip()
+    mention = request.args.get("mention", "").strip()
+    promotion = request.args.get("promotion", "").strip()
+    if section_name: query = query.filter(User.section_name == section_name)
+    if mention: query = query.filter(User.mention == mention)
+    if promotion: query = query.filter(User.promotion == promotion)
+    students = query.order_by(User.full_name.asc(), User.matricule.asc()).all()
     rows = [{"student":s,"topic":ProjectTopic.query.filter_by(student_id=s.id).order_by(ProjectTopic.updated_at.desc()).first()} for s in students]
-    return render_template("print_students.html",rows=rows,now=datetime.utcnow())
+    return render_template("print_students.html",rows=rows,now=datetime.utcnow(),institution=Institution.query.order_by(Institution.id.asc()).first(),filters={"section":section_name,"mention":mention,"promotion":promotion})
 
 @modules_bp.get("/documents/<int:doc_id>")
 @login_required
