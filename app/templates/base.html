@@ -7,20 +7,11 @@
   <title>{% block title %}Gestion des projets tutorés{% endblock %}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css', v='20261125b') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css', v='20261125d') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/modules.css', v='20261124e') }}">
 </head>
 <body>
-{% if not institution or institution.progress_enabled %}<div class="app-loading" id="appLoading" aria-live="polite" aria-label="Chargement en cours">
-  <div class="loading-orbit">
-    <span class="loading-orbit-dot dot-a"></span><span class="loading-orbit-dot dot-b"></span>
-    <span class="loading-orbit-dot dot-c"></span><span class="loading-orbit-dot dot-d"></span>
-    <span class="loading-orbit-dot dot-e"></span><span class="loading-orbit-dot dot-f"></span>
-    <div class="loading-core">{% if institution and institution.progress_image_data %}<img src="{{ institution.progress_image_data }}" alt="Chargement">{% elif institution and institution.logo_data %}<img src="{{ institution.logo_data }}" alt="Logo">{% else %}<span>GP</span>{% endif %}</div>
-  </div>
-  <div class="loading-copy"><b>Préparation de votre espace</b><small>Chargement des modules académiques…</small></div>
-  <div class="loading-track"><span></span></div>
-</div>{% endif %}
+{# Le chargeur plein écran est désactivé : il masquait parfois le contenu mobile. #}
 {% if current_user.is_authenticated and institution and institution.progress_enabled %}<div class="global-progress" id="globalProgress"></div>{% endif %}
 {% if current_user.is_authenticated %}
 <div class="app-shell">
@@ -43,5 +34,5 @@
   </main>
 </div>
 {% else %}{% block public_content %}{% endblock %}{% endif %}
-<script src="{{ url_for('static', filename='js/app.js', v='20261125c') }}"></script>
+<script src="{{ url_for('static', filename='js/app.js', v='20261125d') }}"></script>
 </body></html>
