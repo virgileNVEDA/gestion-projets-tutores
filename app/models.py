@@ -4,13 +4,9 @@ from flask_login import UserMixin
 from .extensions import db, login_manager
 
 ROLES = {
-    "admin": "Administration",
+    "admin": "Administrateur",
     "student": "Étudiant",
     "tutor": "Tuteur",
-    "codirector": "Codirecteur",
-    "section_head": "Chef de section",
-    "department_head": "Chef de département",
-    "coordination": "Coordination académique",
 }
 
 
@@ -18,6 +14,7 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     full_name = db.Column(db.String(140), nullable=False)
     email = db.Column(db.String(180), unique=True, nullable=False, index=True)
+    phone = db.Column(db.String(40), nullable=True)
     password_hash = db.Column(db.String(255), nullable=False)
     role = db.Column(db.String(30), nullable=False, default="student")
     matricule = db.Column(db.String(60), unique=True, nullable=True, index=True)
