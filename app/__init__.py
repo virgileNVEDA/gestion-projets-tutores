@@ -20,7 +20,7 @@ def create_app():
     from . import models  # noqa: F401
     from .auth import auth_bp
     from .main import main_bp
-    from .modules import modules_bp
+    from .modules import modules_bp, generate_matricule
     app.register_blueprint(auth_bp)
     app.register_blueprint(main_bp)
     app.register_blueprint(modules_bp)
@@ -50,6 +50,12 @@ def create_app():
             db.session.add(Institution(name=os.getenv("INSTITUTION_NAME", "Établissement académique"),
                                        acronym=os.getenv("INSTITUTION_ACRONYM", "")))
             db.session.commit()
+        # Harmoniser les matricules existants : identifiant court lié au rôle et aux initiales.
+        from .models import ROLES
+        for account in User.query.order_by(User.id.asc()).all():
+            expected_prefix = {"student":"ET","tutor":"DIR","codirector":"COD","section_head":"SEC","department_head":"DEP","coordination":"COO","admin":"ADM"}.get(account.role, "USR")
+            if not account.matricule or not account.matricule.startswith(expected_prefix + "-"):
+                account.matricule = generate_matricule(account.full_name, account.role, exclude_user_id=account.id)
         db.session.commit()
         email = os.getenv("ADMIN_EMAIL")
         password = os.getenv("ADMIN_PASSWORD")
