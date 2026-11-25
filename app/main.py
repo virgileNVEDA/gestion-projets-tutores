@@ -74,11 +74,11 @@ def export_students_csv():
     import csv, io
     buffer = io.StringIO()
     writer = csv.writer(buffer, delimiter=";")
-    writer.writerow(["Matricule","Nom complet","Option","Mention","Promotion","Sujet","Programme","Niveau","Tuteur","Codirecteur","Statut"])
+    writer.writerow(["Matricule","Nom complet","Section","Option","Mention","Promotion","Sujet","Programme","Niveau","Tuteur","Codirecteur","Statut"])
     students = User.query.filter_by(role="student").order_by(User.full_name.asc()).all()
     for student in students:
         topic = ProjectTopic.query.filter_by(student_id=student.id).order_by(ProjectTopic.updated_at.desc()).first()
-        writer.writerow([student.matricule or "",student.full_name,student.option_name or "",student.mention or "",student.promotion or "",topic.title if topic else "",topic.program.name if topic and topic.program else "",topic.program.level if topic and topic.program else "",topic.tutor.full_name if topic and topic.tutor else "",topic.codirector.full_name if topic and topic.codirector else "",topic.status if topic else ""])
+        writer.writerow([student.matricule or "",student.full_name,student.section_name or "",student.option_name or "",student.mention_name or student.mention or "",student.promotion or "",topic.title if topic else "",topic.program.name if topic and topic.program else "",topic.program.level if topic and topic.program else "",topic.tutor.full_name if topic and topic.tutor else "",topic.codirector.full_name if topic and topic.codirector else "",topic.status if topic else ""])
     response = make_response("\\ufeff" + buffer.getvalue())
     response.headers["Content-Type"] = "text/csv; charset=utf-8"
     response.headers["Content-Disposition"] = "attachment; filename=liste_academique_etudiants.csv"
