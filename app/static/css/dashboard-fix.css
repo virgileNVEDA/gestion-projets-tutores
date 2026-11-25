@@ -3,7 +3,7 @@ html body .app-shell{min-height:100vh}
 html body .app-shell>.main-area{
  display:block!important;position:relative!important;min-width:0!important;
  min-height:100vh!important;margin:0 0 0 278px!important;
- padding:78px 0 0!important;transform:none!important
+ padding:0!important;transform:none!important
 }
 html body .app-shell>.main-area>.topbar{
  display:flex!important;position:fixed!important;top:0!important;left:278px!important;
@@ -24,7 +24,7 @@ html body .app-shell>.main-area>.page-content{
 @media(max-width:780px){
  html body .app-shell>.main-area{
   display:block!important;width:100%!important;max-width:100%!important;
-  min-height:100vh!important;margin:0!important;padding:68px 0 0!important
+  min-height:100vh!important;margin:0!important;padding:0!important
  }
  html body .app-shell>.main-area>.topbar{
   position:fixed!important;top:0!important;left:0!important;right:0!important;
