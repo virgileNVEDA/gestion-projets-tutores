@@ -3,9 +3,17 @@ from flask_login import login_user, logout_user, current_user, login_required
 from .models import User
 from .extensions import db
 from datetime import datetime
+from urllib.parse import urlsplit
 import base64
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
+
+def is_safe_next_url(target):
+    """Reject absolute and scheme-relative redirects supplied by the browser."""
+    if not target:
+        return False
+    parsed = urlsplit(target)
+    return not parsed.scheme and not parsed.netloc and target.startswith("/") and not target.startswith("//")
 
 
 @auth_bp.route("/login", methods=["GET", "POST"])
@@ -20,7 +28,8 @@ def login():
         if user and user.check_password(password):
             login_user(user, remember=bool(request.form.get("remember")))
             flash("Connexion réussie. Bienvenue !", "success")
-            return redirect(request.args.get("next") or url_for("main.dashboard"))
+            next_url = request.args.get("next", "")
+            return redirect(next_url if is_safe_next_url(next_url) else url_for("main.dashboard"))
         error = "Adresse e-mail ou mot de passe incorrect."
     return render_template("auth/login.html", error=error)
 
