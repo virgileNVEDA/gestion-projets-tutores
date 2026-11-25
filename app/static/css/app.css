@@ -345,35 +345,29 @@ thead th{background:#e8eef4;color:#334155}
 .danger-btn{background:#fff0ee;color:#b4433b}
 @media(max-width:650px){.row-actions{min-width:135px}.inline-edit-form{position:static;min-width:240px}}
 
-/* Correctif structurel : la barre supérieure reste dans le flux, sans réserve artificielle.
-   Cela supprime le décalage vertical cumulatif responsable des grandes zones vides. */
-.main-area{padding-top:0!important;min-height:100vh;min-width:0}
-.topbar{position:sticky!important;top:0!important;left:auto!important;right:auto!important;width:100%;z-index:1100;}
-.page-content{margin-top:0!important;padding-top:28px!important;min-height:calc(100vh - 76px)}
-.app-shell{display:flex;align-items:stretch;min-height:100vh}
-.sidebar{flex:0 0 278px}
-@media(max-width:1150px) and (min-width:781px){.sidebar{flex-basis:250px}}
-@media(max-width:780px){.sidebar{position:fixed;inset:0 auto 0 0;width:min(280px,86vw);flex:none}.main-area{width:100%;margin-left:0!important;padding-top:0!important}.topbar{position:sticky!important;top:0!important;left:0!important;min-height:68px}.page-content{padding:22px 15px 36px!important;min-height:calc(100vh - 68px)}}
 
-
-/* RESET STRUCTUREL DU TABLEAU DE BORD — annule les anciens décalages cumulés */
-.app-shell{display:block!important;min-height:100vh}
-.sidebar{position:fixed!important;left:0!important;top:0!important;bottom:0!important;width:278px!important;flex:none!important}
-.main-area{display:block!important;margin-left:278px!important;padding:0!important;min-height:100vh!important;width:auto!important}
-.topbar{position:relative!important;inset:auto!important;width:100%!important;min-height:68px!important}
-.page-content{display:block!important;position:relative!important;margin:0 auto!important;padding:22px 28px 34px!important;min-height:0!important;height:auto!important;max-width:1760px}
+/* LAYOUT AUTHENTIFIE — feuille de règles unique, sans overrides empilés */
+html,body{min-height:100%;height:auto!important;overflow-x:hidden!important;overflow-y:auto!important}
+body{margin:0!important}
+.app-shell{display:block!important;position:relative!important;min-height:100vh!important;height:auto!important;overflow:visible!important}
+.sidebar{position:fixed!important;inset:0 auto 0 0!important;width:278px!important;z-index:1300!important;overflow-y:auto!important}
+.main-area{display:block!important;position:relative!important;width:auto!important;min-width:0!important;margin:0 0 0 278px!important;padding:76px 0 0!important;min-height:100vh!important;height:auto!important;overflow:visible!important}
+.topbar{position:fixed!important;top:0!important;left:278px!important;right:0!important;width:auto!important;height:76px!important;min-height:76px!important;margin:0!important;z-index:1200!important}
+.page-content{display:block!important;position:relative!important;width:100%!important;max-width:1760px!important;height:auto!important;min-height:0!important;margin:0 auto!important;padding:22px 28px 34px!important;overflow:visible!important;transform:none!important}
 .page-content>.welcome-row{margin-top:0!important;padding-top:0!important}
 @media(max-width:1150px) and (min-width:781px){
  .sidebar{width:250px!important}
  .main-area{margin-left:250px!important}
+ .topbar{left:250px!important}
  .page-content{padding:20px 22px 30px!important}
 }
 @media(max-width:780px){
  .app-shell{display:block!important;min-height:100svh!important}
- .sidebar{position:fixed!important;inset:0 auto 0 0!important;width:min(280px,86vw)!important;flex:none!important}
- .main-area{display:block!important;width:100%!important;max-width:100%!important;margin:0!important;padding:0!important;min-height:0!important}
- .topbar{position:relative!important;inset:auto!important;left:auto!important;right:auto!important;width:100%!important;min-height:64px!important;height:64px!important;padding:0 14px!important;transform:none!important}
- .page-content{display:block!important;width:100%!important;max-width:none!important;margin:0!important;padding:14px 14px 28px!important;min-height:0!important;height:auto!important;top:auto!important;transform:none!important}
+ .sidebar{width:min(280px,86vw)!important;transform:translateX(-105%);transition:transform .25s;visibility:hidden;pointer-events:none}
+ .sidebar.open{transform:translateX(0)!important;visibility:visible!important;pointer-events:auto!important}
+ .main-area{width:100%!important;max-width:100%!important;margin:0!important;padding:64px 0 0!important;min-height:0!important}
+ .topbar{top:0!important;left:0!important;right:0!important;width:100%!important;height:64px!important;min-height:64px!important;padding:0 14px!important;z-index:1400!important}
+ .page-content{width:100%!important;max-width:none!important;margin:0!important;padding:14px 14px 28px!important;min-height:0!important}
  .page-content>.welcome-row{margin:0 0 16px!important;padding:0!important;gap:10px!important}
  .welcome-row h1{margin:4px 0!important;font-size:24px!important}
  .welcome-row p{margin:0!important;font-size:13px!important}
@@ -382,25 +376,8 @@ thead th{background:#e8eef4;color:#334155}
  .stat-card{min-height:112px!important;padding:12px!important}
  .stat-icon{width:34px!important;height:34px!important;margin-bottom:9px!important}
  .stat-card strong{font-size:23px!important}
- .charts-grid{margin:0 0 14px!important;gap:12px!important}
+ .charts-grid{grid-template-columns:1fr!important;margin:0 0 14px!important;gap:12px!important}
  .chart-panel{min-height:0!important;padding:16px!important}
- .content-grid{gap:12px!important}
-}
-
-
-/* EN-TÊTE PERSISTANT : reste visible pendant le défilement, sans réserver un espace vertical supplémentaire */
-.topbar{position:sticky!important;top:0!important;z-index:1100!important;align-self:flex-start}
-@media(max-width:780px){.main-area{padding-top:0!important}.topbar{position:sticky!important;top:0!important;min-height:64px!important;height:64px!important;z-index:1100!important}}
-
-
-/* CORRECTION DEFINITIVE MOBILE : l'en-tête est fixé au viewport, hors du flux de défilement */
-@media(min-width:781px){
-  .topbar{position:fixed!important;top:0!important;left:278px!important;right:0!important;width:auto!important;z-index:2000!important}
-  .main-area{margin-left:278px!important;padding-top:68px!important}
-}
-@media(max-width:780px){
-  .app-shell{display:block!important}
-  .main-area{position:relative!important;margin:0!important;padding:64px 0 0!important;width:100%!important;min-height:0!important}
-  .topbar{position:fixed!important;top:0!important;left:0!important;right:0!important;width:100%!important;height:64px!important;min-height:64px!important;padding:0 14px!important;z-index:2000!important}
-  .page-content{position:relative!important;margin:0!important;padding:14px 14px 28px!important;width:100%!important;max-width:none!important;min-height:0!important}
+ .content-grid{grid-template-columns:1fr!important;gap:12px!important}
+ body.menu-open:after{content:"";position:fixed;inset:0;background:rgba(8,24,40,.48);z-index:1250}
 }
