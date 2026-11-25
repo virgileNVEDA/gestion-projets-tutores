@@ -142,3 +142,22 @@ body{background:var(--gp-ice)}
   body .app-shell>.topbar{gap:6px!important;padding-inline:9px!important}
   body .app-shell>.topbar .workspace-controls .workspace-home-btn{padding:0 8px!important;font-size:10px!important}
 }
+
+
+/* Footer unifié inspiré de la structure FOBAK, adapté à la plateforme académique */
+.gp-site-footer{margin-top:42px;padding:38px clamp(18px,4vw,54px) 0;background:linear-gradient(135deg,#071d49 0%,#092d68 55%,#0756a8 100%);color:#d9e7f8}
+.gp-footer-grid{max-width:1600px;margin:0 auto;display:grid;grid-template-columns:1.45fr 1fr 1.15fr 1.35fr 1fr;gap:28px}
+.gp-footer-brand{min-width:0}.gp-footer-logo{display:inline-flex;margin-bottom:14px}.gp-footer-logo span{display:grid;place-items:center;width:48px;height:48px;border-radius:15px;background:linear-gradient(145deg,#1687ed,#0b397e);color:#fff;font:800 18px Manrope;box-shadow:0 8px 20px #00112e55}
+.gp-footer-brand strong{display:block;color:#fff;font:800 13px Manrope;letter-spacing:.07em}.gp-footer-brand p{margin:7px 0;color:#e0ebf8;font-size:13px;line-height:1.55}.gp-footer-brand em{color:#f4c65c;font-size:12px}
+.gp-footer-contact{display:grid;gap:8px;margin-top:15px}.gp-footer-contact a,.gp-footer-contact span{color:#c5d8ef;font-size:11px;line-height:1.5;overflow-wrap:anywhere}
+.gp-footer-links,.gp-footer-resources,.gp-footer-community{display:flex;flex-direction:column;align-items:flex-start;gap:10px;min-width:0}
+.gp-site-footer h3{margin:4px 0 8px;color:#f5c85f;font:800 12px Manrope;letter-spacing:.06em}
+.gp-footer-links a,.gp-footer-resources>a,.gp-footer-community>a{color:#d7e5f8;font-size:12px;line-height:1.45;text-decoration:none;transition:color .15s}
+.gp-footer-links a:hover,.gp-footer-resources>a:hover,.gp-footer-community>a:hover,.gp-footer-contact a:hover{color:#ffd56b}
+.gp-footer-resources p{margin:2px 0;color:#9fb7d5;font-size:10px;line-height:1.6}
+.gp-footer-secure{margin-top:5px;padding:9px 11px;border:1px solid #ffffff25;border-radius:10px;color:#f5d47f;font-size:10px}
+.gp-footer-bottom{max-width:1600px;margin:30px auto 0;padding:18px 0 20px;border-top:1px solid #ffffff24;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;color:#bcd0e9;font-size:10px}
+.gp-footer-bottom strong{color:#fff;font-weight:800}
+@media(max-width:1100px){.gp-footer-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:680px){.gp-site-footer{margin-top:24px;padding:28px 19px 0}.gp-footer-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 18px}.gp-footer-brand{grid-column:1/-1}.gp-footer-bottom{align-items:flex-start;flex-direction:column;gap:6px;margin-top:24px}}
+@media(max-width:380px){.gp-footer-grid{grid-template-columns:1fr}.gp-footer-brand{grid-column:auto}}
