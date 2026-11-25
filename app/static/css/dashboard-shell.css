@@ -1,13 +1,48 @@
-/* Gestion des projets tutorés — shell et tableau de bord reconstruits.
-   Référence d'organisation : FOBAK (sidebar + topbar + contenu dans le flux).
-   Une seule règle de positionnement : aucune compensation verticale cumulée. */
+
+/* Shell responsive propre : en-tête frère du contenu, menu latéral indépendant. */
 html,body{margin:0!important;padding:0!important;min-height:100%;overflow-x:hidden}
 html body .app-shell{display:block!important;position:relative!important;width:100%!important;max-width:100%!important;min-height:100vh!important;margin:0!important;padding:0!important}
-html body .app-shell>.sidebar{position:fixed!important;inset:0 auto 0 0!important;width:278px!important;height:100vh!important;min-height:100vh!important;margin:0!important;transform:none;z-index:1200!important;overflow-y:auto!important;box-sizing:border-box!important}
-html body .app-shell>.main-area{display:block!important;position:relative!important;width:auto!important;max-width:none!important;min-width:0!important;min-height:100vh!important;margin:0 0 0 278px!important;padding:0!important;transform:none!important;box-sizing:border-box!important}
-html body .app-shell>.main-area>.topbar{display:flex!important;position:sticky!important;inset:0 0 auto auto!important;width:100%!important;height:auto!important;min-height:76px!important;max-height:none!important;margin:0!important;padding:12px clamp(18px,2.7vw,42px)!important;box-sizing:border-box!important;z-index:1000!important}
-html body .app-shell>.main-area>.page-content{display:block!important;position:relative!important;inset:auto!important;width:100%!important;max-width:none!important;min-height:0!important;height:auto!important;margin:0!important;padding:24px clamp(18px,2.7vw,42px) 42px!important;box-sizing:border-box!important;transform:none!important}
-html body .app-shell>.main-area>.page-content>:first-child{margin-top:0!important}
+html body .app-shell>.sidebar{position:fixed!important;inset:0 auto 0 0!important;width:278px!important;height:100vh!important;min-height:100vh!important;margin:0!important;z-index:1300!important;overflow-y:auto!important;box-sizing:border-box!important}
+html body .app-shell>header.topbar{display:flex!important;position:relative!important;top:auto!important;right:auto!important;bottom:auto!important;left:auto!important;width:calc(100% - 278px)!important;min-height:76px!important;height:auto!important;margin:0 0 0 278px!important;padding:12px clamp(18px,2.7vw,42px)!important;transform:none!important;z-index:1000!important;box-sizing:border-box!important}
+html body .app-shell>main.main-area{display:block!important;position:relative!important;width:auto!important;min-width:0!important;max-width:none!important;min-height:0!important;height:auto!important;margin:0 0 0 278px!important;padding:0!important;transform:none!important;box-sizing:border-box!important}
+html body .app-shell>main.main-area>.page-content{display:block!important;position:relative!important;width:100%!important;max-width:none!important;min-height:0!important;height:auto!important;margin:0!important;padding:24px clamp(18px,2.7vw,42px) 42px!important;transform:none!important;box-sizing:border-box!important}
+html body .app-shell>main.main-area>.page-content>:first-child{margin-top:0!important}
+@media(max-width:1150px) and (min-width:781px){
+ html body .app-shell>.sidebar{width:250px!important}
+ html body .app-shell>header.topbar{width:calc(100% - 250px)!important;margin-left:250px!important}
+ html body .app-shell>main.main-area{margin-left:250px!important}
+}
+@media(max-width:780px){
+ html body .app-shell{display:block!important;min-height:100dvh!important}
+ html body .app-shell>.sidebar{position:fixed!important;inset:0 auto 0 0!important;width:min(86vw,300px)!important;height:100dvh!important;min-height:100dvh!important;margin:0!important;transform:translateX(-105%)!important;visibility:hidden!important;pointer-events:none!important;z-index:1300!important;transition:transform .24s ease,visibility .24s ease}
+ html body .app-shell>.sidebar.open{transform:translateX(0)!important;visibility:visible!important;pointer-events:auto!important}
+ html body .app-shell>header.topbar{display:flex!important;position:relative!important;inset:auto!important;top:auto!important;right:auto!important;bottom:auto!important;left:auto!important;width:100%!important;height:auto!important;min-height:68px!important;margin:0!important;padding:8px 14px!important;transform:none!important;z-index:1200!important}
+ html body .app-shell>main.main-area{display:block!important;position:relative!important;width:100%!important;max-width:100%!important;min-height:0!important;height:auto!important;margin:0!important;padding:0!important;transform:none!important;top:auto!important}
+ html body .app-shell>main.main-area>.page-content{display:block!important;position:relative!important;width:100%!important;max-width:none!important;min-height:0!important;height:auto!important;margin:0!important;padding:17px 14px 30px!important;transform:none!important;top:auto!important}
+ .gp-dashboard{gap:15px}
+ .gp-dashboard-hero{align-items:flex-start;flex-direction:column;gap:12px;padding:21px 18px;border-radius:16px}
+ .gp-dashboard-hero h1{font-size:25px}
+ .gp-dashboard-hero p{font-size:12px}
+ .gp-dashboard-hero .date-chip{display:inline-flex}
+ .gp-dashboard-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ .gp-dashboard-stat{padding:14px;border-radius:13px}
+ .gp-dashboard-stat-icon{width:36px;height:36px;margin-bottom:10px;font-size:17px}
+ .gp-dashboard-stat strong{font-size:27px}
+ .gp-dashboard-grid{grid-template-columns:1fr;gap:13px}
+ .gp-dashboard-panel-head{padding:14px 15px}
+ .gp-dashboard-panel-body{padding:14px 15px}
+ .gp-dashboard-table{min-width:620px}
+ .gp-dashboard-analytics{grid-template-columns:1fr;gap:13px}
+ .gp-dashboard-chart-card{padding:15px}
+ .gp-dashboard-month-bars{height:135px}
+ .gp-dashboard-month-track{height:98px}
+ body.menu-open:after{content:"";position:fixed;inset:0;background:rgba(8,24,40,.48);z-index:1250}
+ body.menu-open .sidebar{z-index:1300!important}
+}
+@media(max-width:380px){.gp-dashboard-stats{grid-template-columns:1fr 1fr}.gp-dashboard-hero h1{font-size:22px}.breadcrumb{font-size:11px}.breadcrumb span{padding:0 5px}}
+@media(prefers-reduced-motion:reduce){html body .app-shell>.sidebar{transition:none!important}}
+
+
 .gp-dashboard{display:grid;gap:22px;width:100%;max-width:1680px;margin:0 auto;color:#17324a}
 .gp-dashboard-hero{display:flex;align-items:center;justify-content:space-between;gap:22px;padding:clamp(22px,3vw,34px);border-radius:20px;color:#fff;background:linear-gradient(130deg,#102d49 0%,#155b7d 58%,#078f7a 100%);box-shadow:0 14px 34px rgba(16,58,93,.14)}
 .gp-dashboard-hero .eyebrow{color:#aee9dc;font-size:11px;letter-spacing:.14em;font-weight:900}
@@ -99,132 +134,3 @@ body.menu-open .sidebar{z-index:1300!important}
 .gp-dashboard-month-track i{display:block;width:100%;min-height:3px;border-radius:7px 7px 2px 2px;background:linear-gradient(180deg,#19b99c,#155b7d)}
 .gp-dashboard-month small{color:#8392a1;font-size:10px;font-weight:750}
 @media(max-width:780px){.gp-dashboard-analytics{grid-template-columns:1fr;gap:13px}.gp-dashboard-chart-card{padding:15px}.gp-dashboard-month-bars{height:135px}.gp-dashboard-month-track{height:98px}}
-
-/* CORRECTION CIBLEE MOBILE — l'en-tête ne doit jamais être repoussé dans le flux. */
-@media(max-width:780px){
-  html,body{margin:0!important;padding:0!important;scroll-padding-top:68px}
-  html body .app-shell{display:block!important;margin:0!important;padding:0!important}
-  html body .app-shell>.main-area{
-    display:block!important;
-    position:relative!important;
-    margin:0!important;
-    padding:68px 0 0!important;
-    top:0!important;
-  }
-  html body .app-shell>.main-area>.topbar{
-    display:flex!important;
-    position:fixed!important;
-    top:0!important;
-    right:0!important;
-    bottom:auto!important;
-    left:0!important;
-    width:100%!important;
-    height:68px!important;
-    min-height:68px!important;
-    max-height:68px!important;
-    margin:0!important;
-    padding:8px 14px!important;
-    transform:none!important;
-    z-index:2000!important;
-  }
-  html body .app-shell>.main-area>.page-content{
-    position:relative!important;
-    margin:0!important;
-    padding:17px 14px 30px!important;
-  }
-}
-
-/* FIX DEFINITIF MOBILE/TABLETTE : ancrage de l'en-tête au viewport,
-   indépendant du flux et de la position initiale du conteneur principal. */
-@media screen and (max-width:1000px){
-  html body .app-shell > main.main-area{
-    display:block!important;
-    position:relative!important;
-    top:0!important;
-    left:0!important;
-    margin:0!important;
-    padding:68px 0 0!important;
-    transform:none!important;
-  }
-  html body .app-shell > main.main-area > header.topbar{
-    display:flex!important;
-    position:fixed!important;
-    inset:0 0 auto 0!important;
-    top:0!important;
-    left:0!important;
-    right:0!important;
-    bottom:auto!important;
-    width:100vw!important;
-    height:68px!important;
-    min-height:68px!important;
-    max-height:68px!important;
-    margin:0!important;
-    transform:none!important;
-    z-index:99999!important;
-  }
-  html body .app-shell > main.main-area > section.page-content{
-    display:block!important;
-    position:relative!important;
-    top:0!important;
-    margin:0!important;
-    padding:17px 14px 30px!important;
-    transform:none!important;
-  }
-}
-
-/* RECONSTRUCTION DU FLUX : l'en-tête est maintenant un frère de main,
-   et non plus un enfant du conteneur qui porte le contenu. */
-html body .app-shell{transform:none!important;filter:none!important;perspective:none!important;contain:none!important}
-html body .app-shell>header.topbar{
-  display:flex!important;
-  position:relative!important;
-  top:auto!important;right:auto!important;bottom:auto!important;left:auto!important;
-  width:calc(100% - 278px)!important;
-  min-height:76px!important;height:auto!important;max-height:none!important;
-  margin:0 0 0 278px!important;
-  padding:12px clamp(18px,2.7vw,42px)!important;
-  transform:none!important;
-  z-index:1000!important;
-  box-sizing:border-box!important;
-}
-html body .app-shell>main.main-area{
-  display:block!important;position:relative!important;
-  width:auto!important;min-width:0!important;max-width:none!important;
-  min-height:0!important;height:auto!important;
-  margin:0 0 0 278px!important;padding:0!important;
-  transform:none!important;top:auto!important;
-}
-html body .app-shell>main.main-area>.page-content{
-  width:100%!important;max-width:none!important;
-  min-height:0!important;height:auto!important;
-  margin:0!important;padding:24px clamp(18px,2.7vw,42px) 42px!important;
-  transform:none!important;
-}
-@media(max-width:1150px) and (min-width:781px){
-  html body .app-shell>header.topbar{width:calc(100% - 250px)!important;margin-left:250px!important}
-  html body .app-shell>main.main-area{margin-left:250px!important}
-}
-@media(max-width:780px){
-  html body .app-shell>header.topbar{
-    display:flex!important;position:fixed!important;
-    inset:0 0 auto 0!important;
-    width:100vw!important;height:68px!important;
-    min-height:68px!important;max-height:68px!important;
-    margin:0!important;padding:8px 14px!important;
-    transform:none!important;z-index:1200!important;
-  }
-  html body .app-shell>main.main-area{
-    display:block!important;position:relative!important;
-    width:100%!important;max-width:100%!important;
-    min-height:0!important;height:auto!important;
-    margin:0!important;padding:68px 0 0!important;
-    transform:none!important;top:0!important;
-  }
-  html body .app-shell>main.main-area>.page-content{
-    display:block!important;position:relative!important;
-    width:100%!important;max-width:none!important;
-    min-height:0!important;height:auto!important;
-    margin:0!important;padding:17px 14px 30px!important;
-    transform:none!important;top:0!important;
-  }
-}
