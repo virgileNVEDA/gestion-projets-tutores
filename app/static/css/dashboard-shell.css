@@ -237,9 +237,7 @@ html,body { margin:0; padding:0; min-height:100%; overflow-x:hidden; }
  body .app-shell>header.topbar{display:flex!important;position:sticky!important;top:0!important;left:auto!important;right:auto!important;bottom:auto!important;width:100%!important;height:68px!important;min-height:68px!important;max-height:68px!important;margin:0!important;padding:8px 14px!important;transform:none!important;z-index:5000!important}
  body .app-shell>main.main-area{display:block!important;position:relative!important;width:100%!important;max-width:100%!important;min-width:0!important;height:auto!important;min-height:0!important;margin:0!important;padding:0!important;transform:none!important}
  body .app-shell>main.main-area>.page-content{display:block!important;position:relative!important;width:100%!important;max-width:100%!important;min-width:0!important;height:auto!important;min-height:0!important;margin:0!important;padding:17px 14px 30px!important;transform:none!important}
- body .app-shell>.sidebar{position:fixed!important;top:0!important;left:0!important;bottom:0!important;right:auto!important;width:min(86vw,300px)!important;height:100vh!important;height:100dvh!important;z-index:6000!important;transform:translateX(-105%)!important;visibility:hidden!important;pointer-events:none!important}
- body .app-shell>.sidebar.open{transform:translateX(0)!important;visibility:visible!important;pointer-events:auto!important}
- body .app-shell .gp-dashboard,body .app-shell .gp-dashboard-grid,body .app-shell .gp-dashboard-analytics,body .app-shell .gp-dashboard-panel,body .app-shell .gp-dashboard-chart-card{width:100%!important;max-width:100%!important;min-width:0!important}
+  body .app-shell .gp-dashboard,body .app-shell .gp-dashboard-grid,body .app-shell .gp-dashboard-analytics,body .app-shell .gp-dashboard-panel,body .app-shell .gp-dashboard-chart-card{width:100%!important;max-width:100%!important;min-width:0!important}
  body .app-shell .gp-dashboard-grid,body .app-shell .gp-dashboard-analytics{display:grid!important;grid-template-columns:minmax(0,1fr)!important}
 }
 
