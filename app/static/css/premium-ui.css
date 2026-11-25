@@ -244,3 +244,26 @@ button.primary-btn:hover,button.small-btn:not(.danger-btn):hover,a.small-btn:hov
  .panel{min-width:0}
  .table-wrap{max-width:100%;overflow-x:auto}
 }
+
+
+/* Correctifs issus du contrôle visuel mobile et desktop */
+@media(min-width:781px){
+ .app-shell{grid-template-rows:0 minmax(0,1fr)!important}
+ .app-shell>header.topbar{position:fixed!important;inset:0 0 auto 0!important;width:100%!important;height:76px!important;min-height:76px!important;z-index:3000!important}
+ .app-shell>main.main-area{grid-row:2!important}
+ .app-shell>main.main-area>.page-content{padding-top:30px!important}
+}
+@media(max-width:780px){
+ .app-shell{grid-template-rows:0 minmax(0,1fr)!important}
+ .app-shell>header.topbar{position:fixed!important;inset:0 0 auto 0!important;width:100%!important;height:68px!important;min-height:68px!important;max-height:68px!important;z-index:3000!important}
+ .app-shell>main.main-area{grid-row:2!important}
+ .app-shell>main.main-area>.page-content{padding-top:84px!important}
+}
+.gp-dashboard-hero p{color:#f1f6ff!important;opacity:1!important;text-shadow:0 1px 2px #001c4a55}
+.gp-dashboard-hero .eyebrow{color:#ffda7a!important}
+.gp-dashboard-hero h1{color:#fff!important;text-shadow:0 1px 2px #001c4a30}
+.gp-dashboard-hero .date-chip{color:#fff!important}
+.workspace-module-card b{color:#102f60!important}
+.workspace-module-card small{color:#52677f!important;font-weight:500!important}
+.workspace-module-card>i{color:#526b87!important}
+.workspace-module-card em{color:#064ba6!important}
