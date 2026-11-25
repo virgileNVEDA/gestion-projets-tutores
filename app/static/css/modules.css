@@ -69,3 +69,23 @@
  .module-grid{grid-template-columns:minmax(0,1fr)!important}
  .panel{min-width:0}
 }
+
+
+/* Harmonisation finale des modules avec le footer bleu nuit / bleu / or */
+.panel-heading{background:linear-gradient(105deg,#071d49 0%,#0a397c 72%,#0756a8 100%)!important;border-bottom:3px solid #e5ad3b!important;border-radius:14px 14px 0 0}
+.panel-heading h3,.panel-heading p{color:#fff!important}
+.form-panel>h3,.panel>h3,.settings-group summary{
+ background:linear-gradient(105deg,#071d49,#0a397c 72%,#0756a8)!important;
+ color:#fff!important;border-bottom:3px solid #e5ad3b!important;
+}
+.module-form label,.settings-fields>label,.upload-card>label{color:#203c5b!important}
+.module-form input,.module-form select,.module-form textarea,
+.inline-form input,.inline-form select{color:#18324d!important}
+.small-btn,.hierarchy-edit-form button,.hierarchy-toggle button{
+ color:#fff!important;background:linear-gradient(110deg,#0756a8,#0b4b91)!important;
+ border:1px solid #0756a8!important;border-radius:10px!important;font-weight:800;
+}
+.danger-btn,.small-btn.danger-btn{
+ color:#a52e37!important;background:#fff1f1!important;border:1px solid #efc8c8!important;
+}
+.settings-group summary b,.settings-group summary small,.settings-group summary i{color:#fff!important}
