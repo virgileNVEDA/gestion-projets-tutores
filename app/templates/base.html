@@ -9,9 +9,10 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css', v='20261125-workspace1') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/modules.css', v='20261125-audit2') }}">
+  <style>:root{--gp-primary:{{ institution.primary_color if institution else '#142D49' }};--gp-accent:{{ institution.accent_color if institution else '#079B83' }};--gp-primary-rgb:20,45,73} .topbar{border-bottom:3px solid var(--gp-accent)} .page-content h1,.page-content h2,.page-content h3{color:var(--gp-primary)} .eyebrow.green,.small-btn,.primary-btn,.settings-save{border-color:var(--gp-accent)} .primary-btn,.small-btn:not(.danger-btn),.settings-save{background-color:var(--gp-accent)} .panel-heading{border-bottom-color:var(--gp-accent)} .stat-card{border-top:3px solid var(--gp-accent)}</style>
   {% block extra_css %}{% endblock %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard-shell.css', v='20261125-corrections2') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/premium-ui.css', v='20261126-footer2') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/premium-ui.css', v='20261126-academic3') }}">
 </head>
 <body>
 {% if current_user.is_authenticated and institution and institution.progress_enabled %}<div class="global-progress" id="globalProgress"></div>{% endif %}
