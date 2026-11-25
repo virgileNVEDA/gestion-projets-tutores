@@ -70,6 +70,11 @@ def create_app():
             db.session.add(Institution(name=os.getenv("INSTITUTION_NAME", "Établissement académique"),
                                        acronym=os.getenv("INSTITUTION_ACRONYM", "")))
             db.session.commit()
+        institution = Institution.query.order_by(Institution.id.asc()).first()
+        if institution and not institution.promotions_json:
+            import json
+            institution.promotions_json = json.dumps(["L3", "M2"], ensure_ascii=False)
+            db.session.commit()
         # Harmoniser les matricules existants : identifiant court lié au rôle et aux initiales.
         from .models import ROLES
         for account in User.query.order_by(User.id.asc()).all():
