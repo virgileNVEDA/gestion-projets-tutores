@@ -53,3 +53,40 @@
 .dashboard-v3 .dash-empty b{display:block;color:#334b61;font-size:13px;margin-bottom:5px}
 @media(max-width:1050px){.dashboard-v3 .dash-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.dashboard-v3 .dash-panels{grid-template-columns:1fr}}
 @media(max-width:600px){.dashboard-v3{padding:17px 14px 28px}.dashboard-v3 .dash-heading{display:block;margin-bottom:18px}.dashboard-v3 .dash-date{display:inline-block;margin-top:13px}.dashboard-v3 .dash-profile{margin-top:12px}.dashboard-v3 .dash-stats{gap:10px}.dashboard-v3 .dash-stat{padding:14px}.dashboard-v3 .dash-stat strong{font-size:25px}.dashboard-v3 .dash-stat-label{font-size:11px}.dashboard-v3 .dash-panel{padding:16px}.dashboard-v3 .dash-status-row{grid-template-columns:85px minmax(45px,1fr) 25px;gap:7px;font-size:10px}.dashboard-v3 .dash-months{height:155px}.dashboard-v3 .dash-month-track{height:110px}.dashboard-v3 .dash-month small{font-size:9px}}
+
+/* Positionnement final : le tableau de bord démarre juste sous l'en-tête fixe. */
+html body .app-shell > .main-area{
+  padding-top:78px!important;
+}
+html body .app-shell > .main-area > .page-content.dashboard-page{
+  display:block!important;
+  position:relative!important;
+  inset:auto!important;
+  margin:0!important;
+  padding:0!important;
+  width:100%!important;
+  min-height:0!important;
+  height:auto!important;
+  transform:none!important;
+}
+html body .app-shell > .main-area > .page-content.dashboard-page > .dashboard-v3{
+  display:block!important;
+  position:relative!important;
+  inset:auto!important;
+  top:0!important;
+  margin:0!important;
+  padding:18px clamp(18px,2.8vw,38px) 34px!important;
+  width:100%!important;
+  min-height:0!important;
+  height:auto!important;
+  transform:none!important;
+  visibility:visible!important;
+  opacity:1!important;
+}
+@media(max-width:780px){
+  html body .app-shell > .main-area{padding-top:68px!important}
+  html body .app-shell > .main-area > .page-content.dashboard-page{padding:0!important}
+  html body .app-shell > .main-area > .page-content.dashboard-page > .dashboard-v3{
+    padding:14px 14px 28px!important;
+  }
+}
