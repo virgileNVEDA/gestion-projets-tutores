@@ -1,5 +1,12 @@
 {% extends "base.html" %}
-{% block title %}{{ section|replace('_',' ')|title }} · Projets tutorés{% endblock %}
+{% block title %}{{ section|replace('_',' ')|title }} · Projets tutorés
+<script>
+document.addEventListener("DOMContentLoaded",()=>{
+const fill=async(url,el,placeholder)=>{el.innerHTML="<option value=''>"+placeholder+"</option>";el.disabled=true;if(!url)return;const r=await fetch(url);if(!r.ok)return;(await r.json()).forEach(x=>{const o=document.createElement("option");o.value=x.name;o.textContent=x.name;el.appendChild(o)});el.disabled=false};
+document.querySelectorAll(".user-section").forEach(s=>{const form=s.closest("form"),o=form.querySelector(".user-option"),m=form.querySelector(".user-mention");s.addEventListener("change",async()=>{m.innerHTML="<option value=''>Choisir une option</option>";m.disabled=true;const rows=await (await fetch("/modules/api/sections")).json();const sec=rows.find(x=>x.name===s.value);await fill(sec?"/modules/api/sections/"+sec.id+"/options":null,o,"Choisir une option")});o.addEventListener("change",async()=>{const rows=await (await fetch("/modules/api/sections")).json();const sec=rows.find(x=>x.name===s.value);if(!sec)return;const opts=await (await fetch("/modules/api/sections/"+sec.id+"/options")).json();const opt=opts.find(x=>x.name===o.value);await fill(opt?"/modules/api/options/"+opt.id+"/mentions":null,m,"Aucune mention définie")})});
+});
+</script>
+{% endblock %}
 {% block page_section %}{{ section|replace('_',' ')|title }}{% endblock %}
 {% block content %}
 {% set titles={'etudiants':'Gestion des étudiants','enseignants':'Corps enseignant','programmes':'Programmes et filières','sujets':'Sujets et mémoires','encadrement':'Affectation des encadreurs','validations':'Circuit de validation','messagerie':'Messagerie des projets','documents':'Documents et versions','reunions':'Réunions et rendez-vous','rapports':'Rapports académiques','notifications':'Centre de notifications','utilisateurs':'Utilisateurs et rôles'} %}
