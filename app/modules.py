@@ -431,7 +431,7 @@ def print_student_report():
     mention = request.args.get("mention", "").strip()
     promotion = request.args.get("promotion", "").strip()
     if section_name: query = query.filter(User.section_name == section_name)
-    if mention: query = query.filter(User.mention == mention)
+    if mention: query = query.filter(db.or_(User.mention == mention, User.mention_name == mention, User.option_name == mention))
     if promotion: query = query.filter(User.promotion == promotion)
     students = query.order_by(User.full_name.asc(), User.matricule.asc()).all()
     rows = [{"student":s,"topic":ProjectTopic.query.filter_by(student_id=s.id).order_by(ProjectTopic.updated_at.desc()).first()} for s in students]
