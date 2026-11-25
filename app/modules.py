@@ -226,9 +226,9 @@ def section(section):
                 section_name=request.form.get("section_name","").strip()
                 mention_name=request.form.get("mention_name","").strip()
                 matricule=request.form.get("matricule","").strip().upper()
-                if role=="student":
-                    if not matricule: raise ValueError("Le matricule officiel de l’étudiant est obligatoire.")
-                    if User.query.filter_by(matricule=matricule).first(): raise ValueError("Ce matricule est déjà utilisé.")
+                if role in {"student","tutor"}:
+                    if role=="student" and not matricule: raise ValueError("Le matricule officiel de l’étudiant est obligatoire.")
+                    if role=="student" and User.query.filter_by(matricule=matricule).first(): raise ValueError("Ce matricule est déjà utilisé.")
                     parent=AcademicSection.query.filter_by(name=section_name,active=True).first()
                     men=AcademicOption.query.filter_by(name=mention_name,active=True,section_id=parent.id).first() if parent and mention_name else None
                     if not parent or not men: raise ValueError("La section et la mention doivent respecter leur rattachement.")
@@ -301,10 +301,10 @@ def section(section):
                     user.matricule=generate_matricule(full_name, role, exclude_user_id=user.id)
                 section_name=request.form.get("section_name","").strip()
                 mention_name=request.form.get("mention_name","").strip()
-                if role=="student":
+                if role in {"student","tutor"}:
                     parent=AcademicSection.query.filter_by(name=section_name,active=True).first()
                     men=AcademicOption.query.filter_by(name=mention_name,active=True,section_id=parent.id).first() if parent and mention_name else None
-                    if not parent or not men: raise ValueError("La section et la mention doivent respecter leur rattachement.")
+                    if not parent or not men or not request.form.get("promotion","").strip(): raise ValueError("Pour un étudiant ou un tuteur, la section, la mention et la promotion sont obligatoires et doivent respecter leur rattachement.")
                 user.section_name=section_name or None
                 user.option_name=None
                 user.mention_name=mention_name or None
