@@ -314,3 +314,13 @@ thead th{background:#e8eef4;color:#334155}
 .profile-actions{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-top:18px;border-top:1px solid #e9eef2}
 .profile-actions span{font-size:11px;color:#8493a2}
 @media(max-width:760px){.welcome-row{align-items:flex-start;flex-direction:column}.dashboard-profile{width:100%;min-width:0}.profile-top-entry{padding:3px}.profile-top-entry>span:last-child{display:none}.profile-top-entry .profile-avatar{width:40px;height:40px}.profile-form{padding:19px}.profile-photo-section{align-items:flex-start;gap:15px}.profile-photo-preview{width:84px;height:84px;flex-basis:84px}.profile-fields{grid-template-columns:1fr;gap:14px}.profile-actions{align-items:stretch;flex-direction:column}.profile-actions .settings-save{width:100%}.profile-page-heading{align-items:flex-start}}
+
+/* Correctif mobile : menu latéral au premier plan et contenu sans décalage parasite */
+@media(max-width:780px){
+  .sidebar{z-index:1200;top:0;bottom:0;pointer-events:auto}
+  .sidebar.open{transform:translateX(0);visibility:visible}
+  .topbar{z-index:1100}
+  .main-area{padding-top:68px!important}
+  .page-content{margin-top:0!important}
+  .profile-page{margin-top:0!important;padding-top:0!important}
+}
