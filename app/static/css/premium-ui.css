@@ -207,3 +207,40 @@ body{background:#f2f6ff}
  body .app-shell>.topbar{background:linear-gradient(105deg,#092d68,#0756bd)!important}
  body .app-shell>.topbar .workspace-brand b{color:#fff!important}
 }
+
+
+/* Finition visuelle : contraste, cohérence de l'accueil et actions lisibles */
+:root{--gp-primary:#092d68;--gp-accent:#087f75;--gp-gold:#e5ad3b}
+.orbit-header{
+ background:linear-gradient(105deg,#092d68 0%,#0756bd 72%,#087f75 100%)!important;
+ border-bottom:3px solid #e5ad3b!important;
+ box-shadow:0 8px 24px rgba(7,29,73,.18)!important;
+}
+.orbit-brand,.orbit-brand>span:last-child{color:#fff!important}
+.orbit-brand b{color:#f2c65f!important}
+.orbit-brand-mark{background:#fff!important;color:#0756bd!important;box-shadow:0 6px 18px #00112e30}
+.orbit-login{background:#fff!important;color:#092d68!important;border:1px solid #ffffff80!important}
+.orbit-login svg{stroke:#092d68!important}
+.orbit-header a:focus-visible,.orbit-login:focus-visible{outline:3px solid #f2c65f;outline-offset:3px}
+button.primary-btn,button.small-btn:not(.danger-btn),a.small-btn,button.signin-submit,
+.orbit-search-form button,.student-lookup button{
+ color:#fff!important;
+ text-shadow:none!important;
+}
+button.primary-btn:hover,button.small-btn:not(.danger-btn):hover,a.small-btn:hover,
+.orbit-search-form button:hover,.student-lookup button:hover{filter:brightness(.94)}
+.page-content{color:#263b50}
+.page-content p,.page-content label,.page-content td{color:#40566c}
+.page-content .form-hint,.page-content .muted,.page-content small{color:#687d91}
+.page-content h1,.page-content h2,.page-content h3,.page-content h4{color:#123b63}
+.auth-page .auth-brand{width:min(100%,960px);padding:14px 18px;border-radius:14px;background:linear-gradient(105deg,#092d68,#0756bd 75%,#087f75);border-bottom:3px solid #e5ad3b}
+.auth-page .auth-brand>a,.auth-page .auth-brand b{color:#fff!important}
+.auth-page .auth-brand small{color:#dbe8f8!important}
+@media(min-width:781px){
+ .app-shell>.topbar{position:sticky!important;top:0!important;align-self:start;z-index:1400!important}
+ .app-shell>.sidebar{z-index:1450}
+ .app-shell>main.main-area>.page-content{padding:30px clamp(24px,3vw,54px) 48px}
+ .module-grid{grid-template-columns:minmax(0,1.55fr) minmax(340px,.9fr);gap:22px}
+ .panel{min-width:0}
+ .table-wrap{max-width:100%;overflow-x:auto}
+}
