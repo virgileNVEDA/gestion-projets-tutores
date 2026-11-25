@@ -59,28 +59,18 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
-/* Évite la restauration d'une ancienne position de défilement sur le profil.
-   Sur mobile, certains navigateurs réaffichent sinon le contenu au milieu de la page. */
+/* Réinitialise réellement le défilement du profil sur les navigateurs mobiles. */
 (() => {
-  const isProfilePage = () => window.location.pathname.replace(/\\/+$/, "") === "/auth/profil";
-  const resetProfileScroll = () => {
-    if (!isProfilePage()) return;
+  const profilePath = location.pathname === "/auth/profil" || location.pathname === "/auth/profil/";
+  if (!profilePath) return;
+  if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+  const goTop = () => {
     window.scrollTo(0, 0);
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
   };
-
-  if (isProfilePage() && "scrollRestoration" in history) {
-    history.scrollRestoration = "manual";
-  }
-
-  document.addEventListener("DOMContentLoaded", () => {
-    resetProfileScroll();
-    requestAnimationFrame(() => {
-      resetProfileScroll();
-      requestAnimationFrame(resetProfileScroll);
-    });
-  });
-  window.addEventListener("load", resetProfileScroll);
-  window.addEventListener("pageshow", resetProfileScroll);
+  goTop();
+  document.addEventListener("DOMContentLoaded", goTop, {once:true});
+  window.addEventListener("load", goTop, {once:true});
+  window.addEventListener("pageshow", goTop);
 })();
