@@ -186,6 +186,40 @@ def section(section):
                 if AcademicMention.query.filter_by(option_id=parent.id,name=name).first(): raise ValueError("Cette mention existe déjà dans cette option.")
                 db.session.add(AcademicMention(option_id=parent.id,name=name))
                 flash("Mention ajoutée à l'option.","success")
+            elif action == "edit_section" and current_user.role == "admin":
+                item=AcademicSection.query.get_or_404(int(request.form.get("section_id")))
+                name=request.form.get("name","").strip()
+                if not name: raise ValueError("Le nom de la section est obligatoire.")
+                duplicate=AcademicSection.query.filter(AcademicSection.name==name,AcademicSection.id!=item.id).first()
+                if duplicate: raise ValueError("Cette section existe déjà.")
+                item.name=name
+                flash("Section modifiée.","success")
+            elif action == "edit_option" and current_user.role == "admin":
+                item=AcademicOption.query.get_or_404(int(request.form.get("option_id")))
+                parent=AcademicSection.query.get_or_404(int(request.form.get("section_id")))
+                name=request.form.get("name","").strip()
+                if not name: raise ValueError("Le nom de l'option est obligatoire.")
+                duplicate=AcademicOption.query.filter(AcademicOption.section_id==parent.id,AcademicOption.name==name,AcademicOption.id!=item.id).first()
+                if duplicate: raise ValueError("Cette option existe déjà dans cette section.")
+                item.section_id=parent.id; item.name=name
+                flash("Option modifiée.","success")
+            elif action == "edit_mention" and current_user.role == "admin":
+                item=AcademicMention.query.get_or_404(int(request.form.get("mention_id")))
+                parent=AcademicOption.query.get_or_404(int(request.form.get("option_id")))
+                name=request.form.get("name","").strip()
+                if not name: raise ValueError("Le nom de la mention est obligatoire.")
+                duplicate=AcademicMention.query.filter(AcademicMention.option_id==parent.id,AcademicMention.name==name,AcademicMention.id!=item.id).first()
+                if duplicate: raise ValueError("Cette mention existe déjà dans cette option.")
+                item.option_id=parent.id; item.name=name
+                flash("Mention modifiée.","success")
+            elif action == "toggle_academic_item" and current_user.role == "admin":
+                kind=request.form.get("kind")
+                item_id=int(request.form.get("item_id"))
+                model={"section":AcademicSection,"option":AcademicOption,"mention":AcademicMention}.get(kind)
+                if not model: raise ValueError("Type de référence invalide.")
+                item=model.query.get_or_404(item_id)
+                item.active=not item.active
+                flash("Élément activé." if item.active else "Élément désactivé.","success")
             elif action == "create_user" and current_user.role == "admin":
                 email=request.form.get("email","").strip().lower()
                 if User.query.filter_by(email=email).first(): raise ValueError("Cette adresse e-mail existe déjà.")
