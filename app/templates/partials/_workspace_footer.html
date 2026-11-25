@@ -1,60 +1,26 @@
-<footer class="gp-site-footer" aria-label="Pied de page de la plateforme">
-  <div class="gp-footer-grid">
-    <section class="gp-footer-brand">
-      <a class="gp-footer-logo" href="{{ url_for('main.index') }}" aria-label="Accueil"><span>GP</span></a>
-      <div><strong>{{ institution.acronym if institution and institution.acronym else 'GESTION ACADÉMIQUE' }}</strong>
-        <p>{{ institution.name if institution else 'Gestion des projets tutorés' }}</p>
-        {% if institution and institution.motto %}<em>« {{ institution.motto }} »</em>{% endif %}
-      </div>
-      <div class="gp-footer-contact">
-        {% if institution and institution.address %}<span>⌖ {{ institution.address }}</span>{% endif %}
-        {% if institution and institution.phone %}<a href="tel:{{ institution.phone }}">☎ {{ institution.phone }}</a>{% endif %}
-        {% if institution and institution.contact_email %}<a href="mailto:{{ institution.contact_email }}">✉ {{ institution.contact_email }}</a>{% endif %}
-        {% if institution and institution.website %}<a href="{{ institution.website if institution.website.startswith('http') else 'https://' ~ institution.website }}" target="_blank" rel="noopener">↗ Site officiel</a>{% endif %}
-      </div>
-    </section>
-    <nav class="gp-footer-links" aria-label="Accès rapides">
-      <h3>Accès rapides</h3>
-      <a href="{{ url_for('main.index') }}">Accueil</a>
-      <a href="{{ url_for('auth.register') }}">Créer un compte</a>
-      <a href="{{ url_for('auth.login') }}">Connexion</a>
-      <a href="{{ url_for('main.public_student_lookup') }}">Rechercher un étudiant</a>
-      {% if current_user.is_authenticated %}<a href="{{ url_for('main.dashboard') }}">Tableau de bord</a>{% endif %}
-    </nav>
-    <nav class="gp-footer-links" aria-label="Espaces académiques">
-      <h3>Espaces académiques</h3>
-      {% if current_user.is_authenticated %}
-        <a href="{{ url_for('modules.section',section='sujets') }}">Sujets & mémoires</a>
-        <a href="{{ url_for('modules.section',section='encadrement') }}">Encadrement</a>
-        <a href="{{ url_for('modules.section',section='documents') }}">Documents</a>
-        <a href="{{ url_for('modules.section',section='reunions') }}">Réunions & calendrier</a>
-        <a href="{{ url_for('modules.section',section='notifications') }}">Notifications</a>
-      {% else %}
-        <a href="{{ url_for('auth.login') }}">Espace étudiant</a>
-        <a href="{{ url_for('auth.login') }}">Espace enseignant</a>
-        <a href="{{ url_for('auth.login') }}">Espace administration</a>
-      {% endif %}
-    </nav>
-    <section class="gp-footer-resources">
-      <h3>Documents & téléchargements</h3>
-      <a href="{{ url_for('modules.section',section='documents') if current_user.is_authenticated else url_for('auth.login') }}">Ressources académiques</a>
+<footer class="gp-site-footer gp-footer-compact" aria-label="Pied de page">
+  <div class="gp-footer-compact-inner">
+    <div class="gp-footer-mini-brand">
+      <span class="gp-footer-mini-logo">GP</span>
+      <span><strong>{{ institution.acronym if institution and institution.acronym else 'GESTION ACADÉMIQUE' }}</strong><small>{{ institution.name if institution else 'Gestion des projets tutorés' }}</small></span>
+    </div>
+    <nav class="gp-footer-downloads" aria-label="Téléchargements et documents">
+      <span class="gp-footer-download-title">DOCUMENTS & TÉLÉCHARGEMENTS</span>
+      <a class="gp-download-item" href="{{ url_for('modules.section',section='documents') if current_user.is_authenticated else url_for('auth.login') }}">
+        <span class="gp-download-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3.75h7l4 4v12.5H7a2 2 0 0 1-2-2V5.75a2 2 0 0 1 2-2Z"/><path d="M14 3.75v4h4M8.5 13h7M8.5 16.5h7"/></svg></span>
+        <span><b>Documents</b><small>Ressources académiques</small></span>
+      </a>
       {% if current_user.is_authenticated and current_user.role in ['admin','section_head','department_head','coordination'] %}
-      <a href="{{ url_for('main.export_students_csv') }}">Télécharger la liste des étudiants (CSV)</a>
+      <a class="gp-download-item" href="{{ url_for('main.export_students_csv') }}">
+        <span class="gp-download-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 3.75h14v16.5H5zM8 8h8M8 12h8M8 16h4"/><path d="M16 15v5m-2-2 2 2 2-2"/></svg></span>
+        <span><b>Exporter</b><small>Liste des étudiants · CSV</small></span>
+      </a>
       {% endif %}
-      <a href="{{ url_for('main.public_student_lookup') }}">Consulter / imprimer une fiche étudiant</a>
-      <p>Les guides PDF/Word et fichiers d’installation seront proposés ici dès leur publication officielle.</p>
-    </section>
-    <section class="gp-footer-community">
-      <h3>Assistance & application</h3>
-      <a href="{{ url_for('auth.forgot_password') }}">Mot de passe oublié</a>
-      {% if institution and institution.contact_email %}<a href="mailto:{{ institution.contact_email }}?subject=Assistance%20plateforme">Contacter l’assistance</a>{% endif %}
-      <a href="{{ url_for('main.index') }}">Version web mobile</a>
-      <span class="gp-footer-secure">✦ Plateforme académique sécurisée</span>
-    </section>
+      <a class="gp-download-item" href="{{ url_for('main.public_student_lookup') }}">
+        <span class="gp-download-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 3.75h12v16.5H6zM9 8h6M9 11.5h6M9 15h3"/><path d="M15.5 16.5 18 19"/></svg></span>
+        <span><b>Fiche étudiant</b><small>Consulter / imprimer</small></span>
+      </a>
+    </nav>
   </div>
-  <div class="gp-footer-bottom">
-    <strong>© {{ now.year if now else 2026 }} {{ institution.name if institution else 'Gestion des projets tutorés' }}</strong>
-    <span>Tous droits réservés.</span>
-    <span>Gestion académique · Espace numérique</span>
-  </div>
+  <div class="gp-footer-compact-bottom">© {{ now.year if now else 2026 }} {{ institution.name if institution else 'Gestion des projets tutorés' }} · Tous droits réservés.</div>
 </footer>
