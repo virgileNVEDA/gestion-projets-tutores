@@ -133,8 +133,14 @@ def profile():
             return redirect(url_for("auth.profile"))
         current_user.full_name = full_name
         current_user.email = email
+        cropped = request.form.get("profile_photo_cropped", "").strip()
         photo = request.files.get("profile_photo")
-        if photo and photo.filename:
+        if cropped:
+            if not cropped.startswith("data:image/jpeg;base64,") or len(cropped) > 3_000_000:
+                flash("Le recadrage de la photo est invalide ou trop volumineux.", "error")
+                return redirect(url_for("auth.profile"))
+            current_user.profile_photo_data = cropped
+        elif photo and photo.filename:
             raw = photo.read(2 * 1024 * 1024 + 1)
             if len(raw) > 2 * 1024 * 1024:
                 flash("La photo ne doit pas dépasser 2 Mo.", "error")
