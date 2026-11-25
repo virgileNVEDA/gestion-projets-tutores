@@ -16,7 +16,8 @@ def login():
         return redirect(url_for("main.dashboard"))
     error = None
     if request.method == "POST":
-        identifier = request.form.get("email", "").strip()\n        email = identifier.lower()
+        identifier = request.form.get("email", "").strip()
+        email = identifier.lower()
         password = request.form.get("password", "")
         user = User.query.filter_by(email=email, active=True).first() or User.query.filter_by(matricule=identifier.upper(), active=True).first()
         if user and user.check_password(password):
