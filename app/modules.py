@@ -433,7 +433,16 @@ def section(section):
     history=WorkflowEvent.query.filter(WorkflowEvent.topic_id.in_(topic_ids)).order_by(WorkflowEvent.created_at.desc()).limit(100).all() if topic_ids else []
     notes=Notification.query.filter_by(user_id=current_user.id).order_by(Notification.created_at.desc()).limit(100).all()
     stats={"students":User.query.filter_by(role="student").count(),"tutors":User.query.filter_by(role="tutor").count(),"topics":ProjectTopic.query.count(),"pending":ProjectTopic.query.filter(ProjectTopic.status.in_(["draft","submitted","revision","in_review"])).count(),"approved":ProjectTopic.query.filter_by(status="approved").count()}
-    return render_template("module.html",section=section,topics=topics,users=users,programs=programs,academic_sections=AcademicSection.query.filter_by(active=True).order_by(AcademicSection.name).all(),academic_sections_all=AcademicSection.query.order_by(AcademicSection.name).all(),messages=messages,docs=docs,meetings=meetings,history=history,notes=notes,stats=stats,roles=ROLES,now=datetime.utcnow())
+    import json
+    institution_settings = Institution.query.order_by(Institution.id.asc()).first()
+    try:
+        promotions = json.loads(institution_settings.promotions_json or '["L3","M2"]')
+    except (ValueError, TypeError, AttributeError):
+        promotions = ["L3", "M2"]
+    promotions = list(dict.fromkeys(str(x).strip() for x in promotions if str(x).strip()))
+    for required in ("L3", "M2"):
+        if required not in promotions: promotions.append(required)
+    return render_template("module.html",section=section,topics=topics,users=users,programs=programs,promotions=promotions,academic_sections=AcademicSection.query.filter_by(active=True).order_by(AcademicSection.name).all(),academic_sections_all=AcademicSection.query.order_by(AcademicSection.name).all(),messages=messages,docs=docs,meetings=meetings,history=history,notes=notes,stats=stats,roles=ROLES,now=datetime.utcnow())
 
 
 @modules_bp.get("/api/etudiants/<string:matricule>")
