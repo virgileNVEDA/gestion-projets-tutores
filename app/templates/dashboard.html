@@ -1,27 +1,48 @@
 {% extends "base.html" %}
 {% block title %}Tableau de bord · Projets tutorés{% endblock %}
 {% block content %}
-<div class="welcome-row"><div><span class="eyebrow green">VOTRE ESPACE DE TRAVAIL</span><h1>Bonjour, {{ current_user.full_name.split(' ')[0] }} <span class="wave">✦</span></h1><p class="muted">Voici un aperçu de l'activité de vos projets aujourd'hui.</p></div><a class="dashboard-profile" href="{{ url_for('auth.profile') }}" title="Modifier mon profil"><span class="dashboard-avatar">{% if current_user.profile_photo_data %}<img src="{{ current_user.profile_photo_data }}" alt="Votre photo">{% else %}{{ current_user.full_name[:1]|upper }}{% endif %}<i class="online-dot"></i></span><span class="dashboard-profile-copy"><b>{{ current_user.full_name }}</b><small>{{ current_user.role_label }}</small><em><i></i> En ligne · Modifier le profil</em></span><span class="profile-edit-icon">✎</span></a></div>
-<div class="stats-grid">
-{% if current_user.role == 'admin' %}<article class="stat-card"><div class="stat-icon blue">♙</div><span>Étudiants inscrits</span><strong>{{ stats.students }}</strong><small>Comptes étudiants actifs</small></article><article class="stat-card"><div class="stat-icon green">◎</div><span>Encadreurs</span><strong>{{ stats.tutors }}</strong><small>Directeurs de mémoire</small></article>{% endif %}
-<article class="stat-card"><div class="stat-icon gold">▤</div><span>{% if current_user.role == 'student' %}Mon sujet{% else %}Projets suivis{% endif %}</span><strong>{{ stats.topics }}</strong><small>Dossiers dans votre espace</small></article><article class="stat-card"><div class="stat-icon violet">◷</div><span>En attente d'action</span><strong>{{ stats.pending }}</strong><small>À examiner ou compléter</small></article>
-</div>
-<div class="charts-grid">
-<section class="panel chart-panel">
-  <div class="panel-heading"><div><h3>Répartition des projets</h3><p>État d'avancement des dossiers</p></div><span class="chart-tag">Vue globale</span></div>
-  {% if status_chart %}
-  <div class="donut-layout">
-    <div class="donut-chart" style="background:conic-gradient({% for item in status_chart %}{{ item.color }} {{ loop.index0 == 0 and 0 or status_chart[:loop.index0]|sum(attribute='percent') }}% {{ status_chart[:loop.index]|sum(attribute='percent') }}%{% if not loop.last %}, {% endif %}{% endfor %});">
-      <div class="donut-hole"><strong>{{ stats.topics }}</strong><span>Projets</span></div>
-    </div>
-    <div class="chart-legend">{% for item in status_chart %}<div class="legend-row"><span class="legend-dot" style="background:{{ item.color }}"></span><span>{{ item.label }}</span><b>{{ item.count }}</b></div>{% endfor %}</div>
+<style>
+/* Rendu autonome du tableau de bord : ne dépend pas des anciennes classes de mise en page. */
+.dashboard-render-check{display:block!important;position:relative!important;visibility:visible!important;opacity:1!important;width:100%!important;height:auto!important;min-height:1px!important;overflow:visible!important;color:#142d49!important;background:transparent!important;transform:none!important}
+.dashboard-render-check *{visibility:visible!important;opacity:1!important}
+.dashboard-render-check h1,.dashboard-render-check h2,.dashboard-render-check h3,.dashboard-render-check p,.dashboard-render-check span,.dashboard-render-check b,.dashboard-render-check strong,.dashboard-render-check small{color:inherit}
+.dashboard-render-check .dr-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:20px 0}
+.dashboard-render-check .dr-card{display:block!important;background:#fff!important;border:1px solid #dfe8ef!important;border-radius:14px!important;padding:18px!important;min-width:0!important;box-shadow:0 5px 18px rgba(20,45,73,.06)}
+.dashboard-render-check .dr-card strong{display:block;font-size:28px;color:#142d49!important}
+.dashboard-render-check .dr-muted{color:#64788c!important;font-size:13px}
+.dashboard-render-check .dr-table{width:100%;border-collapse:collapse;background:#fff}
+.dashboard-render-check .dr-table th,.dashboard-render-check .dr-table td{padding:12px 10px;border-bottom:1px solid #e8eef3;text-align:left;color:#334155!important;font-size:13px}
+@media(max-width:700px){.dashboard-render-check{padding:4px 0 24px!important}.dashboard-render-check .dr-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.dashboard-render-check .dr-card{padding:14px!important}.dashboard-render-check .dr-card strong{font-size:24px}.dashboard-render-check .dr-table-wrap{overflow-x:auto}}
+</style>
+<div class="dashboard-render-check">
+  <div style="display:block!important;margin:0 0 20px!important;padding:0!important">
+    <div class="dr-muted" style="font-weight:800;letter-spacing:1.4px;color:#078f7a!important">VOTRE ESPACE DE TRAVAIL</div>
+    <h1 style="display:block!important;visibility:visible!important;color:#142d49!important;font-size:clamp(25px,4vw,34px)!important;margin:8px 0!important">Bonjour, {{ current_user.full_name.split(' ')[0] }} ✦</h1>
+    <p class="dr-muted" style="display:block!important">Voici un aperçu de l'activité de vos projets aujourd'hui.</p>
   </div>
-  {% else %}<div class="chart-empty">Les graphiques apparaîtront dès l'enregistrement des premiers projets.</div>{% endif %}
-</section>
-<section class="panel chart-panel">
-  <div class="panel-heading"><div><h3>Activité des six derniers mois</h3><p>Nombre de nouveaux sujets enregistrés</p></div><span class="chart-tag">Tendance</span></div>
-  <div class="bar-chart">{% for item in monthly_chart %}<div class="bar-column"><strong>{{ item.count }}</strong><div class="bar-track"><div class="bar-fill" style="height:{{ item.height }}%"></div></div><span>{{ item.label }}</span></div>{% endfor %}</div>
-</section>
+  <div class="dr-grid">
+    {% if current_user.role == 'admin' %}
+    <div class="dr-card"><span class="dr-muted">Étudiants inscrits</span><strong>{{ stats.students }}</strong><small class="dr-muted">Comptes étudiants actifs</small></div>
+    <div class="dr-card"><span class="dr-muted">Encadreurs</span><strong>{{ stats.tutors }}</strong><small class="dr-muted">Directeurs de mémoire</small></div>
+    {% endif %}
+    <div class="dr-card"><span class="dr-muted">{% if current_user.role == 'student' %}Mon sujet{% else %}Projets suivis{% endif %}</span><strong>{{ stats.topics }}</strong><small class="dr-muted">Dossiers dans votre espace</small></div>
+    <div class="dr-card"><span class="dr-muted">En attente d'action</span><strong>{{ stats.pending }}</strong><small class="dr-muted">À examiner ou compléter</small></div>
+  </div>
+  <div class="dr-card" style="margin-bottom:18px">
+    <h2 style="font-size:19px!important;margin:0 0 6px!important;color:#142d49!important">Projets récents</h2>
+    <p class="dr-muted" style="margin:0 0 12px">Derniers dossiers mis à jour</p>
+    {% if topics %}
+    <div class="dr-table-wrap"><table class="dr-table"><thead><tr><th>Sujet / Projet</th><th>Étudiant</th><th>Statut</th><th>Mise à jour</th></tr></thead><tbody>
+    {% for topic in topics %}<tr><td><b>{{ topic.title }}</b><br><small class="dr-muted">{{ topic.program.name if topic.program else 'Programme non défini' }}</small></td><td>{{ topic.student.full_name }}</td><td>{{ topic.status|replace('_',' ')|title }}</td><td>{{ topic.updated_at.strftime('%d/%m/%Y') }}</td></tr>{% endfor %}
+    </tbody></table></div>
+    {% else %}
+    <div style="padding:22px 8px;text-align:center;color:#64788c!important"><b style="display:block;color:#142d49!important">Aucun dossier pour le moment</b><p class="dr-muted">Les projets qui vous sont attribués apparaîtront ici.</p></div>
+    {% endif %}
+  </div>
+  <div class="dr-card">
+    <h2 style="font-size:18px!important;margin:0 0 8px!important;color:#142d49!important">À retenir</h2>
+    <p class="dr-muted">Espace sécurisé : vos accès sont limités à votre rôle et à vos dossiers.</p>
+    <p class="dr-muted">Centralisez les échanges et gardez une trace de chaque décision académique.</p>
+  </div>
 </div>
-<div class="content-grid"><section class="panel"><div class="panel-heading"><div><h3>Projets récents</h3><p>Derniers dossiers mis à jour</p></div><a href="#" class="text-link">Voir tout →</a></div>{% if topics %}<div class="table-wrap"><table><thead><tr><th>SUJET / PROJET</th><th>ÉTUDIANT</th><th>STATUT</th><th>MISE À JOUR</th></tr></thead><tbody>{% for topic in topics %}<tr><td><b>{{ topic.title }}</b><small class="table-sub">{{ topic.program.name if topic.program else 'Programme non défini' }}</small></td><td>{{ topic.student.full_name }}</td><td><span class="status {{ topic.status }}">{{ topic.status|replace('_',' ')|title }}</span></td><td>{{ topic.updated_at.strftime('%d/%m/%Y') }}</td></tr>{% endfor %}</tbody></table></div>{% else %}<div class="empty-state"><div>▤</div><b>Aucun dossier pour le moment</b><p>Les projets qui vous sont attribués apparaîtront ici.</p></div>{% endif %}</section><aside class="panel side-panel"><div class="panel-heading"><div><h3>À retenir</h3><p>Votre espace en un coup d'œil</p></div></div><div class="notice-item"><span class="notice-icon green">✓</span><div><b>Espace sécurisé</b><p>Vos accès sont limités à votre rôle et à vos dossiers.</p></div></div><div class="notice-item"><span class="notice-icon gold">✦</span><div><b>Suivi des mémoires</b><p>Les prochaines étapes intégreront les dépôts et corrections de documents.</p></div></div><div class="tip-card"><b>Un projet bien suivi commence ici.</b><p>Centralisez les échanges et gardez une trace de chaque décision académique.</p></div></aside></div>
 {% endblock %}
