@@ -21,6 +21,30 @@ def roles_required(*roles):
         return wrapped
     return deco
 
+ROLE_MATRICULE_PREFIX = {
+    "student": "ET", "tutor": "DIR", "codirector": "COD",
+    "section_head": "SEC", "department_head": "DEP",
+    "coordination": "COO", "admin": "ADM"
+}
+
+def generate_matricule(full_name, role, exclude_user_id=None):
+    """Identifiant court : préfixe du rôle + initiales + compteur unique."""
+    import re
+    import unicodedata
+    words = [w for w in re.split(r"[^A-Za-zÀ-ÿ0-9]+", (full_name or "").strip()) if w]
+    chosen = [words[0], words[-1]] if len(words) > 1 else words
+    initials = "".join(unicodedata.normalize("NFKD", w[0]).encode("ascii", "ignore").decode().upper() for w in chosen)
+    initials = (initials or "XX")[:2]
+    base = f"{ROLE_MATRICULE_PREFIX.get(role, 'USR')}-{initials}"
+    number = 1
+    while True:
+        candidate = f"{base}-{number:03d}"
+        query = User.query.filter_by(matricule=candidate)
+        if exclude_user_id is not None:
+            query = query.filter(User.id != exclude_user_id)
+        if query.first() is None:
+            return candidate
+        number += 1
 def visible_topics():
     q = ProjectTopic.query
     if current_user.role == "student": q = q.filter_by(student_id=current_user.id)
@@ -135,7 +159,7 @@ def section(section):
                 password=request.form.get("password","")
                 if len(user.full_name)<3 or len(password)<10: raise ValueError("Nom obligatoire et mot de passe de 10 caractères minimum.")
                 user.set_password(password); db.session.add(user); db.session.flush()
-                if role == "student": user.matricule = f"PT{datetime.utcnow().year}-{user.id:06d}"
+                user.matricule = generate_matricule(user.full_name, role)
                 db.session.commit()
                 flash(f"Compte créé avec succès. Matricule : {user.matricule}" if role == "student" else "Compte créé avec succès.", "success")
             elif action == "create_program" and current_user.role == "admin":
@@ -189,8 +213,10 @@ def section(section):
                 role=request.form.get("role",user.role)
                 if role not in ROLES: raise ValueError("Rôle invalide.")
                 if user.id==current_user.id and role!="admin": raise ValueError("Vous ne pouvez pas retirer votre propre rôle administrateur.")
+                old_role=user.role
                 user.full_name=full_name; user.email=email; user.role=role
-                if role=="student" and not user.matricule: user.matricule=f"PT{datetime.utcnow().year}-{user.id:06d}"
+                if old_role != role or not user.matricule:
+                    user.matricule=generate_matricule(full_name, role, exclude_user_id=user.id)
                 user.option_name=request.form.get("option_name","").strip() or None
                 user.mention=request.form.get("mention","").strip() or None
                 user.promotion=request.form.get("promotion","").strip() or None
