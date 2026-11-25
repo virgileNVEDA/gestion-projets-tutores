@@ -261,10 +261,18 @@ def section(section):
                 user.full_name=full_name; user.email=email; user.role=role
                 if old_role != role or not user.matricule:
                     user.matricule=generate_matricule(full_name, role, exclude_user_id=user.id)
-                user.section_name=request.form.get("section_name","").strip() or None
-                user.option_name=request.form.get("option_name","").strip() or None
-                user.mention_name=request.form.get("mention_name","").strip() or None
-                user.mention=user.mention_name
+                section_name=request.form.get("section_name","").strip()
+                option_name=request.form.get("option_name","").strip()
+                mention_name=request.form.get("mention_name","").strip()
+                if role=="student":
+                    parent=AcademicSection.query.filter_by(name=section_name,active=True).first()
+                    opt=AcademicOption.query.filter_by(name=option_name,active=True,section_id=parent.id).first() if parent else None
+                    men=AcademicMention.query.filter_by(name=mention_name,active=True,option_id=opt.id).first() if opt and mention_name else None
+                    if not parent or not opt or (mention_name and not men): raise ValueError("La section, l'option et la mention doivent respecter leur rattachement.")
+                user.section_name=section_name or None
+                user.option_name=option_name or None
+                user.mention_name=mention_name or None
+                user.mention=mention_name or None
                 user.promotion=request.form.get("promotion","").strip() or None
                 if request.form.get("password",""):
                     if len(request.form["password"])<10: raise ValueError("Le mot de passe doit contenir au moins 10 caractères.")
