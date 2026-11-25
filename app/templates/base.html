@@ -39,7 +39,12 @@
     {% with messages = get_flashed_messages(with_categories=true) %}{% for category, message in messages %}<div class="flash {{ category }}">{{ message }}</div>{% endfor %}{% endwith %}
     {% block content %}{% endblock %}
   </section></main>
+  <footer class="workspace-footer">
+    <div class="workspace-footer-brand"><b>{{ institution.acronym if institution and institution.acronym else 'GESTION ACADÉMIQUE' }}</b><span>{{ institution.name if institution else 'Gestion des sujets des projets tutorés' }}</span>{% if institution and institution.motto %}<small>{{ institution.motto }}</small>{% endif %}</div>
+    <div class="workspace-footer-contact">{% if institution and institution.address %}<span>{{ institution.address }}</span>{% endif %}{% if institution and institution.phone %}<a href="tel:{{ institution.phone }}">{{ institution.phone }}</a>{% endif %}{% if institution and institution.contact_email %}<a href="mailto:{{ institution.contact_email }}">{{ institution.contact_email }}</a>{% endif %}{% if institution and institution.website %}<a href="{{ institution.website if institution.website.startswith('http') else 'https://' ~ institution.website }}" target="_blank" rel="noopener">Site officiel</a>{% endif %}</div>
+    <small>© {{ now.year }} · Tous droits réservés</small>
+  </footer>
 </div>
 {% else %}{% block public_content %}{% endblock %}{% endif %}
-<script src="{{ url_for('static', filename='js/app.js', v='20261125-workspace-final3') }}"></script>
+<script src="{{ url_for('static', filename='js/app.js', v='20261125-corrections3') }}"></script>
 </body></html>
