@@ -11,6 +11,52 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/modules.css', v='20261125-audit2') }}">
   {% block extra_css %}{% endblock %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard-shell.css', v='20261125-dom-sibling-fix3') }}">
+  <style id="mobile-shell-emergency-fix">
+    /* Priorité maximale : le menu ne doit jamais pousser l'en-tête vers le bas. */
+    @media (max-width: 780px) {
+      html, body { margin: 0 !important; padding: 0 !important; min-height: 100% !important; }
+      body { display: block !important; overflow-x: hidden !important; }
+      body > .app-shell {
+        display: block !important; position: relative !important;
+        width: 100% !important; min-height: 100dvh !important;
+        margin: 0 !important; padding: 0 !important;
+      }
+      body > .app-shell > aside.sidebar {
+        position: fixed !important; top: 0 !important; right: auto !important;
+        bottom: 0 !important; left: 0 !important;
+        width: min(86vw, 300px) !important; height: 100dvh !important;
+        margin: 0 !important; z-index: 1300 !important;
+        transform: translateX(-105%) !important;
+        visibility: hidden !important; pointer-events: none !important;
+      }
+      body > .app-shell > aside.sidebar.open {
+        transform: translateX(0) !important;
+        visibility: visible !important; pointer-events: auto !important;
+      }
+      body > .app-shell > header.topbar {
+        display: flex !important; position: relative !important;
+        inset: auto !important; width: 100% !important;
+        min-height: 68px !important; height: auto !important;
+        margin: 0 !important; padding: 8px 14px !important;
+        transform: none !important; z-index: 20 !important;
+      }
+      body > .app-shell > main.main-area {
+        display: block !important; position: relative !important;
+        inset: auto !important; width: 100% !important;
+        min-width: 0 !important; max-width: 100% !important;
+        height: auto !important; min-height: 0 !important;
+        margin: 0 !important; padding: 0 !important;
+        transform: none !important;
+      }
+      body > .app-shell > main.main-area > section.page-content {
+        display: block !important; position: relative !important;
+        inset: auto !important; width: 100% !important;
+        max-width: none !important; min-height: 0 !important;
+        height: auto !important; margin: 0 !important;
+        padding: 0 14px 30px !important; transform: none !important;
+      }
+    }
+  </style>
 </head>
 <body>
 {# Le chargeur plein écran est désactivé : il masquait parfois le contenu mobile. #}
