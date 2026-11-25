@@ -144,4 +144,5 @@ def dashboard():
         item["height"] = max(8, round(item["count"] * 100 / max_month)) if item["count"] else 3
 
     return render_template("dashboard.html", topics=topics, stats=stats,
-                           status_chart=status_chart, monthly_chart=monthly_chart)
+                           status_chart=status_chart, monthly_chart=monthly_chart,
+                           now=now)
