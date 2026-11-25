@@ -153,6 +153,18 @@ def api_options(section_id):
 def api_mentions(option_id):
     return jsonify([{"id":m.id,"name":m.name} for m in AcademicMention.query.filter_by(option_id=option_id,active=True).order_by(AcademicMention.name).all()])
 
+@modules_bp.get("/api/sections/<int:section_id>/mentions")
+def api_section_mentions(section_id):
+    section_item = AcademicSection.query.filter_by(id=section_id, active=True).first_or_404()
+    mentions = (AcademicMention.query.join(AcademicOption, AcademicMention.option_id == AcademicOption.id)
+                .filter(AcademicOption.section_id == section_item.id,
+                        AcademicOption.active.is_(True), AcademicMention.active.is_(True))
+                .order_by(AcademicMention.name).all())
+    unique = {}
+    for mention_item in mentions:
+        unique.setdefault(mention_item.name.casefold(), mention_item)
+    return jsonify([{"id": item.id, "name": item.name} for item in unique.values()])
+
 
 @modules_bp.route("/<section>", methods=["GET","POST"])
 @login_required
