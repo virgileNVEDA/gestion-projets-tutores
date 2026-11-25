@@ -313,3 +313,23 @@ thead th{background:#e8eef4;color:#334155}
 .inline-edit-form textarea{min-height:62px;resize:vertical}
 .danger-btn{background:#fff0ee;color:#b4433b}
 @media(max-width:650px){.row-actions{min-width:135px}.inline-edit-form{position:static;min-width:240px}}
+
+
+/* Accueil pleine largeur : en-tête indépendant du carrousel */
+.orbit-home{padding-left:0!important;padding-right:0!important}
+.orbit-header{
+ width:100%!important;max-width:none!important;flex:0 0 82px!important;
+ padding:0 clamp(18px,4vw,58px)!important;box-sizing:border-box!important;
+ position:relative!important;z-index:100!important;
+ background:linear-gradient(105deg,#092d68 0%,#0756bd 72%,#087f75 100%)!important;
+ border-bottom:3px solid #e5ad3b!important;
+ box-shadow:0 8px 24px rgba(7,29,73,.18)!important;
+}
+.orbit-stage{z-index:1!important;margin:28px auto 16px!important;flex:0 0 auto!important}
+.orbit-thumbnails{z-index:1!important}
+.orbit-center{z-index:2!important}
+.orbit-search-section,.orbit-bottom{z-index:2!important}
+@media(max-width:650px){
+ .orbit-header{height:70px!important;flex-basis:70px!important;padding:0 18px!important}
+ .orbit-stage{margin:24px auto 12px!important}
+}
