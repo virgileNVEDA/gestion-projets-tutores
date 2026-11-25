@@ -57,9 +57,13 @@ def create_app():
             section = AcademicSection(name="Sciences commerciales")
             db.session.add(section)
             db.session.flush()
-        for option_name in ["Banque, Microfinance et Assurance (BMA)", "Marketing", "Comptabilité et Finance", "Administration et Gestion des Ressources Humaines (AGRH)", "Logistique"]:
-            if not AcademicOption.query.filter_by(section_id=section.id, name=option_name).first():
-                db.session.add(AcademicOption(section_id=section.id, name=option_name))
+        # Référentiel désormais présenté comme Section -> Mention -> Promotion.
+        mention_names = ["Banque, Microfinance et Assurance (BMA)", "Marketing", "Comptabilité et Finance", "Administration et Gestion des Ressources Humaines (AGRH)", "Logistique", "Fiscalité", "Entrepreneuriat"]
+        existing_mentions = {item.name.strip().casefold() for item in AcademicOption.query.filter_by(section_id=section.id).all()}
+        for mention_name in mention_names:
+            if mention_name.strip().casefold() not in existing_mentions:
+                db.session.add(AcademicOption(section_id=section.id, name=mention_name))
+                existing_mentions.add(mention_name.strip().casefold())
         db.session.commit()
         # Créer une identité par défaut pour préserver l'installation existante.
         if Institution.query.count() == 0:
