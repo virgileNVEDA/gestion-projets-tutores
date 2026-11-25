@@ -182,6 +182,7 @@ class Institution(db.Model):
     primary_color = db.Column(db.String(20), nullable=False, default="#142D49")
     accent_color = db.Column(db.String(20), nullable=False, default="#079B83")
     carousel_images = db.Column(db.Text, nullable=True)
+    promotions_json = db.Column(db.Text, nullable=True)
     progress_enabled = db.Column(db.Boolean, nullable=False, default=True)
     progress_color = db.Column(db.String(20), nullable=False, default="#079B83")
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
