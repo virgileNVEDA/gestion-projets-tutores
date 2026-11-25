@@ -17,6 +17,13 @@ def create_app():
     migrate.init_app(app, db)
     csrf.init_app(app)
 
+
+    @app.context_processor
+    def inject_global_template_context():
+        from datetime import datetime
+        from .models import Institution
+        return {"institution": Institution.query.order_by(Institution.id.asc()).first(), "now": datetime.utcnow()}
+
     from . import models  # noqa: F401
     from .auth import auth_bp
     from .main import main_bp
