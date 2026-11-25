@@ -74,18 +74,29 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
-/* Tableau de bord : empêcher la restauration d'une ancienne position de défilement
-   qui laisse le haut de la page vide sous la barre fixe sur certains navigateurs mobiles. */
+
+
+/* Correction adaptative de l'espace au-dessus du tableau de bord.
+   Mesure le bas réel de l'en-tête et le début du contenu, puis supprime
+   uniquement l'écart excédentaire constaté, sans masquer ni supprimer le contenu. */
 (() => {
-  const resetDashboardScroll = () => {
-    if (!document.querySelector(".page-content.dashboard-page")) return;
-    if ("scrollRestoration" in history) history.scrollRestoration = "manual";
-    window.scrollTo(0, 0);
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
+  const correctDashboardGap = () => {
+    const page = document.querySelector(".page-content.dashboard-page");
+    const header = document.querySelector(".main-area > .topbar");
+    if (!page || !header) return;
+    page.style.marginTop = "0px";
+    const headerBottom = header.getBoundingClientRect().bottom;
+    const pageTop = page.getBoundingClientRect().top;
+    const gap = pageTop - headerBottom;
+    if (gap > 24) page.style.marginTop = `-${Math.ceil(gap)}px`;
   };
-  document.addEventListener("DOMContentLoaded", resetDashboardScroll, { once: true });
-  window.addEventListener("pageshow", () => {
-    window.requestAnimationFrame(resetDashboardScroll);
-  });
+  const scheduleCorrection = () => {
+    requestAnimationFrame(correctDashboardGap);
+    setTimeout(correctDashboardGap, 80);
+    setTimeout(correctDashboardGap, 300);
+  };
+  document.addEventListener("DOMContentLoaded", scheduleCorrection, { once: true });
+  window.addEventListener("load", scheduleCorrection);
+  window.addEventListener("pageshow", scheduleCorrection);
+  window.addEventListener("resize", scheduleCorrection);
 })();
