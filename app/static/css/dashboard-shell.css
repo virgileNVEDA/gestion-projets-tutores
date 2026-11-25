@@ -554,3 +554,15 @@ body{font-family:'DM Sans',Arial,sans-serif;color:var(--workspace-ink);backgroun
 .hierarchy-option-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
 .hierarchy-mentions{grid-column:1/-1;display:grid;gap:6px;padding-left:12px}
 .hierarchy-mentions .hierarchy-edit-form{padding:5px 0}
+
+
+/* Barre de navigation persistante sur ordinateur et mobile */
+@media(min-width:781px){
+ .app-shell>header.topbar{position:sticky!important;top:0!important;align-self:start!important;z-index:1400!important}
+ .app-shell>.sidebar{z-index:1450!important}
+ .app-shell>main.main-area{min-width:0}
+ .app-shell>main.main-area>.page-content{max-width:1740px;margin:0 auto;padding-top:28px}
+ .module-grid{align-items:start}
+ .module-grid>.panel{min-width:0}
+ .table-wrap{width:100%;max-width:100%;overflow-x:auto}
+}
