@@ -231,7 +231,7 @@ def section(section):
                     if role=="student" and User.query.filter_by(matricule=matricule).first(): raise ValueError("Ce matricule est déjà utilisé.")
                     parent=AcademicSection.query.filter_by(name=section_name,active=True).first()
                     men=AcademicOption.query.filter_by(name=mention_name,active=True,section_id=parent.id).first() if parent and mention_name else None
-                    if not parent or not men: raise ValueError("La section et la mention doivent respecter leur rattachement.")
+                    if not parent or not men or not request.form.get("promotion","").strip(): raise ValueError("Pour un étudiant ou un tuteur, la section, la mention et la promotion sont obligatoires et doivent respecter leur rattachement.")
                 user=User(full_name=request.form.get("full_name","").strip(),email=email,phone=request.form.get("phone","").strip() or None,role=role,section_name=section_name or None,option_name=None,mention_name=mention_name or None,mention=mention_name or None,promotion=request.form.get("promotion","").strip() or None)
                 password=request.form.get("password","")
                 if len(user.full_name)<3 or len(password)<10: raise ValueError("Nom obligatoire et mot de passe de 10 caractères minimum.")
