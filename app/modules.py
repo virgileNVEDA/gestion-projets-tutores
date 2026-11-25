@@ -153,6 +153,69 @@ def section(section):
                 db.session.add(topic); db.session.flush()
                 db.session.add(WorkflowEvent(topic_id=topic.id,actor_id=current_user.id,action="Soumission du sujet" if topic.status=="submitted" else "Création du dossier"))
                 flash("Sujet enregistré.","success")
+            elif action == "edit_topic":
+                topic=ProjectTopic.query.get_or_404(int(request.form.get("topic_id")))
+                if not can_access(topic): abort(403)
+                if current_user.role not in {"admin"} and not (current_user.role=="student" and topic.student_id==current_user.id and topic.status in {"draft","revision","rejected"}):
+                    abort(403)
+                title=request.form.get("title","").strip()
+                if len(title)<12: raise ValueError("Le titre doit contenir au moins 12 caractères.")
+                topic.title=title
+                topic.problem_statement=request.form.get("problem_statement","").strip()
+                topic.objectives=request.form.get("objectives","").strip()
+                topic.methodology=request.form.get("methodology","").strip()
+                topic.keywords=request.form.get("keywords","").strip()
+                topic.program_id=int(request.form.get("program_id")) if request.form.get("program_id") else None
+                topic.updated_at=datetime.utcnow()
+                db.session.add(WorkflowEvent(topic_id=topic.id,actor_id=current_user.id,action="Modification du sujet"))
+                notify(topic.student_id,topic.id,"Sujet modifié",topic.title)
+                flash("Le sujet a été modifié.","success")
+            elif action == "delete_topic" and current_user.role=="admin":
+                topic=ProjectTopic.query.get_or_404(int(request.form.get("topic_id")))
+                # Nettoyage explicite des éléments liés avant suppression du dossier.
+                Notification.query.filter_by(topic_id=topic.id).delete(synchronize_session=False)
+                Message.query.filter_by(topic_id=topic.id).delete(synchronize_session=False)
+                Meeting.query.filter_by(topic_id=topic.id).delete(synchronize_session=False)
+                DocumentVersion.query.filter_by(topic_id=topic.id).delete(synchronize_session=False)
+                WorkflowEvent.query.filter_by(topic_id=topic.id).delete(synchronize_session=False)
+                db.session.delete(topic)
+                flash("Le dossier et son historique ont été supprimés.","success")
+            elif action == "edit_user" and current_user.role=="admin":
+                user=User.query.get_or_404(int(request.form.get("user_id")))
+                full_name=request.form.get("full_name","").strip()
+                email=request.form.get("email","").strip().lower()
+                if len(full_name)<3 or not email: raise ValueError("Nom et adresse e-mail valides obligatoires.")
+                if User.query.filter(User.email==email,User.id!=user.id).first(): raise ValueError("Cette adresse e-mail est déjà utilisée.")
+                role=request.form.get("role",user.role)
+                if role not in ROLES: raise ValueError("Rôle invalide.")
+                if user.id==current_user.id and role!="admin": raise ValueError("Vous ne pouvez pas retirer votre propre rôle administrateur.")
+                user.full_name=full_name; user.email=email; user.role=role
+                user.option_name=request.form.get("option_name","").strip() or None
+                user.mention=request.form.get("mention","").strip() or None
+                user.promotion=request.form.get("promotion","").strip() or None
+                if request.form.get("password",""):
+                    if len(request.form["password"])<10: raise ValueError("Le mot de passe doit contenir au moins 10 caractères.")
+                    user.set_password(request.form["password"])
+                flash("Le compte a été modifié.","success")
+            elif action == "delete_user" and current_user.role=="admin":
+                user=User.query.get_or_404(int(request.form.get("user_id")))
+                if user.id==current_user.id: raise ValueError("Vous ne pouvez pas supprimer votre propre compte.")
+                linked=ProjectTopic.query.filter((ProjectTopic.student_id==user.id)|(ProjectTopic.tutor_id==user.id)|(ProjectTopic.codirector_id==user.id)).first()
+                if linked: raise ValueError("Ce compte est lié à un dossier académique. Désactivez-le au lieu de le supprimer.")
+                if Notification.query.filter_by(user_id=user.id).first() or DocumentVersion.query.filter_by(uploader_id=user.id).first() or Message.query.filter_by(sender_id=user.id).first() or Meeting.query.filter_by(organizer_id=user.id).first():
+                    raise ValueError("Ce compte possède un historique. La suppression est bloquée pour préserver la traçabilité.")
+                db.session.delete(user); flash("Le compte a été supprimé.","success")
+            elif action == "edit_program" and current_user.role=="admin":
+                program=AcademicProgram.query.get_or_404(int(request.form.get("program_id")))
+                name=request.form.get("name","").strip()
+                if not name: raise ValueError("Le nom du programme est obligatoire.")
+                program.name=name; program.level=request.form.get("level","").strip() or None
+                flash("Le programme a été modifié.","success")
+            elif action == "delete_program" and current_user.role=="admin":
+                program=AcademicProgram.query.get_or_404(int(request.form.get("program_id")))
+                if ProjectTopic.query.filter_by(program_id=program.id).first():
+                    raise ValueError("Ce programme est utilisé par des dossiers. Modifiez les dossiers concernés avant de le supprimer.")
+                db.session.delete(program); flash("Le programme a été supprimé.","success")
             elif action == "assign" and current_user.role=="admin":
                 topic=ProjectTopic.query.get_or_404(int(request.form.get("topic_id")))
                 tutor_id=int(request.form.get("tutor_id")) if request.form.get("tutor_id") else None
