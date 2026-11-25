@@ -19,6 +19,20 @@ document.addEventListener("DOMContentLoaded",()=>{
  });
 });
 </script>
+
+<script>
+document.addEventListener("DOMContentLoaded",()=>{
+ const fill=async(url,el,label,chosen)=>{el.innerHTML="<option value=''>"+label+"</option>";el.disabled=true;if(!url)return;const r=await fetch(url);if(!r.ok)return;(await r.json()).forEach(v=>{const o=document.createElement("option");o.value=v.name;o.textContent=v.name;if(v.name===chosen)o.selected=true;el.append(o)});el.disabled=false};
+ document.querySelectorAll(".user-section").forEach(async s=>{
+  const form=s.closest("form"),o=form.querySelector(".user-option"),m=form.querySelector(".user-mention");
+  const sections=await (await fetch("/modules/api/sections")).json(),sec=sections.find(v=>v.name===s.value);
+  if(sec){await fill("/modules/api/sections/"+sec.id+"/options",o,"Choisir une option",o.dataset.current||"");const opts=await (await fetch("/modules/api/sections/"+sec.id+"/options")).json(),opt=opts.find(v=>v.name===o.value);if(opt)await fill("/modules/api/options/"+opt.id+"/mentions",m,"Aucune mention (facultatif)",m.dataset.current||"")}
+  s.addEventListener("change",async()=>{m.innerHTML="<option value=''>Choisir une option</option>";m.disabled=true;const rows=await (await fetch("/modules/api/sections")).json(),parent=rows.find(v=>v.name===s.value);await fill(parent?"/modules/api/sections/"+parent.id+"/options":null,o,"Choisir une option","")});
+  o.addEventListener("change",async()=>{const rows=await (await fetch("/modules/api/sections")).json(),parent=rows.find(v=>v.name===s.value);if(!parent)return;const opts=await (await fetch("/modules/api/sections/"+parent.id+"/options")).json(),opt=opts.find(v=>v.name===o.value);await fill(opt?"/modules/api/options/"+opt.id+"/mentions":null,m,"Aucune mention (facultatif)","")});
+ });
+});
+</script>
+
 {% endblock %}
 {% block page_section %}{{ section|replace('_',' ')|title }}{% endblock %}
 {% block content %}
