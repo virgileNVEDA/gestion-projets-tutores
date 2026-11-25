@@ -386,3 +386,8 @@ thead th{background:#e8eef4;color:#334155}
  .chart-panel{min-height:0!important;padding:16px!important}
  .content-grid{gap:12px!important}
 }
+
+
+/* EN-TÊTE PERSISTANT : reste visible pendant le défilement, sans réserver un espace vertical supplémentaire */
+.topbar{position:sticky!important;top:0!important;z-index:1100!important;align-self:flex-start}
+@media(max-width:780px){.main-area{padding-top:0!important}.topbar{position:sticky!important;top:0!important;min-height:64px!important;height:64px!important;z-index:1100!important}}
