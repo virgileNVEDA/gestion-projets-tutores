@@ -86,7 +86,7 @@
   </section></main>
 </div>
 {% else %}{% block public_content %}{% endblock %}{% endif %}
-{% include 'partials/_workspace_footer.html' %}
+{% if current_user.is_authenticated %}{% include 'partials/_workspace_footer.html' %}{% endif %}
 {% block extra_js %}{% endblock %}
 <script src="{{ url_for('static', filename='js/app.js', v='20261126-progress1') }}"></script>
 </body></html>
