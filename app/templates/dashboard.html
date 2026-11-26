@@ -2,38 +2,77 @@
 {% block title %}Tableau de bord · Projets tutorés{% endblock %}
 {% block page_section %}Tableau de bord{% endblock %}
 {% block content %}
-<div class="gp-dashboard">
-  <section class="gp-dashboard-hero">
-    <div>
-      <span class="eyebrow">VOTRE ESPACE DE TRAVAIL</span>
-      <h1>Bonjour, {{ current_user.full_name.split(' ')[0] }} ✦</h1>
-      <p>Retrouvez en un seul endroit le suivi de vos sujets, mémoires, encadrements et validations académiques. Les accès affichés respectent votre profil et vos autorisations.</p>
+<div class="gp-dashboard gp-dashboard-classic">
+  <div class="welcome-row dashboard-welcome">
+    <div class="dashboard-welcome-copy">
+      <span class="eyebrow green">VOTRE ESPACE DE TRAVAIL</span>
+      <h1>Bonjour, {{ current_user.full_name.split(' ')[0] }}</h1>
+      <p class="muted">Voici un aperçu de l’activité de vos projets aujourd’hui.</p>
     </div>
-    <div class="date-chip">✦ &nbsp; Espace académique sécurisé</div>
+    <a class="dashboard-profile" href="{{ url_for('auth.profile') }}" title="Modifier mon profil">
+      <span class="dashboard-avatar">
+        {% if current_user.profile_photo_data %}<img src="{{ current_user.profile_photo_data }}" alt="Votre photo">{% else %}{{ current_user.full_name[:1]|upper }}{% endif %}
+        <i class="online-dot"></i>
+      </span>
+      <span class="dashboard-profile-copy"><b>{{ current_user.full_name }}</b><small>{{ current_user.role_label }}</small><em><i></i> En ligne · Modifier le profil</em></span>
+      <svg class="dashboard-profile-edit" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg>
+    </a>
+  </div>
+
+  <section class="stats-grid dashboard-stats" aria-label="Indicateurs principaux">
+    {% if current_user.role == 'admin' %}
+    <article class="stat-card">
+      <div class="stat-icon blue"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+      <span>Étudiants inscrits</span><strong>{{ stats.students }}</strong><small>Comptes étudiants actifs</small>
+    </article>
+    <article class="stat-card">
+      <div class="stat-icon green"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 7v5c0 5 3.4 8 8 9 4.6-1 8-4 8-9V7Z"/><path d="m9 12 2 2 4-4"/></svg></div>
+      <span>Encadreurs</span><strong>{{ stats.tutors }}</strong><small>Directeurs de mémoire</small>
+    </article>
+    {% endif %}
+    <article class="stat-card">
+      <div class="stat-icon gold"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21Z"/><path d="M4 5.5V21M8 7h8M8 11h8"/></svg></div>
+      <span>{% if current_user.role == 'student' %}Mon sujet{% else %}Projets suivis{% endif %}</span><strong>{{ stats.topics }}</strong><small>Dossiers dans votre espace</small>
+    </article>
+    <article class="stat-card">
+      <div class="stat-icon violet"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+      <span>En attente d’action</span><strong>{{ stats.pending }}</strong><small>À examiner ou compléter</small>
+    </article>
   </section>
-  <section class="workspace-modules" aria-label="Tous les modules accessibles">
-    <div class="workspace-section-heading">
-      <div><span class="eyebrow green">VOTRE ENVIRONNEMENT</span><h2>Modules de gestion</h2><p>Accédez rapidement à chaque espace depuis le menu latéral ou les raccourcis ci-dessous.</p></div>
-    </div>
-    <div class="workspace-module-grid">
-      <a class="workspace-module-card" href="{{ url_for('modules.section',section='sujets') }}"><span class="module-card-icon">▤</span><span><b>Sujets & mémoires</b><small>Soumission et suivi des dossiers</small></span><i>↗</i></a>
-      <a class="workspace-module-card" href="{{ url_for('modules.section',section='encadrement') }}"><span class="module-card-icon">◎</span><span><b>Encadrement</b><small>Affectation et suivi des encadreurs</small></span><i>↗</i></a>
-      <a class="workspace-module-card" href="{{ url_for('modules.section',section='validations') }}"><span class="module-card-icon">⇄</span><span><b>Validations</b><small>Décisions et circuit académique</small></span><i>↗</i></a>
-      <a class="workspace-module-card" href="{{ url_for('modules.section',section='documents') }}"><span class="module-card-icon">▧</span><span><b>Documents</b><small>Dépôt et versions des fichiers</small></span><i>↗</i></a>
-      <a class="workspace-module-card" href="{{ url_for('modules.section',section='messagerie') }}"><span class="module-card-icon">✉</span><span><b>Messagerie</b><small>Échanges autour des projets</small></span><i>↗</i></a>
-      <a class="workspace-module-card" href="{{ url_for('modules.section',section='reunions') }}"><span class="module-card-icon">◷</span><span><b>Réunions & calendrier</b><small>Rendez-vous et échéances</small></span><i>↗</i></a>
-      <a class="workspace-module-card" href="{{ url_for('modules.section',section='notifications') }}"><span class="module-card-icon">♧</span><span><b>Notifications</b><small>Alertes et mises à jour</small>{% if unread_notifications %}<em>{{ unread_notifications }}</em>{% endif %}</span><i>↗</i></a>
-      {% if current_user.role == 'admin' %}
-      <a class="workspace-module-card" href="{{ url_for('modules.section',section='etudiants') }}"><span class="module-card-icon">♙</span><span><b>Étudiants</b><small>Inscriptions et dossiers</small></span><i>↗</i></a>
-      <a class="workspace-module-card" href="{{ url_for('modules.section',section='enseignants') }}"><span class="module-card-icon">♟</span><span><b>Enseignants</b><small>Corps enseignant</small></span><i>↗</i></a>
-      <a class="workspace-module-card" href="{{ url_for('modules.section',section='programmes') }}"><span class="module-card-icon">▦</span><span><b>Programmes</b><small>Filières et niveaux</small></span><i>↗</i></a>
-      <a class="workspace-module-card" href="{{ url_for('modules.section',section='utilisateurs') }}"><span class="module-card-icon">⚙</span><span><b>Utilisateurs & rôles</b><small>Comptes et autorisations</small></span><i>↗</i></a>
-      <a class="workspace-module-card" href="{{ url_for('modules.section',section='rapports') }}"><span class="module-card-icon">▥</span><span><b>Rapports & statistiques</b><small>Indicateurs académiques</small></span><i>↗</i></a>
-      <a class="workspace-module-card" href="{{ url_for('modules.settings') }}"><span class="module-card-icon">⚙</span><span><b>Paramètres</b><small>Configuration de l'établissement</small></span><i>↗</i></a>
-      {% elif current_user.role in ['section_head','department_head','coordination'] %}
-      <a class="workspace-module-card" href="{{ url_for('modules.section',section='rapports') }}"><span class="module-card-icon">▥</span><span><b>Rapports</b><small>Statistiques académiques</small></span><i>↗</i></a>
-      {% endif %}
-    </div>
+
+  <section class="charts-grid dashboard-charts" aria-label="Analyse des projets">
+    <article class="panel chart-panel">
+      <div class="panel-heading"><div><h3>Répartition des projets</h3><p>État d’avancement des dossiers</p></div><span class="chart-tag">Vue globale</span></div>
+      {% if status_chart %}
+      <div class="donut-layout">
+        <div class="donut-chart" style="background:conic-gradient({% for item in status_chart %}{{ item.color }} {{ loop.index0 == 0 and 0 or status_chart[:loop.index0]|sum(attribute='percent') }}% {{ status_chart[:loop.index]|sum(attribute='percent') }}%{% if not loop.last %}, {% endif %}{% endfor %});">
+          <div class="donut-hole"><strong>{{ stats.topics }}</strong><span>Projets</span></div>
+        </div>
+        <div class="chart-legend">{% for item in status_chart %}<div class="legend-row"><span class="legend-dot" style="background:{{ item.color }}"></span><span>{{ item.label }}</span><b>{{ item.count }}</b></div>{% endfor %}</div>
+      </div>
+      {% else %}<div class="chart-empty">Les graphiques apparaîtront dès l’enregistrement des premiers projets.</div>{% endif %}
+    </article>
+    <article class="panel chart-panel">
+      <div class="panel-heading"><div><h3>Activité des six derniers mois</h3><p>Nombre de nouveaux sujets enregistrés</p></div><span class="chart-tag">Tendance</span></div>
+      <div class="bar-chart">{% for item in monthly_chart %}<div class="bar-column"><strong>{{ item.count }}</strong><div class="bar-track"><div class="bar-fill" style="height:{{ item.height }}%"></div></div><span>{{ item.label }}</span></div>{% endfor %}</div>
+    </article>
+  </section>
+
+  <section class="content-grid dashboard-lower">
+    <article class="panel dashboard-recent-panel">
+      <div class="panel-heading"><div><h3>Projets récents</h3><p>Derniers dossiers mis à jour</p></div><a href="{{ url_for('modules.section',section='sujets') }}" class="text-link">Voir les sujets <span aria-hidden="true">→</span></a></div>
+      {% if topics %}
+      <div class="table-wrap"><table><thead><tr><th>SUJET / PROJET</th><th>ÉTUDIANT</th><th>STATUT</th><th>MISE À JOUR</th></tr></thead><tbody>
+      {% for topic in topics %}<tr><td><b>{{ topic.title }}</b><small class="table-sub">{{ topic.program.name if topic.program else 'Programme non défini' }}</small></td><td>{{ topic.student.full_name }}</td><td><span class="status {{ topic.status }}">{{ topic.status|replace('_',' ')|title }}</span></td><td>{{ topic.updated_at.strftime('%d/%m/%Y') }}</td></tr>{% endfor %}
+      </tbody></table></div>
+      {% else %}<div class="empty-state"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21Z"/><path d="M4 5.5V21M8 7h8M8 11h8"/></svg><b>Aucun dossier pour le moment</b><p>Les projets qui vous sont attribués apparaîtront ici.</p></div>{% endif %}
+    </article>
+    <aside class="panel side-panel dashboard-notices">
+      <div class="panel-heading"><div><h3>À retenir</h3><p>Votre espace en un coup d’œil</p></div></div>
+      <div class="notice-item"><span class="notice-icon green"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 7v5c0 5 3.4 8 8 9 4.6-1 8-4 8-9V7Z"/><path d="m9 12 2 2 4-4"/></svg></span><div><b>Espace sécurisé</b><p>Vos accès sont limités à votre rôle et à vos dossiers.</p></div></div>
+      <div class="notice-item"><span class="notice-icon gold"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.2 5.8L20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2Z"/><path d="m19 16 .9 2.1L22 19l-2.1.9L19 22l-.9-2.1L16 19l2.1-.9Z"/></svg></span><div><b>Suivi des mémoires</b><p>Centralisez les dépôts, corrections et décisions académiques.</p></div></div>
+      <div class="tip-card"><b>Un projet bien suivi commence ici.</b><p>Gardez une trace de chaque étape et facilitez les échanges entre étudiants et encadreurs.</p></div>
+    </aside>
   </section>
 </div>
 {% endblock %}
