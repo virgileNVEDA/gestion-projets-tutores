@@ -13,17 +13,56 @@
   {% block extra_css %}{% endblock %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard-shell.css', v='20261126-fixed-sidebar1') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/premium-ui.css', v='20261126-visual-audit1') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/desktop-premium.css', v='20261126-desktop-premium1') }}">
 </head>
 <body>
 {% if current_user.is_authenticated %}<div class="global-progress" id="globalProgress" role="progressbar" aria-label="Chargement de la page"></div>{% endif %}
 {% if current_user.is_authenticated %}
 <div class="app-shell">
+  <aside class="sidebar" id="sidebar" aria-label="Navigation principale">
+    <a class="brand sidebar-brand" href="{{ url_for('main.dashboard') }}" aria-label="Accueil">
+      {% if institution and institution.logo_data %}<img src="{{ institution.logo_data }}" alt="Logo de l'établissement">{% else %}<span class="brand-mark">GP</span>{% endif %}
+      <span><b>{{ institution.acronym if institution and institution.acronym else 'PROJETS' }}</b><small>{{ institution.name if institution else 'ESPACE ACADÉMIQUE' }}</small></span>
+    </a>
+    <nav class="sidebar-nav" aria-label="Modules de gestion">
+      <span class="nav-caption">ESPACE DE TRAVAIL</span>
+      <a class="nav-link{% if request.endpoint == 'main.dashboard' %} active{% endif %}" href="{{ url_for('main.dashboard') }}"><span aria-hidden="true">⌂</span>Tableau de bord</a>
+
+      <span class="nav-caption">SUIVI ACADÉMIQUE</span>
+      <a class="nav-link{% if request.endpoint == 'modules.section' and request.view_args and request.view_args.get('section') == 'sujets' %} active{% endif %}" href="{{ url_for('modules.section',section='sujets') }}"><span aria-hidden="true">▤</span>Sujets & mémoires</a>
+      <a class="nav-link{% if request.endpoint == 'modules.section' and request.view_args and request.view_args.get('section') == 'encadrement' %} active{% endif %}" href="{{ url_for('modules.section',section='encadrement') }}"><span aria-hidden="true">◎</span>Encadrement</a>
+      <a class="nav-link{% if request.endpoint == 'modules.section' and request.view_args and request.view_args.get('section') == 'validations' %} active{% endif %}" href="{{ url_for('modules.section',section='validations') }}"><span aria-hidden="true">⇄</span>Validations</a>
+      <a class="nav-link{% if request.endpoint == 'modules.section' and request.view_args and request.view_args.get('section') == 'documents' %} active{% endif %}" href="{{ url_for('modules.section',section='documents') }}"><span aria-hidden="true">▧</span>Documents</a>
+      <a class="nav-link{% if request.endpoint == 'modules.section' and request.view_args and request.view_args.get('section') == 'messagerie' %} active{% endif %}" href="{{ url_for('modules.section',section='messagerie') }}"><span aria-hidden="true">✉</span>Messagerie</a>
+      <a class="nav-link{% if request.endpoint == 'modules.section' and request.view_args and request.view_args.get('section') == 'reunions' %} active{% endif %}" href="{{ url_for('modules.section',section='reunions') }}"><span aria-hidden="true">◷</span>Réunions & calendrier</a>
+      <a class="nav-link{% if request.endpoint == 'modules.section' and request.view_args and request.view_args.get('section') == 'notifications' %} active{% endif %}" href="{{ url_for('modules.section',section='notifications') }}"><span aria-hidden="true">♧</span>Notifications{% if unread_notifications %}<i class="nav-dot" aria-label="{{ unread_notifications }} notification(s) non lue(s)"></i>{% endif %}</a>
+
+      {% if current_user.role == 'admin' %}
+      <span class="nav-caption">ADMINISTRATION</span>
+      <a class="nav-link{% if request.endpoint == 'modules.section' and request.view_args and request.view_args.get('section') == 'etudiants' %} active{% endif %}" href="{{ url_for('modules.section',section='etudiants') }}"><span aria-hidden="true">♙</span>Étudiants</a>
+      <a class="nav-link{% if request.endpoint == 'modules.section' and request.view_args and request.view_args.get('section') == 'enseignants' %} active{% endif %}" href="{{ url_for('modules.section',section='enseignants') }}"><span aria-hidden="true">♟</span>Enseignants</a>
+      <a class="nav-link{% if request.endpoint == 'modules.section' and request.view_args and request.view_args.get('section') == 'programmes' %} active{% endif %}" href="{{ url_for('modules.section',section='programmes') }}"><span aria-hidden="true">▦</span>Programmes</a>
+      <a class="nav-link{% if request.endpoint == 'modules.section' and request.view_args and request.view_args.get('section') == 'utilisateurs' %} active{% endif %}" href="{{ url_for('modules.section',section='utilisateurs') }}"><span aria-hidden="true">⚙</span>Utilisateurs & rôles</a>
+      <a class="nav-link{% if request.endpoint == 'modules.section' and request.view_args and request.view_args.get('section') == 'rapports' %} active{% endif %}" href="{{ url_for('modules.section',section='rapports') }}"><span aria-hidden="true">▥</span>Rapports & statistiques</a>
+      <a class="nav-link{% if request.endpoint == 'modules.settings' %} active{% endif %}" href="{{ url_for('modules.settings') }}"><span aria-hidden="true">⚙</span>Paramètres</a>
+      {% endif %}
+    </nav>
+    <div class="sidebar-bottom">
+      <a class="profile-mini" href="{{ url_for('auth.profile') }}" title="Consulter mon profil">
+        <span class="avatar">{% if current_user.profile_photo_data %}<img src="{{ current_user.profile_photo_data }}" alt="Photo de profil" style="width:100%;height:100%;object-fit:cover;border-radius:50%">{% else %}{{ current_user.full_name[:1]|upper }}{% endif %}</span>
+        <span><b>{{ current_user.full_name }}</b><small>{{ current_user.role_label }} · Mon profil</small></span>
+      </a>
+      <div class="sidebar-caption">Espace académique sécurisé</div>
+    </div>
+  </aside>
   <header class="topbar">
+    <button type="button" class="menu-toggle" id="menuToggle" aria-controls="sidebar" aria-expanded="false" aria-label="Ouvrir le menu de navigation">☰</button>
     <a class="workspace-brand" href="{{ url_for('main.dashboard') }}" aria-label="Accueil">
       {% if institution and institution.logo_data %}<img src="{{ institution.logo_data }}" alt="Logo">{% else %}<span class="brand-mark">GP</span>{% endif %}
       <span><b>{{ institution.acronym if institution and institution.acronym else 'PROJETS' }}</b><small>{{ institution.name if institution else 'ESPACE ACADÉMIQUE' }}</small></span>
     </a>
-    <div class="workspace-controls" aria-label="Navigation principale">
+    <div class="breadcrumb"><span>ESPACE ACADÉMIQUE</span><span>›</span><b>{% block page_section %}Tableau de bord{% endblock %}</b></div>
+    <div class="workspace-controls" aria-label="Navigation rapide">
       <button type="button" class="workspace-nav-btn" onclick="history.back()" aria-label="Page précédente" title="Précédent">←</button>
       <a class="workspace-home-btn" href="{{ url_for('main.dashboard') }}">⌂ &nbsp; Accueil</a>
       <button type="button" class="workspace-nav-btn" onclick="history.forward()" aria-label="Page suivante" title="Suivant">→</button>
