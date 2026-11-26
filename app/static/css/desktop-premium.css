@@ -314,3 +314,91 @@ body{color:var(--gp-shell-ink)}
 @media(prefers-reduced-motion:reduce){
   .sidebar .nav-link,.workspace-module-card,.primary-btn,.small-btn,.settings-save{transition:none!important}
 }
+
+/* Mode ordinateur sur smartphone : détecter la largeur physique et le tactile.
+   Certains navigateurs imposent un viewport desktop (≈980px) même sur un petit écran. */
+@media screen and (max-device-width:780px) and (pointer:coarse){
+  :root{--gp-header-height:66px;--gp-sidebar-width:min(86vw,300px)}
+  html,body{width:100%!important;max-width:100%!important;overflow-x:hidden!important}
+  body .app-shell{
+    display:block!important;position:relative!important;width:100%!important;
+    min-width:0!important;min-height:100vh!important;min-height:100dvh!important;
+    margin:0!important;padding:0!important;transform:none!important;
+  }
+  body .app-shell>.sidebar{
+    position:fixed!important;inset:0 auto 0 0!important;
+    width:min(86vw,300px)!important;height:100vh!important;height:100dvh!important;
+    min-height:100vh!important;min-height:100dvh!important;
+    padding:18px 14px 16px!important;transform:translateX(-105%)!important;
+    visibility:hidden!important;pointer-events:none!important;z-index:6000!important;
+    transition:transform .24s ease,visibility .24s ease;
+  }
+  body .app-shell>.sidebar.open{
+    transform:translateX(0)!important;visibility:visible!important;
+    pointer-events:auto!important;
+  }
+  body .app-shell>header.topbar{
+    display:flex!important;position:sticky!important;inset:0 0 auto!important;
+    width:100%!important;height:66px!important;min-height:66px!important;
+    max-height:66px!important;margin:0!important;padding:7px 11px!important;
+    gap:8px!important;transform:none!important;z-index:5000!important;
+  }
+  body .app-shell>.topbar .menu-toggle{
+    display:inline-grid!important;place-items:center;flex:0 0 40px!important;
+    width:40px!important;height:40px!important;padding:0!important;
+  }
+  body .app-shell>.topbar .workspace-brand{
+    display:flex!important;flex:1 1 auto!important;min-width:0!important;gap:8px!important;
+  }
+  body .app-shell>.topbar .workspace-brand img,
+  body .app-shell>.topbar .workspace-brand .brand-mark{
+    width:36px!important;height:36px!important;flex:0 0 36px!important;
+  }
+  body .app-shell>.topbar .workspace-brand small,
+  body .app-shell>.topbar .breadcrumb,
+  body .app-shell>.topbar .premium-top-links{display:none!important}
+  body .app-shell>.topbar .workspace-controls{
+    flex:0 0 auto!important;margin:0!important;padding:0!important;
+    border:0!important;background:transparent!important;
+  }
+  body .app-shell>.topbar .workspace-controls .workspace-nav-btn{display:none!important}
+  body .app-shell>.topbar .workspace-controls .workspace-home-btn{
+    min-height:34px!important;padding:0 9px!important;font-size:10px!important;
+    white-space:nowrap!important;
+  }
+  body .app-shell>.topbar .top-actions{gap:6px!important}
+  body .app-shell>.topbar .top-user>span:last-child{display:none!important}
+  body .app-shell>.topbar .profile-avatar{width:35px!important;height:35px!important}
+  body .app-shell>.topbar .workspace-logout{width:34px!important;height:34px!important}
+  body .app-shell>main.main-area{
+    display:block!important;position:relative!important;grid-column:1!important;
+    width:100%!important;max-width:100%!important;min-width:0!important;
+    min-height:0!important;height:auto!important;margin:0!important;padding:0!important;
+    transform:none!important;
+  }
+  body .app-shell>main.main-area>.page-content{
+    display:block!important;width:100%!important;max-width:100%!important;
+    min-width:0!important;height:auto!important;min-height:0!important;
+    margin:0!important;padding:16px 13px 28px!important;transform:none!important;
+  }
+  body .app-shell .gp-dashboard,
+  body .app-shell .workspace-modules,
+  body .app-shell .workspace-module-grid,
+  body .app-shell .workspace-module-card,
+  body .app-shell .module-grid,
+  body .app-shell .panel,
+  body .app-shell .stats-grid{
+    min-width:0!important;max-width:100%!important;
+  }
+  body .app-shell .workspace-module-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  body .app-shell .module-grid{grid-template-columns:minmax(0,1fr)!important}
+  body .app-shell .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  body .app-shell~.gp-site-footer.gp-footer-compact{
+    width:100%!important;margin-left:0!important;
+  }
+  body.menu-open:after{
+    content:"";position:fixed;inset:0;background:rgba(7,22,40,.52);
+    z-index:5500;backdrop-filter:blur(2px);
+  }
+  body.menu-open .sidebar{z-index:6000!important}
+}
