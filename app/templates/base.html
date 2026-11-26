@@ -13,7 +13,7 @@
   {% block extra_css %}{% endblock %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard-shell.css', v='20261126-fixed-sidebar1') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/premium-ui.css', v='20261126-visual-audit1') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/desktop-premium.css', v='20261126-touch-layout3') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/desktop-premium.css', v='20261126-dashboard-icons1') }}">
 </head>
 <body>
 {% if current_user.is_authenticated %}<div class="global-progress" id="globalProgress" role="progressbar" aria-label="Chargement de la page"></div>{% endif %}
@@ -26,25 +26,25 @@
     </a>
     <nav class="sidebar-nav" aria-label="Modules de gestion">
       <span class="nav-caption">ESPACE DE TRAVAIL</span>
-      <a class="nav-link{% if request.endpoint == 'main.dashboard' %} active{% endif %}" href="{{ url_for('main.dashboard') }}"><span aria-hidden="true">⌂</span>Tableau de bord</a>
+      <a class="nav-link{% if request.endpoint == 'main.dashboard' %} active{% endif %}" href="{{ url_for('main.dashboard') }}"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1Z"/></svg></span>Tableau de bord</a>
 
       <span class="nav-caption">SUIVI ACADÉMIQUE</span>
-      <a class="nav-link{% if request.endpoint == 'modules.section' and request.view_args and request.view_args.get('section') == 'sujets' %} active{% endif %}" href="{{ url_for('modules.section',section='sujets') }}"><span aria-hidden="true">▤</span>Sujets & mémoires</a>
-      <a class="nav-link{% if request.endpoint == 'modules.section' and request.view_args and request.view_args.get('section') == 'encadrement' %} active{% endif %}" href="{{ url_for('modules.section',section='encadrement') }}"><span aria-hidden="true">◎</span>Encadrement</a>
-      <a class="nav-link{% if request.endpoint == 'modules.section' and request.view_args and request.view_args.get('section') == 'validations' %} active{% endif %}" href="{{ url_for('modules.section',section='validations') }}"><span aria-hidden="true">⇄</span>Validations</a>
-      <a class="nav-link{% if request.endpoint == 'modules.section' and request.view_args and request.view_args.get('section') == 'documents' %} active{% endif %}" href="{{ url_for('modules.section',section='documents') }}"><span aria-hidden="true">▧</span>Documents</a>
-      <a class="nav-link{% if request.endpoint == 'modules.section' and request.view_args and request.view_args.get('section') == 'messagerie' %} active{% endif %}" href="{{ url_for('modules.section',section='messagerie') }}"><span aria-hidden="true">✉</span>Messagerie</a>
-      <a class="nav-link{% if request.endpoint == 'modules.section' and request.view_args and request.view_args.get('section') == 'reunions' %} active{% endif %}" href="{{ url_for('modules.section',section='reunions') }}"><span aria-hidden="true">◷</span>Réunions & calendrier</a>
-      <a class="nav-link{% if request.endpoint == 'modules.section' and request.view_args and request.view_args.get('section') == 'notifications' %} active{% endif %}" href="{{ url_for('modules.section',section='notifications') }}"><span aria-hidden="true">♧</span>Notifications{% if unread_notifications %}<i class="nav-dot" aria-label="{{ unread_notifications }} notification(s) non lue(s)"></i>{% endif %}</a>
+      <a class="nav-link{% if request.endpoint == 'modules.section' and request.view_args and request.view_args.get('section') == 'sujets' %} active{% endif %}" href="{{ url_for('modules.section',section='sujets') }}"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h11l3 3v15H5z"/><path d="M16 3v4h4M8 11h8M8 15h8"/></svg></span>Sujets & mémoires</a>
+      <a class="nav-link{% if request.endpoint == 'modules.section' and request.view_args and request.view_args.get('section') == 'encadrement' %} active{% endif %}" href="{{ url_for('modules.section',section='encadrement') }}"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 3v2M21 12h-2"/></svg></span>Encadrement</a>
+      <a class="nav-link{% if request.endpoint == 'modules.section' and request.view_args and request.view_args.get('section') == 'validations' %} active{% endif %}" href="{{ url_for('modules.section',section='validations') }}"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h15l-3-3M20 17H5l3 3"/></svg></span>Validations</a>
+      <a class="nav-link{% if request.endpoint == 'modules.section' and request.view_args and request.view_args.get('section') == 'documents' %} active{% endif %}" href="{{ url_for('modules.section',section='documents') }}"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h10l4 4v14H5z"/><path d="M15 3v5h4M8 13h8M8 17h8"/></svg></span>Documents</a>
+      <a class="nav-link{% if request.endpoint == 'modules.section' and request.view_args and request.view_args.get('section') == 'messagerie' %} active{% endif %}" href="{{ url_for('modules.section',section='messagerie') }}"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg></span>Messagerie</a>
+      <a class="nav-link{% if request.endpoint == 'modules.section' and request.view_args and request.view_args.get('section') == 'reunions' %} active{% endif %}" href="{{ url_for('modules.section',section='reunions') }}"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 9h18M8 13h3M8 17h6"/></svg></span>Réunions & calendrier</a>
+      <a class="nav-link{% if request.endpoint == 'modules.section' and request.view_args and request.view_args.get('section') == 'notifications' %} active{% endif %}" href="{{ url_for('modules.section',section='notifications') }}"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg></span>Notifications{% if unread_notifications %}<i class="nav-dot" aria-label="{{ unread_notifications }} notification(s) non lue(s)"></i>{% endif %}</a>
 
       {% if current_user.role == 'admin' %}
       <span class="nav-caption">ADMINISTRATION</span>
-      <a class="nav-link{% if request.endpoint == 'modules.section' and request.view_args and request.view_args.get('section') == 'etudiants' %} active{% endif %}" href="{{ url_for('modules.section',section='etudiants') }}"><span aria-hidden="true">♙</span>Étudiants</a>
-      <a class="nav-link{% if request.endpoint == 'modules.section' and request.view_args and request.view_args.get('section') == 'enseignants' %} active{% endif %}" href="{{ url_for('modules.section',section='enseignants') }}"><span aria-hidden="true">♟</span>Enseignants</a>
-      <a class="nav-link{% if request.endpoint == 'modules.section' and request.view_args and request.view_args.get('section') == 'programmes' %} active{% endif %}" href="{{ url_for('modules.section',section='programmes') }}"><span aria-hidden="true">▦</span>Programmes</a>
-      <a class="nav-link{% if request.endpoint == 'modules.section' and request.view_args and request.view_args.get('section') == 'utilisateurs' %} active{% endif %}" href="{{ url_for('modules.section',section='utilisateurs') }}"><span aria-hidden="true">⚙</span>Utilisateurs & rôles</a>
-      <a class="nav-link{% if request.endpoint == 'modules.section' and request.view_args and request.view_args.get('section') == 'rapports' %} active{% endif %}" href="{{ url_for('modules.section',section='rapports') }}"><span aria-hidden="true">▥</span>Rapports & statistiques</a>
-      <a class="nav-link{% if request.endpoint == 'modules.settings' %} active{% endif %}" href="{{ url_for('modules.settings') }}"><span aria-hidden="true">⚙</span>Paramètres</a>
+      <a class="nav-link{% if request.endpoint == 'modules.section' and request.view_args and request.view_args.get('section') == 'etudiants' %} active{% endif %}" href="{{ url_for('modules.section',section='etudiants') }}"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2Z"/></svg></span>Étudiants</a>
+      <a class="nav-link{% if request.endpoint == 'modules.section' and request.view_args and request.view_args.get('section') == 'enseignants' %} active{% endif %}" href="{{ url_for('modules.section',section='enseignants') }}"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a3 3 0 1 0 0 6 3 3 0 0 0 0-6ZM5 21v-2a7 7 0 0 1 14 0v2Z"/><path d="M8 14h8"/></svg></span>Enseignants</a>
+      <a class="nav-link{% if request.endpoint == 'modules.section' and request.view_args and request.view_args.get('section') == 'programmes' %} active{% endif %}" href="{{ url_for('modules.section',section='programmes') }}"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg></span>Programmes</a>
+      <a class="nav-link{% if request.endpoint == 'modules.section' and request.view_args and request.view_args.get('section') == 'utilisateurs' %} active{% endif %}" href="{{ url_for('modules.section',section='utilisateurs') }}"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1 1.4 1.1-1.4 2.4-1.7-.6a8 8 0 0 1-1.5.9l-.3 1.8h-2.8l-.3-1.8a8 8 0 0 1-1.5-.9l-1.7.6-1.4-2.4 1.4-1.1a7 7 0 0 1 0-1.8L6.3 12l1.4-2.4 1.7.6a8 8 0 0 1 1.5-.9l.3-1.8H14l.3 1.8a8 8 0 0 1 1.5.9l1.7-.6 1.4 2.4-1.4 1.1a7 7 0 0 1-.1 1.9Z"/></svg></span>Utilisateurs & rôles</a>
+      <a class="nav-link{% if request.endpoint == 'modules.section' and request.view_args and request.view_args.get('section') == 'rapports' %} active{% endif %}" href="{{ url_for('modules.section',section='rapports') }}"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span>Rapports & statistiques</a>
+      <a class="nav-link{% if request.endpoint == 'modules.settings' %} active{% endif %}" href="{{ url_for('modules.settings') }}"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1 1.4 1.1-1.4 2.4-1.7-.6a8 8 0 0 1-1.5.9l-.3 1.8h-2.8l-.3-1.8a8 8 0 0 1-1.5-.9l-1.7.6-1.4-2.4 1.4-1.1a7 7 0 0 1 0-1.8L6.3 12l1.4-2.4 1.7.6a8 8 0 0 1 1.5-.9l.3-1.8H14l.3 1.8a8 8 0 0 1 1.5.9l1.7-.6 1.4 2.4-1.4 1.1a7 7 0 0 1-.1 1.9Z"/></svg></span>Paramètres</a>
       {% endif %}
     </nav>
     <div class="sidebar-bottom">
@@ -56,7 +56,7 @@
     </div>
   </aside>
   <header class="topbar">
-    <button type="button" class="menu-toggle" id="menuToggle" aria-controls="sidebar" aria-expanded="false" aria-label="Ouvrir le menu de navigation">☰</button>
+    <button type="button" class="menu-toggle" id="menuToggle" aria-controls="sidebar" aria-expanded="false" aria-label="Ouvrir le menu de navigation"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
     <a class="workspace-brand" href="{{ url_for('main.dashboard') }}" aria-label="Accueil">
       {% if institution and institution.logo_data %}<img src="{{ institution.logo_data }}" alt="Logo">{% else %}<span class="brand-mark">GP</span>{% endif %}
       <span><b>{{ institution.acronym if institution and institution.acronym else 'PROJETS' }}</b><small>{{ institution.name if institution else 'ESPACE ACADÉMIQUE' }}</small></span>
@@ -64,13 +64,13 @@
     <div class="breadcrumb"><span>ESPACE ACADÉMIQUE</span><span>›</span><b>{% block page_section %}Tableau de bord{% endblock %}</b></div>
     <div class="workspace-controls" aria-label="Navigation rapide">
       <button type="button" class="workspace-nav-btn" onclick="history.back()" aria-label="Page précédente" title="Précédent">←</button>
-      <a class="workspace-home-btn" href="{{ url_for('main.dashboard') }}">⌂ &nbsp; Accueil</a>
+      <a class="workspace-home-btn" href="{{ url_for('main.dashboard') }}"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1Z"/></svg> Accueil</a>
       <button type="button" class="workspace-nav-btn" onclick="history.forward()" aria-label="Page suivante" title="Suivant">→</button>
     </div>
     <nav class="premium-top-links" aria-label="Accès rapides">
-      <a href="{{ url_for('modules.section',section='sujets') }}">▤ Modules</a>
-      {% if current_user.role in ['admin','section_head','department_head','coordination'] %}<a href="{{ url_for('modules.section',section='rapports') }}">▥ Rapports</a>{% endif %}
-      {% if current_user.role == 'admin' %}<a href="{{ url_for('modules.settings') }}">⚙ Paramètres</a>{% endif %}
+      <a href="{{ url_for('modules.section',section='sujets') }}"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg> Modules</a>
+      {% if current_user.role in ['admin','section_head','department_head','coordination'] %}<a href="{{ url_for('modules.section',section='rapports') }}"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg> Rapports</a>{% endif %}
+      {% if current_user.role == 'admin' %}<a href="{{ url_for('modules.settings') }}"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="m19 13 2 1-2 4-2-1-2 1v2H9v-2l-2-1-2 1-2-4 2-1v-2l-2-1 2-4 2 1 2-1V4h6v2l2 1 2-1 2 4-2 1Z"/></svg> Paramètres</a>{% endif %}
     </nav>
     <div class="top-actions">
       <a class="top-user profile-entry profile-top-entry" href="{{ url_for('auth.profile') }}" title="Modifier mon profil">
