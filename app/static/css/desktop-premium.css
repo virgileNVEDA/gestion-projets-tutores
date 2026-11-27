@@ -754,3 +754,113 @@ body.menu-open .app-shell>.sidebar{z-index:1300!important}
     font-size:9px!important;
   }
 }
+
+
+/* CORRECTIF DESKTOP — la sidebar fixe sort du flux Grid : le contenu doit réserver sa colonne. */
+@media (min-width:781px){
+  html,body{width:100%;min-width:0;overflow-x:hidden}
+  body .app-shell{
+    display:block!important;
+    width:100%!important;min-width:0!important;min-height:100vh!important;
+    margin:0!important;padding:0!important;
+  }
+  body .app-shell>.sidebar{
+    position:fixed!important;top:0!important;left:0!important;bottom:0!important;
+    right:auto!important;width:var(--gp-sidebar-width,278px)!important;
+    height:100vh!important;height:100dvh!important;min-height:0!important;
+    overflow-x:hidden!important;overflow-y:auto!important;
+    z-index:1500!important;
+  }
+  body .app-shell>header.topbar{
+    display:flex!important;position:sticky!important;top:0!important;
+    left:auto!important;right:auto!important;
+    width:calc(100% - var(--gp-sidebar-width,278px))!important;
+    min-width:0!important;height:var(--gp-header-height,78px)!important;
+    min-height:var(--gp-header-height,78px)!important;max-height:none!important;
+    margin:0 0 0 var(--gp-sidebar-width,278px)!important;
+    padding:10px clamp(18px,2vw,32px)!important;
+    box-sizing:border-box!important;z-index:1400!important;
+    background:#fff!important;border-bottom:1px solid #dfe7f0!important;
+    box-shadow:0 4px 18px rgba(15,45,75,.055)!important;
+    overflow:visible!important;
+  }
+  body .app-shell>header.topbar .breadcrumb{
+    display:flex!important;flex:1 1 220px!important;min-width:120px!important;
+    overflow:hidden!important;white-space:nowrap!important;
+  }
+  body .app-shell>header.topbar .workspace-controls{
+    flex:0 0 auto!important;white-space:nowrap!important;
+  }
+  body .app-shell>header.topbar .top-actions{
+    flex:0 0 auto!important;min-width:0!important;
+  }
+  body .app-shell>main.main-area{
+    display:block!important;position:relative!important;
+    width:calc(100% - var(--gp-sidebar-width,278px))!important;
+    min-width:0!important;max-width:none!important;
+    min-height:calc(100vh - var(--gp-header-height,78px))!important;
+    height:auto!important;margin:0 0 0 var(--gp-sidebar-width,278px)!important;
+    padding:0!important;box-sizing:border-box!important;
+    overflow:visible!important;
+  }
+  body .app-shell>main.main-area>.page-content.dashboard-page{
+    display:block!important;width:100%!important;max-width:1680px!important;
+    min-width:0!important;margin:0 auto!important;
+    padding:30px clamp(24px,2.4vw,40px) 48px!important;
+    box-sizing:border-box!important;
+  }
+  body .app-shell>main.main-area>.page-content.dashboard-page>.gp-dashboard-classic{
+    width:100%!important;max-width:none!important;min-width:0!important;
+    margin:0!important;gap:22px!important;
+  }
+  body .app-shell~.gp-site-footer.gp-footer-compact{
+    display:block!important;width:calc(100% - var(--gp-sidebar-width,278px))!important;
+    max-width:none!important;margin:24px 0 0 var(--gp-sidebar-width,278px)!important;
+    box-sizing:border-box!important;
+  }
+  /* Les cartes de graphiques gardent un en-tête discret et lisible. */
+  body .gp-dashboard-classic .chart-panel>.panel-heading{
+    display:flex!important;align-items:center!important;justify-content:space-between!important;
+    min-height:0!important;padding:0 0 15px!important;margin:0 0 18px!important;
+    background:transparent!important;color:#18324d!important;
+    border:0!important;border-bottom:1px solid #e7edf4!important;
+    border-radius:0!important;box-shadow:none!important;
+  }
+  body .gp-dashboard-classic .chart-panel>.panel-heading h3{
+    color:#173653!important;font-size:15px!important;line-height:1.4!important;
+  }
+  body .gp-dashboard-classic .chart-panel>.panel-heading p{
+    color:#718398!important;font-size:11px!important;
+  }
+  body .gp-dashboard-classic .chart-panel .chart-tag{
+    display:inline-flex!important;align-items:center!important;
+    min-height:28px!important;padding:0 10px!important;border-radius:20px!important;
+    background:#edf4fa!important;color:#315c82!important;font-size:9px!important;
+  }
+  body .gp-dashboard-classic .dashboard-welcome{
+    align-items:center!important;margin:0 0 2px!important;
+  }
+  body .gp-dashboard-classic .dashboard-welcome-copy h1{
+    color:#142d49!important;font-size:clamp(27px,2vw,34px)!important;
+    line-height:1.2!important;margin:7px 0 6px!important;
+  }
+  body .gp-dashboard-classic .dashboard-profile{
+    flex:0 1 300px!important;max-width:300px!important;min-width:230px!important;
+  }
+}
+@media (min-width:781px) and (max-width:1180px){
+  :root{--gp-sidebar-width:244px}
+  body .app-shell>header.topbar{gap:10px!important;padding-inline:14px!important}
+  body .app-shell>header.topbar .workspace-controls .workspace-nav-btn{display:none!important}
+  body .app-shell>header.topbar .workspace-controls .workspace-home-btn{padding-inline:10px!important}
+  body .app-shell>header.topbar .top-user>span:last-child{display:none!important}
+  body .app-shell>main.main-area>.page-content.dashboard-page{padding-inline:20px!important}
+}
+@media (min-width:781px) and (max-width:900px){
+  body .app-shell>header.topbar .breadcrumb span:first-child{display:none!important}
+  body .app-shell>header.topbar .workspace-controls{display:none!important}
+  body .gp-dashboard-classic .dashboard-welcome{align-items:flex-start!important;flex-direction:column!important}
+  body .gp-dashboard-classic .dashboard-profile{max-width:100%!important;width:100%!important}
+  body .gp-dashboard-classic .dashboard-charts{grid-template-columns:minmax(0,1fr)!important}
+  body .gp-dashboard-classic .dashboard-lower{grid-template-columns:minmax(0,1fr)!important}
+}
