@@ -864,3 +864,40 @@ body.menu-open .app-shell>.sidebar{z-index:1300!important}
   body .gp-dashboard-classic .dashboard-charts{grid-template-columns:minmax(0,1fr)!important}
   body .gp-dashboard-classic .dashboard-lower{grid-template-columns:minmax(0,1fr)!important}
 }
+
+
+/* Déconnexion toujours visible dans la barre supérieure. */
+.app-shell>header.topbar .top-actions{
+  display:flex!important;align-items:center!important;justify-content:flex-end!important;
+  flex:0 0 auto!important;gap:12px!important;min-width:max-content!important;
+  margin-left:auto!important;overflow:visible!important;
+}
+.app-shell>header.topbar .top-actions>form{
+  display:block!important;flex:0 0 auto!important;visibility:visible!important;
+  opacity:1!important;margin:0!important;padding:0!important;
+}
+.app-shell>header.topbar .top-actions .workspace-logout{
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  visibility:visible!important;opacity:1!important;position:relative!important;
+  flex:0 0 42px!important;width:42px!important;min-width:42px!important;
+  height:42px!important;min-height:42px!important;padding:0!important;
+  margin:0!important;border:1px solid #d8e4ef!important;border-radius:12px!important;
+  background:#fff!important;color:#17436a!important;
+  box-shadow:0 3px 10px rgba(17,48,81,.08)!important;
+  cursor:pointer!important;z-index:5!important;
+}
+.app-shell>header.topbar .top-actions .workspace-logout svg{
+  display:block!important;width:20px!important;height:20px!important;
+  fill:none!important;stroke:currentColor!important;stroke-width:1.8!important;
+  stroke-linecap:round!important;stroke-linejoin:round!important;
+}
+.app-shell>header.topbar .top-actions .workspace-logout:hover{
+  background:#fff3f1!important;border-color:#efc7c1!important;color:#b5473c!important;
+}
+@media(max-width:780px){
+  .app-shell>header.topbar .top-actions{gap:7px!important}
+  .app-shell>header.topbar .top-actions .workspace-logout{
+    flex-basis:38px!important;width:38px!important;min-width:38px!important;
+    height:38px!important;min-height:38px!important;
+  }
+}
